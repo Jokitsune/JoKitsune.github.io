@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jordan de SOUZA — Security Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- ==========================================
+       BOOT SCREEN
+  =========================================== -->
+  <div id="boot-screen">
+    <div class="boot-line"          style="animation-delay: 0.1s">BIOS v2.4.1 — SECURE BOOT ENABLED</div>
+    <div class="boot-line"          style="animation-delay: 0.3s">Loading kernel modules...</div>
+    <div class="boot-line warn"     style="animation-delay: 0.6s">WARNING: Unauthorized access detected</div>
+    <div class="boot-line error"    style="animation-delay: 0.9s">ALERT: Intrusion attempt blocked by firewall</div>
+    <div class="boot-line"          style="animation-delay: 1.2s">Authenticating user: <span style="color:var(--green)">jordan@sec-shell</span></div>
+    <div class="boot-line"          style="animation-delay: 1.5s">Mounting filesystem... OK</div>
+    <div class="boot-line"          style="animation-delay: 1.8s">Starting portfolio daemon... OK</div>
+    <div class="boot-line highlight"style="animation-delay: 2.1s">✓ System ready. Welcome, Jordan.</div>
+  </div>
+
+  <!-- ==========================================
+       NAVIGATION
+  =========================================== -->
+  <nav>
+    <div class="nav-brand">J<span>.</span>de SOUZA<span class="t-cursor" style="height:14px;width:6px;margin-left:4px"></span></div>
+    <ul class="nav-links">
+      <li><a href="#hero">./home</a></li>
+      <li><a href="#skills">./skills</a></li>
+      <li><a href="#projects">./projects</a></li>
+      <li><a href="#formation">./formation</a></li>
+      <li><a href="#contact">./contact</a></li>
+    </ul>
+    <div>
+      <span class="status-dot"></span>
+      <span style="font-size:0.75rem;color:var(--text-dim);letter-spacing:1px">ONLINE</span>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ===== SECTION : HERO ===== -->
+    <section id="hero">
+      <div class="grid-bg"></div>
+      <div class="hero-left">
+        <div class="hero-greeting">// IDENTIFICATION DU SYSTÈME</div>
+        <div class="hero-name glitch" data-text="de SOUZA">
+          <span class="first">Jordan</span>
+          <span class="last">de SOUZA</span>
+        </div>
+        <div class="hero-title">Étudiant en Sciences du Numérique & Passionné de Cybersécurité</div>
+        <p class="hero-bio">
+          Je construis des applications web et je les défends. De l'écriture du code à la configuration de sécurité opérationnelle,
+          je conçois des solutions numériques robustes face aux menaces actuelles.
+          Certifié CCEP et formé par Fortinet & l'ONU.
+        </p>
+        <div class="hero-cta">
+          <a href="#contact"   class="btn-primary">▶ INITIER CONTACT</a>
+          <a href="#formation" class="btn-secondary">◈ MON PARCOURS</a>
+        </div>
+      </div>
+      <div class="hero-terminal">
+        <div class="terminal-bar">
+          <div class="t-dot red"></div>
+          <div class="t-dot yellow"></div>
+          <div class="t-dot green"></div>
+          <span class="terminal-title">bash — jordan@sec-shell: ~</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-line">
+            <span class="t-prompt">jordan@sec-shell</span>
+            <span class="t-path">:~$</span>
+            <span class="t-cmd">whoami --verbose</span>
+          </div>
+          <div>
+            <span class="t-output"><span class="t-key">name</span>       : <span class="t-val">Jordan de SOUZA</span></span>
+            <span class="t-output"><span class="t-key">role</span>       : <span class="t-val">Security Intern</span></span>
+            <span class="t-output"><span class="t-key">location</span>   : <span class="t-val">Cotonou, Bénin</span></span>
+            <span class="t-output"><span class="t-key">clearance</span>  : <span class="t-val">CCEP Certified</span></span>
+            <span class="t-output"><span class="t-key">status</span>     : <span class="t-val" style="color:var(--green)">ACTIVELY SEEKING INTERNSHIP</span></span>
+          </div>
+          <br>
+          <div class="t-line">
+            <span class="t-prompt">jordan@sec-shell</span>
+            <span class="t-path">:~$</span>
+            <span class="t-cmd">cat skills.txt | head -5</span>
+          </div>
+          <div>
+            <span class="t-output">→ Vulnerability Analysis</span>
+            <span class="t-output">→ Penetration Testing</span>
+            <span class="t-output">→ Network Security</span>
+            <span class="t-output">→ Python / Node.js / C</span>
+            <span class="t-output">→ Web Development</span>
+          </div>
+          <br>
+          <div class="t-line">
+            <span class="t-prompt">jordan@sec-shell</span>
+            <span class="t-path">:~$</span>
+            <span class="t-cmd">ping recruteur<span class="t-cursor"></span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== SECTION : COMPÉTENCES ===== -->
+    <section id="skills">
+      <div class="section-label">competences</div>
+      <h2 class="section-title">Arsenal<br>Technique</h2>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="skill-card-icon">🛡️</div>
+          <div class="skill-card-title">Sécurité</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Analyse de vulnérabilités</span>
+            <span class="skill-tag">Test d'intrusion</span>
+            <span class="skill-tag">Cybercriminalité</span>
+            <span class="skill-tag">Threat Landscape</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-card-icon">💻</div>
+          <div class="skill-card-title">Développement</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">PHP</span>
+            <span class="skill-tag">C / C#</span>
+            <span class="skill-tag">HTML5 / CSS</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-card-icon">🔧</div>
+          <div class="skill-card-title">Systèmes & Réseaux</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Administration systèmes</span>
+            <span class="skill-tag">Réseaux informatiques</span>
+            <span class="skill-tag">Maintenance matérielle</span>
+            <span class="skill-tag">Support technique</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-card-icon">🎯</div>
+          <div class="skill-card-title">Soft Skills</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Gestion de projet</span>
+            <span class="skill-tag">Travail sous pression</span>
+            <span class="skill-tag">Communication</span>
+            <span class="skill-tag">Marketing digital</span>
+            <span class="skill-tag">Création de contenu</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== SECTION : PROJETS ===== -->
+    <section id="projects">
+      <div class="section-label">projets personnels</div>
+      <h2 class="section-title">Projets &<br>Réalisations</h2>
+      <div class="projects-grid">
+
+        <div class="project-card">
+          <div class="project-number">PROJECT_01</div>
+          <div class="project-name">Scanner Réseau</div>
+          <p class="project-desc">Développement d'un scanner réseau en Python capable de détecter les hôtes actifs, les ports ouverts et les services disponibles sur un réseau donné.</p>
+          <div class="project-stack">
+            <span class="stack-item">Python</span>
+            <span class="stack-item">Scapy</span>
+            <span class="stack-item">Network Analysis</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-number">PROJECT_02</div>
+          <div class="project-name">Analyse de Vulnérabilités</div>
+          <p class="project-desc">Simulation de tests d'intrusion sur un environnement de lab contrôlé, appliquant les méthodologies des certifications CCEP et Fortinet.</p>
+          <div class="project-stack">
+            <span class="stack-item">Python</span>
+            <span class="stack-item">Kali Linux</span>
+            <span class="stack-item">Network Analysis</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-number">PROJECT_03</div>
+          <div class="project-name">Simulateur de Phishing</div>
+          <p class="project-desc">Plateforme de simulation de phishing pour sensibiliser les utilisateurs aux risques d'hameçonnage et renforcer leur culture de la cybersécurité.</p>
+          <div class="project-stack">
+            <span class="stack-item">HTML5</span>
+            <span class="stack-item">CSS3</span>
+            <span class="stack-item">JavaScript</span>
+            <span class="stack-item">Sécurité Offensive</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-number">PROJECT_04</div>
+          <div class="project-name">Script de Sécurité Réseau</div>
+          <p class="project-desc">Outil de monitoring réseau en Python permettant la détection d'anomalies de trafic, en approfondissement des cours de sécurité informatique.</p>
+          <div class="project-stack">
+            <span class="stack-item">Python</span>
+            <span class="stack-item">Scapy</span>
+            <span class="stack-item">TCP/IP</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-number">PROJECT_05</div>
+          <div class="project-name">Mise en place d'un intranet avec Nextcloud</div>
+          <p class="project-desc">Déploiement, configuration et sécurisation complète d'un serveur Nextcloud interne visant à offrir un intranet collaboratif souverain.</p>
+          <div class="project-stack">
+            <span class="stack-item">Nextcloud</span>
+            <span class="stack-item">Linux</span>
+            <span class="stack-item">SysAdmin</span>
+            <span class="stack-item">Sécurité Web</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-number">PROJECT_06</div>
+          <div class="project-name">WAF avec ModSecurity</div>
+          <p class="project-desc">Mise en place d'un Pare-Feu Applicatif Web (WAF) avec ModSecurity pour filtrer, monitorer et bloquer le trafic HTTP malveillant ciblant les vulnérabilités OWASP.</p>
+          <div class="project-stack">
+            <span class="stack-item">ModSecurity</span>
+            <span class="stack-item">Apache</span>
+            <span class="stack-item">OWASP</span>
+            <span class="stack-item">Sécurité Web</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ===== SECTION : FORMATION ===== -->
+    <section id="formation">
+      <div class="section-label">parcours</div>
+      <h2 class="section-title">Formation &<br>Expériences</h2>
+
+      <!-- Layout : timeline à gauche, cartes à droite -->
+      <div class="formation-layout">
+
+        <!-- COLONNE GAUCHE : Timeline -->
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">09/2025 — AUJOURD'HUI</div>
+            <div class="timeline-role">Licence Sécurité Informatique</div>
+            <div class="timeline-org">ESGIS — Cotonou, Bénin</div>
+            <div class="timeline-desc">Formation axée sur la cybersécurité, les réseaux et la gestion des systèmes d'information.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">06/2024 — AUJOURD'HUI</div>
+            <div class="timeline-role">Bénévole — Communication & Événementiel</div>
+            <div class="timeline-org">LE ROND POINT CLASSE — Cotonou, Bénin</div>
+            <div class="timeline-desc">
+              <ul>
+                <li>Organisation et coordination du FESTICHILL</li>
+                <li>Marketing digital et communication d'entreprise</li>
+                <li>Gestion du booking et accompagnement d'artistes</li>
+                <li>Gestion du stress et du travail sous pression</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">09/2021 — 06/2022</div>
+            <div class="timeline-role">Baccalauréat Série D</div>
+            <div class="timeline-org">La Merveilleuse — Porto-Novo, Bénin</div>
+            <div class="timeline-desc">Obtention du Baccalauréat série scientifique.</div>
+          </div>
+
+        </div>
+
+        <!-- COLONNE DROITE : Cartes 3D tilt -->
+        <div class="cards-column">
+
+          <!-- Carte Formation -->
+          <div class="card-3d-wrap" data-card="formation">
+            <div class="card-3d-inner">
+              <div class="sec-card">
+                <div class="shine-layer"></div>
+                <div class="card-corner-tag"></div>
+                <div class="card-type-badge"><span class="badge-dot"></span>Formation</div>
+                <div class="card-icon-ring">🎓</div>
+                <div>
+                  <div class="card-title">Licence Sécurité Informatique</div>
+                  <div class="card-org">ESGIS — Cotonou</div>
+                  <div class="card-date">09/2025 — AUJOURD'HUI</div>
+                </div>
+                <div class="card-divider"></div>
+                <div class="card-progress">
+                  <div class="progress-label"><span>PROGRESSION</span><span>EN COURS</span></div>
+                  <div class="progress-bar-bg"><div class="progress-bar-fill" style="--fill: 70%"></div></div>
+                </div>
+                <div class="card-tags">
+                  <span class="card-tag">Cybersécurité</span>
+                  <span class="card-tag">Réseaux</span>
+                  <span class="card-tag">SysAdmin</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Expérience -->
+          <div class="card-3d-wrap" data-card="experience">
+            <div class="card-3d-inner">
+              <div class="sec-card sec-card--cyan">
+                <div class="shine-layer"></div>
+                <div class="card-corner-tag"></div>
+                <div class="card-type-badge card-badge--cyan"><span class="badge-dot badge-dot--cyan"></span>Expérience</div>
+                <div class="card-icon-ring card-ring--cyan">⚡</div>
+                <div>
+                  <div class="card-title card-title--cyan">Bénévole Comm. & Évén.</div>
+                  <div class="card-org">Le Rond Point Classe</div>
+                  <div class="card-date">06/2024 — AUJOURD'HUI</div>
+                </div>
+                <div class="card-divider card-divider--cyan"></div>
+                <div class="card-progress">
+                  <div class="progress-label"><span>IMPACT</span><span>FESTICHILL</span></div>
+                  <div class="progress-bar-bg"><div class="progress-bar-fill progress-bar-fill--cyan" style="--fill: 80%"></div></div>
+                </div>
+                <div class="card-tags">
+                  <span class="card-tag">Marketing</span>
+                  <span class="card-tag">Événementiel</span>
+                  <span class="card-tag">Booking</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Certif CCEP -->
+          <div class="card-3d-wrap" data-card="certif">
+            <div class="card-3d-inner">
+              <div class="sec-card sec-card--yellow">
+                <div class="shine-layer"></div>
+                <div class="card-corner-tag"></div>
+                <div class="card-type-badge card-badge--yellow"><span class="badge-dot badge-dot--yellow"></span>Certification</div>
+                <div class="card-icon-ring card-ring--yellow">🏅</div>
+                <div>
+                  <div class="card-title card-title--yellow">CCEP Certified</div>
+                  <div class="card-org">Red Team Leaders</div>
+                  <div class="card-date">OBTENU</div>
+                </div>
+                <div class="card-divider card-divider--yellow"></div>
+                <div class="card-progress">
+                  <div class="progress-label"><span>NIVEAU</span><span>PROFESSIONNEL</span></div>
+                  <div class="progress-bar-bg"><div class="progress-bar-fill progress-bar-fill--yellow" style="--fill: 100%"></div></div>
+                </div>
+                <div class="card-tags">
+                  <span class="card-tag">Offensive Sec</span>
+                  <span class="card-tag">Educator</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Certif Fortinet -->
+          <div class="card-3d-wrap" data-card="fortinet">
+            <div class="card-3d-inner">
+              <div class="sec-card sec-card--yellow">
+                <div class="shine-layer"></div>
+                <div class="card-corner-tag"></div>
+                <div class="card-type-badge card-badge--yellow"><span class="badge-dot badge-dot--yellow"></span>Certification</div>
+                <div class="card-icon-ring card-ring--yellow">🔒</div>
+                <div>
+                  <div class="card-title card-title--yellow">Threat Landscape</div>
+                  <div class="card-org">Fortinet Training Institute</div>
+                  <div class="card-date">OBTENU</div>
+                </div>
+                <div class="card-divider card-divider--yellow"></div>
+                <div class="card-progress">
+                  <div class="progress-label"><span>DOMAINE</span><span>THREAT INTEL</span></div>
+                  <div class="progress-bar-bg"><div class="progress-bar-fill progress-bar-fill--yellow" style="--fill: 100%"></div></div>
+                </div>
+                <div class="card-tags">
+                  <span class="card-tag">Threat Intel</span>
+                  <span class="card-tag">Fortinet</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== SECTION : CONTACT ===== -->
+    <section id="contact">
+      <div class="section-label">transmission</div>
+      <h2 class="section-title">Initier<br>Contact</h2>
+      <div class="contact-wrapper">
+        <div class="contact-info">
+          <p style="font-family:'Exo 2',sans-serif;color:var(--text-dim);font-size:0.9rem;line-height:1.7;margin-bottom:40px;">
+            Je suis toujours ouvert à discuter de nouvelles opportunités, de projets créatifs ou de partenariats.
+            Que vous ayez un projet spécifique en tête ou que vous souhaitiez explorer des possibilités,
+            n'hésitez pas à me contacter.
+          </p>
+          <div class="contact-item">
+            <div class="contact-icon">✉</div>
+            <div>
+              <span class="contact-label">EMAIL</span>
+              <span class="contact-value">desouzajordan289@gmail.com</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">☎</div>
+            <div>
+              <span class="contact-label">TÉLÉPHONE</span>
+              <span class="contact-value">0164119794</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">◉</div>
+            <div>
+              <span class="contact-label">LOCALISATION</span>
+              <span class="contact-value">Cotonou, Bénin</span>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form">
+          <div data-fs-success style="color:var(--green); margin-bottom:15px; display:none;">✓ Message envoyé ! Je te répondrai rapidement.</div>
+          <div data-fs-error style="color:var(--red); margin-bottom:15px; display:none;">❌ Erreur réseau, réessaie plus tard.</div>
+          
+          <form id="fs-form">
+            <div class="form-group">
+              <label class="form-label">nom</label>
+              <input class="form-input" type="text" name="name" data-fs-field placeholder="Votre nom..." required>
+              <span data-fs-error="name" style="color:var(--red); font-size:0.7rem;"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">email</label>
+              <input class="form-input" type="email" name="email" data-fs-field placeholder="votre@email.com" required>
+              <span data-fs-error="email" style="color:var(--red); font-size:0.7rem;"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">message</label>
+              <textarea class="form-textarea" name="message" data-fs-field placeholder="Votre message..." required></textarea>
+              <span data-fs-error="message" style="color:var(--red); font-size:0.7rem;"></span>
+            </div>
+            <button type="submit" data-fs-submit-btn class="form-submit">▶ ENVOYER_MESSAGE.sh</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>© 2025 Jordan de SOUZA — All rights reserved</div>
+    <div style="color:var(--green-dim)">jordan@sec-shell:~$ <span class="t-cursor" style="height:12px;width:6px"></span></div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+  // Initialisation du formulaire Formspree
+  window.formspree = window.formspree || function() { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { 
+    formElement: '#fs-form', 
+    formId: 'xpqbjwpo'
+  });
+</script>
+</body>
+</html>
