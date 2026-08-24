@@ -3,45 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jordan de SOUZA — Security Portfolio</title>
+  <title>Jordan de SOUZA — Security Portfolio & DevSecOps</title>
+  
+  <!-- SEO & Métadonnées -->
+  <meta name="description" content="Portfolio de Jordan de SOUZA, étudiant en Sciences du Numérique et passionné de cybersécurité & DevSecOps. Projets en sécurité offensive, réseau et développement sécurisé.">
+  <meta name="keywords" content="Jordan de SOUZA, Cybersécurité, DevSecOps, Sécurité Informatique, Portfolio Sécurité, CCEP, Fortinet, Python, Pentest">
+  <meta name="author" content="Jordan de SOUZA">
+  <meta name="robots" content="index, follow">
+
+  <!-- OpenGraph / Réseaux Sociaux (LinkedIn, Discord, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jokitsune.github.io/">
+  <meta property="og:title" content="Jordan de SOUZA — Portfolio Cybersécurité & DevSecOps">
+  <meta property="og:description" content="Découvrez mes projets en sécurité offensive, développement web sécurisé et analyse de vulnérabilités.">
+  <meta property="og:site_name" content="Jordan de SOUZA — Portfolio">
+
+  <!-- Favicon SVG Terminal Cyber -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23050a0e' rx='6'/><path d='M6 10 L14 16 L6 22' stroke='%2300ff88' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='16' y1='22' x2='26' y2='22' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round'/></svg>" type="image/svg+xml">
+
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </head>
 <body>
 
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 
   <!-- ==========================================
        BOOT SCREEN
   =========================================== -->
-  <div id="boot-screen">
-    <div class="boot-line"          style="animation-delay: 0.1s">BIOS v2.4.1 — SECURE BOOT ENABLED</div>
-    <div class="boot-line"          style="animation-delay: 0.3s">Loading kernel modules...</div>
-    <div class="boot-line warn"     style="animation-delay: 0.6s">WARNING: Unauthorized access detected</div>
-    <div class="boot-line error"    style="animation-delay: 0.9s">ALERT: Intrusion attempt blocked by firewall</div>
-    <div class="boot-line"          style="animation-delay: 1.2s">Authenticating user: <span style="color:var(--green)">jordan@sec-shell</span></div>
-    <div class="boot-line"          style="animation-delay: 1.5s">Mounting filesystem... OK</div>
-    <div class="boot-line"          style="animation-delay: 1.8s">Starting portfolio daemon... OK</div>
-    <div class="boot-line highlight"style="animation-delay: 2.1s">✓ System ready. Welcome, Jordan.</div>
+  <div id="boot-screen" role="dialog" aria-label="Terminal de démarrage">
+    <button id="btn-skip-boot" class="boot-skip-btn" type="button" title="Passer l'animation d'amorçage" data-i18n="boot_skip">[ESC] PASSER_BOOT.sh</button>
+    <div class="boot-line"          style="animation-delay: 0.1s" data-i18n="boot_1">BIOS v2.4.1 — SECURE BOOT ENABLED</div>
+    <div class="boot-line"          style="animation-delay: 0.3s" data-i18n="boot_2">Loading kernel modules...</div>
+    <div class="boot-line warn"     style="animation-delay: 0.6s" data-i18n="boot_3">WARNING: Unauthorized access detected</div>
+    <div class="boot-line error"    style="animation-delay: 0.9s" data-i18n="boot_4">ALERT: Intrusion attempt blocked by firewall</div>
+    <div class="boot-line"          style="animation-delay: 1.2s"><span data-i18n="boot_5">Authenticating user:</span> <span style="color:var(--green)">jordan@sec-shell</span></div>
+    <div class="boot-line"          style="animation-delay: 1.5s" data-i18n="boot_6">Mounting filesystem... OK</div>
+    <div class="boot-line"          style="animation-delay: 1.8s" data-i18n="boot_7">Starting portfolio daemon... OK</div>
+    <div class="boot-line highlight"style="animation-delay: 2.1s" data-i18n="boot_8">✓ System ready. Welcome, Jordan.</div>
   </div>
 
   <!-- ==========================================
        NAVIGATION
   =========================================== -->
   <nav>
-    <div class="nav-brand">J<span>.</span>de SOUZA<span class="t-cursor" style="height:14px;width:6px;margin-left:4px"></span></div>
-    <ul class="nav-links">
-      <li><a href="#hero">./home</a></li>
-      <li><a href="#skills">./skills</a></li>
-      <li><a href="#projects">./projects</a></li>
-      <li><a href="#formation">./formation</a></li>
-      <li><a href="#contact">./contact</a></li>
+    <div class="nav-brand">J<span>.</span>de SOUZA<span class="t-cursor" style="height:14px;width:6px;margin-left:4px" aria-hidden="true"></span></div>
+    
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero" class="nav-link-item" data-i18n="nav_home">./home</a></li>
+      <li><a href="#skills" class="nav-link-item" data-i18n="nav_skills">./skills</a></li>
+      <li><a href="#projects" class="nav-link-item" data-i18n="nav_projects">./projects</a></li>
+      <li><a href="#formation" class="nav-link-item" data-i18n="nav_formation">./formation</a></li>
+      <li><a href="#contact" class="nav-link-item" data-i18n="nav_contact">./contact</a></li>
     </ul>
-    <div>
-      <span class="status-dot"></span>
+
+    <div class="nav-status-wrapper">
+      <!-- SELECTEUR DE LANGUE CYBER -->
+      <div class="lang-switch" id="langSwitch" role="group" aria-label="Langue / Language">
+        <button type="button" class="lang-btn active" data-lang="fr">FR</button>
+        <span class="lang-divider" aria-hidden="true">/</span>
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+      </div>
+
+      <span class="status-dot" aria-hidden="true"></span>
       <span style="font-size:0.75rem;color:var(--text-dim);letter-spacing:1px">ONLINE</span>
+      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu de navigation" aria-expanded="false" aria-controls="navLinks">
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+      </button>
     </div>
   </nav>
 
@@ -49,28 +81,61 @@
 
     <!-- ===== SECTION : HERO ===== -->
     <section id="hero">
-      <div class="grid-bg"></div>
+      <div class="grid-bg" aria-hidden="true"></div>
       <div class="hero-left">
-        <div class="hero-greeting">// IDENTIFICATION DU SYSTÈME</div>
-        <div class="hero-name glitch" data-text="de SOUZA">
+        <div class="hero-greeting" data-i18n="hero_greeting">// IDENTIFICATION DU SYSTÈME</div>
+        <h1 class="hero-name glitch" data-text="de SOUZA">
           <span class="first">Jordan</span>
           <span class="last">de SOUZA</span>
-        </div>
-        <div class="hero-title">Étudiant en Sciences du Numérique & Passionné de Cybersécurité</div>
-        <p class="hero-bio">
+        </h1>
+        <div class="hero-title" data-i18n="hero_title">Étudiant en Sciences du Numérique & Passionné de Cybersécurité</div>
+        <p class="hero-bio" data-i18n="hero_bio">
           Je construis des applications web et je les défends. De l'écriture du code à la configuration de sécurité opérationnelle,
           je conçois des solutions numériques robustes face aux menaces actuelles.
         </p>
         <div class="hero-cta">
-          <a href="#contact"   class="btn-primary">▶ INITIER CONTACT</a>
-          <a href="#formation" class="btn-secondary">◈ MON PARCOURS</a>
+          <a href="#contact" class="btn-primary">
+            <span aria-hidden="true">▶</span>
+            <span data-i18n="hero_cta_contact">INITIER CONTACT</span>
+          </a>
+          <a href="#formation" class="btn-secondary">
+            <span aria-hidden="true">◈</span>
+            <span data-i18n="hero_cta_formation">MON PARCOURS</span>
+          </a>
+          <a href="asset/Jordan_de_SOUZA_CV.pdf" download="CV_Jordan_de_SOUZA.pdf" class="btn-secondary" title="Télécharger le CV (PDF)">
+            <span aria-hidden="true">⇩</span>
+            <span data-i18n="hero_cta_cv">TÉLÉCHARGER CV</span>
+          </a>
+          
+          <!-- BOUTON PILE DE RÉSEAUX SOCIAUX DÉPLOYABLE -->
+          <div class="social-stack-container" id="socialStackContainer">
+            <button type="button" class="btn-secondary social-trigger-btn" id="socialTriggerBtn" aria-label="Afficher les réseaux sociaux" aria-expanded="false" title="Déployer les réseaux">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="trigger-icon" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              <span class="trigger-text" data-i18n="hero_cta_social">RÉSEAUX</span>
+              <span class="trigger-arrow" aria-hidden="true">▶</span>
+            </button>
+            <div class="social-links-pile" id="socialLinksPile" aria-hidden="true">
+              <a href="https://github.com/JoKitsune" target="_blank" rel="noopener noreferrer" class="social-pile-item github-item" title="GitHub — JoKitsune" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/in/jordandesouza-jokitsune" target="_blank" rel="noopener noreferrer" class="social-pile-item linkedin-item" title="LinkedIn" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              </a>
+              <a href="https://wa.me/22964119794" target="_blank" rel="noopener noreferrer" class="social-pile-item whatsapp-item" title="WhatsApp — +229 64 11 97 94" aria-label="WhatsApp">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              </a>
+              <a href="https://www.instagram.com/call_me_jordyy/" target="_blank" rel="noopener noreferrer" class="social-pile-item instagram-item" title="Instagram" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       <div class="hero-terminal">
         <div class="terminal-bar">
-          <div class="t-dot red"></div>
-          <div class="t-dot yellow"></div>
-          <div class="t-dot green"></div>
+          <div class="t-dot red" aria-hidden="true"></div>
+          <div class="t-dot yellow" aria-hidden="true"></div>
+          <div class="t-dot green" aria-hidden="true"></div>
           <span class="terminal-title">bash — jordan@sec-shell: ~</span>
         </div>
         <div class="terminal-body">
@@ -84,7 +149,7 @@
             <span class="t-output"><span class="t-key">role</span>       : <span class="t-val">DevSecOps junior</span></span>
             <span class="t-output"><span class="t-key">location</span>   : <span class="t-val">Cotonou, Bénin</span></span>
             <span class="t-output"><span class="t-key">clearance</span>  : <span class="t-val">CCEP Certified</span></span>
-            <span class="t-output"><span class="t-key">status</span>     : <span class="t-val" style="color:var(--green)">Project hunting</span></span>
+            <span class="t-output"><span class="t-key">status</span>     : <span class="t-val" style="color:var(--green)" data-i18n="t_status">Project hunting</span></span>
           </div>
           <br>
           <div class="t-line">
@@ -93,17 +158,17 @@
             <span class="t-cmd">cat skills.txt | head -5</span>
           </div>
           <div>
-            <span class="t-output">→ Vulnerability Analysis</span>
-            <span class="t-output">→ Penetration Testing</span>
-            <span class="t-output">→ Network Security</span>
-            <span class="t-output">→ Python / Node.js / C</span>
-            <span class="t-output">→ Web Development</span>
+            <span class="t-output" data-i18n="t_skill1">→ Vulnerability Analysis</span>
+            <span class="t-output" data-i18n="t_skill2">→ Penetration Testing</span>
+            <span class="t-output" data-i18n="t_skill3">→ Network Security</span>
+            <span class="t-output" data-i18n="t_skill4">→ Python / Node.js / C</span>
+            <span class="t-output" data-i18n="t_skill5">→ Web Development</span>
           </div>
           <br>
           <div class="t-line">
             <span class="t-prompt">jordan@sec-shell</span>
             <span class="t-path">:~$</span>
-            <span class="t-cmd">ping recruteur<span class="t-cursor"></span></span>
+            <span class="t-cmd"><span data-i18n="t_cmd_ping">ping recruteur</span><span class="t-cursor" aria-hidden="true"></span></span>
           </div>
         </div>
       </div>
@@ -112,22 +177,22 @@
 
     <!-- ===== SECTION : COMPÉTENCES ===== -->
     <section id="skills">
-      <div class="section-label">competences</div>
-      <h2 class="section-title">Arsenal<br>Technique</h2>
+      <div class="section-label" data-i18n="skills_label">competences</div>
+      <h2 class="section-title" data-i18n="skills_title">Arsenal<br>Technique</h2>
       <div class="skills-grid">
         <div class="skill-card">
-          <div class="skill-card-icon">🛡️</div>
-          <div class="skill-card-title">Sécurité</div>
+          <div class="skill-card-icon" aria-hidden="true">🛡️</div>
+          <div class="skill-card-title" data-i18n="skill_sec_title">Sécurité</div>
           <div class="skill-tags">
-            <span class="skill-tag">Analyse de vulnérabilités</span>
-            <span class="skill-tag">Test d'intrusion</span>
-            <span class="skill-tag">Cybercriminalité</span>
-            <span class="skill-tag">Threat Landscape</span>
+            <span class="skill-tag" data-i18n="skill_sec_1">Analyse de vulnérabilités</span>
+            <span class="skill-tag" data-i18n="skill_sec_2">Test d'intrusion</span>
+            <span class="skill-tag" data-i18n="skill_sec_3">Cybercriminalité</span>
+            <span class="skill-tag" data-i18n="skill_sec_4">Threat Landscape</span>
           </div>
         </div>
         <div class="skill-card">
-          <div class="skill-card-icon">💻</div>
-          <div class="skill-card-title">Développement</div>
+          <div class="skill-card-icon" aria-hidden="true">💻</div>
+          <div class="skill-card-title" data-i18n="skill_dev_title">Développement</div>
           <div class="skill-tags">
             <span class="skill-tag">Python</span>
             <span class="skill-tag">JavaScript</span>
@@ -138,24 +203,24 @@
           </div>
         </div>
         <div class="skill-card">
-          <div class="skill-card-icon">🔧</div>
-          <div class="skill-card-title">Systèmes & Réseaux</div>
+          <div class="skill-card-icon" aria-hidden="true">🔧</div>
+          <div class="skill-card-title" data-i18n="skill_sys_title">Systèmes & Réseaux</div>
           <div class="skill-tags">
-            <span class="skill-tag">Administration systèmes</span>
-            <span class="skill-tag">Réseaux informatiques</span>
-            <span class="skill-tag">Maintenance matérielle</span>
-            <span class="skill-tag">Support technique</span>
+            <span class="skill-tag" data-i18n="skill_sys_1">Administration systèmes</span>
+            <span class="skill-tag" data-i18n="skill_sys_2">Réseaux informatiques</span>
+            <span class="skill-tag" data-i18n="skill_sys_3">Maintenance matérielle</span>
+            <span class="skill-tag" data-i18n="skill_sys_4">Support technique</span>
           </div>
         </div>
         <div class="skill-card">
-          <div class="skill-card-icon">🎯</div>
-          <div class="skill-card-title">Soft Skills</div>
+          <div class="skill-card-icon" aria-hidden="true">🎯</div>
+          <div class="skill-card-title" data-i18n="skill_soft_title">Soft Skills</div>
           <div class="skill-tags">
-            <span class="skill-tag">Gestion de projet</span>
-            <span class="skill-tag">Travail sous pression</span>
-            <span class="skill-tag">Communication</span>
-            <span class="skill-tag">Marketing digital</span>
-            <span class="skill-tag">Création de contenu</span>
+            <span class="skill-tag" data-i18n="skill_soft_1">Gestion de projet</span>
+            <span class="skill-tag" data-i18n="skill_soft_2">Travail sous pression</span>
+            <span class="skill-tag" data-i18n="skill_soft_3">Communication</span>
+            <span class="skill-tag" data-i18n="skill_soft_4">Marketing digital</span>
+            <span class="skill-tag" data-i18n="skill_soft_5">Création de contenu</span>
           </div>
         </div>
       </div>
@@ -164,75 +229,92 @@
 
     <!-- ===== SECTION : PROJETS ===== -->
     <section id="projects">
-      <div class="section-label">projets personnels</div>
-      <h2 class="section-title">Projets &<br>Réalisations</h2>
+      <div class="section-label" data-i18n="projects_label">projets personnels</div>
+      <h2 class="section-title" data-i18n="projects_title">Projets &<br>Réalisations</h2>
       <div class="projects-grid">
 
         <div class="project-card">
           <div class="project-number">PROJECT_01</div>
-          <div class="project-name">Scanner Réseau</div>
-          <p class="project-desc">Développement d'un scanner réseau en Python capable de détecter les hôtes actifs, les ports ouverts et les services disponibles sur un réseau donné.</p>
+          <div class="project-name" data-i18n="proj1_title">Scanner Réseau</div>
+          <p class="project-desc" data-i18n="proj1_desc">Développement d'un scanner réseau en Python capable de détecter les hôtes actifs, les ports ouverts et les services disponibles sur un réseau donné.</p>
           <div class="project-stack">
             <span class="stack-item">Python</span>
             <span class="stack-item">Scapy</span>
             <span class="stack-item">Network Analysis</span>
+          </div>
+          <div class="project-actions">
+            <a href="https://github.com/JoKitsune" target="_blank" rel="noopener noreferrer" class="project-btn" data-i18n="proj_btn_code">▶ VOIR_CODE.git</a>
           </div>
         </div>
 
         <div class="project-card">
           <div class="project-number">PROJECT_02</div>
-          <div class="project-name">Analyse de Vulnérabilités</div>
-          <p class="project-desc">Simulation de tests d'intrusion sur un environnement de lab contrôlé, appliquant les méthodologies des certifications CCEP et Fortinet.</p>
+          <div class="project-name" data-i18n="proj2_title">Analyse de Vulnérabilités</div>
+          <p class="project-desc" data-i18n="proj2_desc">Simulation de tests d'intrusion sur un environnement de lab contrôlé, appliquant les méthodologies des certifications CCEP et Fortinet.</p>
           <div class="project-stack">
             <span class="stack-item">Python</span>
             <span class="stack-item">Kali Linux</span>
             <span class="stack-item">Network Analysis</span>
           </div>
+          <div class="project-actions">
+            <a href="https://github.com/JoKitsune" target="_blank" rel="noopener noreferrer" class="project-btn" data-i18n="proj_btn_report">▶ RAPPORT_LAB.sh</a>
+          </div>
         </div>
 
         <div class="project-card">
           <div class="project-number">PROJECT_03</div>
-          <div class="project-name">Générateur de faux trafics internet</div>
-          <p class="project-desc">Script en python permettant de simuler du faux trafic internet en modifiant les en-tête HTTP, le Referer, le
-comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
+          <div class="project-name" data-i18n="proj3_title">Générateur de faux trafics internet</div>
+          <p class="project-desc" data-i18n="proj3_desc">Script en Python permettant de simuler du faux trafic internet en modifiant les en-têtes HTTP, le Referer, le comportement TCP et l'adresse IP une fois couplé à un VPN.</p>
           <div class="project-stack">
             <span class="stack-item">Python</span>
-            <span class="stack-item">Sécurité Offensive</span>
+            <span class="stack-item" data-i18n="proj3_stack">Sécurité Offensive</span>
+          </div>
+          <div class="project-actions">
+            <a href="https://github.com/JoKitsune" target="_blank" rel="noopener noreferrer" class="project-btn" data-i18n="proj_btn_script">▶ VOIR_SCRIPT.py</a>
           </div>
         </div>
 
         <div class="project-card">
           <div class="project-number">PROJECT_04</div>
-          <div class="project-name">Script de Sécurité Réseau</div>
-          <p class="project-desc">Outil de monitoring réseau en Python permettant la détection d'anomalies de trafic, en approfondissement des cours de sécurité informatique.</p>
+          <div class="project-name" data-i18n="proj4_title">Script de Sécurité Réseau</div>
+          <p class="project-desc" data-i18n="proj4_desc">Outil de monitoring réseau en Python permettant la détection d'anomalies de trafic, en approfondissement des cours de sécurité informatique.</p>
           <div class="project-stack">
             <span class="stack-item">Python</span>
             <span class="stack-item">Scapy</span>
             <span class="stack-item">TCP/IP</span>
           </div>
+          <div class="project-actions">
+            <a href="https://github.com/JoKitsune" target="_blank" rel="noopener noreferrer" class="project-btn" data-i18n="proj_btn_code">▶ VOIR_CODE.git</a>
+          </div>
         </div>
 
         <div class="project-card">
           <div class="project-number">PROJECT_05</div>
-          <div class="project-name">Mise en place d'un intranet avec Nextcloud</div>
-          <p class="project-desc">Déploiement, configuration et sécurisation complète d'un serveur Nextcloud interne visant à offrir un intranet collaboratif souverain.</p>
+          <div class="project-name" data-i18n="proj5_title">Mise en place d'un intranet avec Nextcloud</div>
+          <p class="project-desc" data-i18n="proj5_desc">Déploiement, configuration et sécurisation complète d'un serveur Nextcloud interne visant à offrir un intranet collaboratif souverain.</p>
           <div class="project-stack">
             <span class="stack-item">Nextcloud</span>
             <span class="stack-item">Linux</span>
             <span class="stack-item">SysAdmin</span>
-            <span class="stack-item">Sécurité Web</span>
+            <span class="stack-item" data-i18n="proj5_stack">Sécurité Web</span>
+          </div>
+          <div class="project-actions">
+            <a href="https://github.com/JoKitsune" target="_blank" rel="noopener noreferrer" class="project-btn" data-i18n="proj_btn_arch">▶ ARCHITECTURE.md</a>
           </div>
         </div>
 
         <div class="project-card">
           <div class="project-number">PROJECT_06</div>
-          <div class="project-name">WAF avec ModSecurity</div>
-          <p class="project-desc">Mise en place d'un Pare-Feu Applicatif Web (WAF) avec ModSecurity pour filtrer, monitorer et bloquer le trafic HTTP malveillant ciblant les vulnérabilités OWASP.</p>
+          <div class="project-name" data-i18n="proj6_title">WAF avec ModSecurity</div>
+          <p class="project-desc" data-i18n="proj6_desc">Mise en place d'un Pare-Feu Applicatif Web (WAF) avec ModSecurity pour filtrer, monitorer et bloquer le trafic HTTP malveillant ciblant les vulnérabilités OWASP.</p>
           <div class="project-stack">
             <span class="stack-item">ModSecurity</span>
             <span class="stack-item">Apache</span>
             <span class="stack-item">OWASP</span>
-            <span class="stack-item">Sécurité Web</span>
+            <span class="stack-item" data-i18n="proj6_stack">Sécurité Web</span>
+          </div>
+          <div class="project-actions">
+            <a href="https://github.com/JoKitsune" target="_blank" rel="noopener noreferrer" class="project-btn" data-i18n="proj_btn_rules">▶ REGLES_WAF.conf</a>
           </div>
         </div>
 
@@ -242,8 +324,8 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
 
     <!-- ===== SECTION : FORMATION ===== -->
     <section id="formation">
-      <div class="section-label">parcours</div>
-      <h2 class="section-title">Formation &<br>Expériences</h2>
+      <div class="section-label" data-i18n="formation_label">parcours</div>
+      <h2 class="section-title" data-i18n="formation_title">Formation &<br>Expériences</h2>
 
       <!-- Layout : timeline à gauche, cartes à droite -->
       <div class="formation-layout">
@@ -252,43 +334,42 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
         <div class="timeline">
 
           <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-date">03/2026 – AUJOURD'HUI</div>
-            <div class="timeline-role">Stage DevSecOps Junior</div>
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <div class="timeline-date">03/2026 – 06/2026</div>
+            <div class="timeline-role" data-i18n="timeline_role_stage">Stage DevSecOps Junior</div>
             <div class="timeline-org">Tics Master Sarl — Abomey-Calavi, Bénin</div>
-            <div class="timeline-desc">Mise en place de solutions de sécurité réseau, incluant des WAF (ModSecurity), des systèmes de détection d'intrusion (IDS/IPS), et la gestion sécurisée des identités et des accès. Analyse de code statique,
-              de dépendances, Tests de sécurité dynamiques, Gestion des secrets, Monitoring & réponse aux incidents.</div>
+            <div class="timeline-desc" data-i18n="timeline_desc_stage">Mise en place de solutions de sécurité réseau, incluant des WAF (ModSecurity), des systèmes de détection d'intrusion (IDS/IPS), et la gestion sécurisée des identités et des accès. Analyse de code statique, de dépendances, Tests de sécurité dynamiques, Gestion des secrets, Monitoring & réponse aux incidents.</div>
           </div>
 
           <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-date">09/2025 — AUJOURD'HUI</div>
-            <div class="timeline-role">Licence Sécurité Informatique</div>
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <div class="timeline-date">09/2022 — 06/2026</div>
+            <div class="timeline-role" data-i18n="timeline_role_licence">Licence Sécurité Informatique</div>
             <div class="timeline-org">ESGIS — Cotonou, Bénin</div>
-            <div class="timeline-desc">Formation axée sur la cybersécurité, les réseaux et la gestion des systèmes d'information.</div>
+            <div class="timeline-desc" data-i18n="timeline_desc_licence">Formation axée sur la cybersécurité, les réseaux et la gestion des systèmes d'information.</div>
           </div>
 
           <div class="timeline-item">
-            <div class="timeline-dot"></div>
+            <div class="timeline-dot" aria-hidden="true"></div>
             <div class="timeline-date">06/2024 — AUJOURD'HUI</div>
-            <div class="timeline-role">Bénévole — Communication & Événementiel</div>
+            <div class="timeline-role" data-i18n="timeline_role_benevole">Bénévole — Communication & Événementiel</div>
             <div class="timeline-org">LE ROND POINT CLASSE — Cotonou, Bénin</div>
             <div class="timeline-desc">
               <ul>
-                <li>Organisation et coordination du FESTICHILL</li>
-                <li>Marketing digital et communication d'entreprise</li>
-                <li>Gestion du booking et accompagnement d'artistes</li>
-                <li>Gestion du stress et du travail sous pression</li>
+                <li data-i18n="timeline_benevole_1">Organisation et coordination du FESTICHILL</li>
+                <li data-i18n="timeline_benevole_2">Marketing digital et communication d'entreprise</li>
+                <li data-i18n="timeline_benevole_3">Gestion du booking et accompagnement d'artistes</li>
+                <li data-i18n="timeline_benevole_4">Gestion du stress et du travail sous pression</li>
               </ul>
             </div>
           </div>
 
           <div class="timeline-item">
-            <div class="timeline-dot"></div>
+            <div class="timeline-dot" aria-hidden="true"></div>
             <div class="timeline-date">09/2021 — 06/2022</div>
-            <div class="timeline-role">Baccalauréat Série D</div>
+            <div class="timeline-role" data-i18n="timeline_role_bac">Baccalauréat Série D</div>
             <div class="timeline-org">La Merveilleuse — Porto-Novo, Bénin</div>
-            <div class="timeline-desc">Obtention du Baccalauréat série scientifique.</div>
+            <div class="timeline-desc" data-i18n="timeline_desc_bac">Obtention du Baccalauréat série scientifique.</div>
           </div>
 
         </div>
@@ -300,23 +381,23 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
           <div class="card-3d-wrap" data-card="formation">
             <div class="card-3d-inner">
               <div class="sec-card">
-                <div class="shine-layer"></div>
-                <div class="card-corner-tag"></div>
-                <div class="card-type-badge"><span class="badge-dot"></span>Formation</div>
-                <div class="card-icon-ring">🎓</div>
+                <div class="shine-layer" aria-hidden="true"></div>
+                <div class="card-corner-tag" aria-hidden="true"></div>
+                <div class="card-type-badge"><span class="badge-dot" aria-hidden="true"></span><span data-i18n="badge_formation">Formation</span></div>
+                <div class="card-icon-ring" aria-hidden="true">🎓</div>
                 <div>
-                  <div class="card-title">Licence Sécurité Informatique</div>
+                  <div class="card-title" data-i18n="card_licence_title">Licence Sécurité Informatique</div>
                   <div class="card-org">ESGIS — Cotonou</div>
-                  <div class="card-date">09/2025 — AUJOURD'HUI</div>
+                  <div class="card-date">09/2022 — 06/2026</div>
                 </div>
-                <div class="card-divider"></div>
+                <div class="card-divider" aria-hidden="true"></div>
                 <div class="card-progress">
-                  <div class="progress-label"><span>PROGRESSION</span><span>EN COURS</span></div>
-                  <div class="progress-bar-bg"><div class="progress-bar-fill" style="--fill: 70%"></div></div>
+                  <div class="progress-label"><span data-i18n="lbl_progression">PROGRESSION</span><span data-i18n="val_terminee">Terminé</span></div>
+                  <div class="progress-bar-bg"><div class="progress-bar-fill" style="--fill: 100%"></div></div>
                 </div>
                 <div class="card-tags">
-                  <span class="card-tag">Cybersécurité</span>
-                  <span class="card-tag">Réseaux</span>
+                  <span class="card-tag" data-i18n="tag_cyber">Cybersécurité</span>
+                  <span class="card-tag" data-i18n="tag_reseaux">Réseaux</span>
                   <span class="card-tag">SysAdmin</span>
                 </div>
               </div>
@@ -327,23 +408,23 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
           <div class="card-3d-wrap" data-card="experience">
             <div class="card-3d-inner">
               <div class="sec-card sec-card--cyan">
-                <div class="shine-layer"></div>
-                <div class="card-corner-tag"></div>
-                <div class="card-type-badge card-badge--cyan"><span class="badge-dot badge-dot--cyan"></span>Expérience</div>
-                <div class="card-icon-ring card-ring--cyan">⚡</div>
+                <div class="shine-layer" aria-hidden="true"></div>
+                <div class="card-corner-tag" aria-hidden="true"></div>
+                <div class="card-type-badge card-badge--cyan"><span class="badge-dot badge-dot--cyan" aria-hidden="true"></span><span data-i18n="badge_experience">Expérience</span></div>
+                <div class="card-icon-ring card-ring--cyan" aria-hidden="true">⚡</div>
                 <div>
-                  <div class="card-title card-title--cyan">Bénévole Comm. & Évén.</div>
+                  <div class="card-title card-title--cyan" data-i18n="card_exp_title">Bénévole Comm. & Évén.</div>
                   <div class="card-org">Le Rond Point Classe</div>
-                  <div class="card-date">06/2024 — AUJOURD'HUI</div>
+                  <div class="card-date" data-i18n="card_exp_date">06/2024 — AUJOURD'HUI</div>
                 </div>
-                <div class="card-divider card-divider--cyan"></div>
+                <div class="card-divider card-divider--cyan" aria-hidden="true"></div>
                 <div class="card-progress">
                   <div class="progress-label"><span>IMPACT</span><span>FESTICHILL</span></div>
                   <div class="progress-bar-bg"><div class="progress-bar-fill progress-bar-fill--cyan" style="--fill: 80%"></div></div>
                 </div>
                 <div class="card-tags">
                   <span class="card-tag">Marketing</span>
-                  <span class="card-tag">Événementiel</span>
+                  <span class="card-tag" data-i18n="tag_event">Événementiel</span>
                   <span class="card-tag">Booking</span>
                 </div>
               </div>
@@ -354,18 +435,18 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
           <div class="card-3d-wrap" data-card="certif">
             <div class="card-3d-inner">
               <div class="sec-card sec-card--yellow">
-                <div class="shine-layer"></div>
-                <div class="card-corner-tag"></div>
-                <div class="card-type-badge card-badge--yellow"><span class="badge-dot badge-dot--yellow"></span>Certification</div>
-                <div class="card-icon-ring card-ring--yellow">🏅</div>
+                <div class="shine-layer" aria-hidden="true"></div>
+                <div class="card-corner-tag" aria-hidden="true"></div>
+                <div class="card-type-badge card-badge--yellow"><span class="badge-dot badge-dot--yellow" aria-hidden="true"></span><span data-i18n="badge_certif">Certification</span></div>
+                <div class="card-icon-ring card-ring--yellow" aria-hidden="true">🏅</div>
                 <div>
                   <div class="card-title card-title--yellow">CCEP Certified</div>
                   <div class="card-org">Red Team Leaders</div>
-                  <div class="card-date">OBTENU</div>
+                  <div class="card-date" data-i18n="val_obtenu">OBTENU</div>
                 </div>
-                <div class="card-divider card-divider--yellow"></div>
+                <div class="card-divider card-divider--yellow" aria-hidden="true"></div>
                 <div class="card-progress">
-                  <div class="progress-label"><span>NIVEAU</span><span>PROFESSIONNEL</span></div>
+                  <div class="progress-label"><span data-i18n="lbl_accreditation">ACCRÉDITATION</span><span data-i18n="val_certifie">CERTIFIÉ</span></div>
                   <div class="progress-bar-bg"><div class="progress-bar-fill progress-bar-fill--yellow" style="--fill: 100%"></div></div>
                 </div>
                 <div class="card-tags">
@@ -380,18 +461,18 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
           <div class="card-3d-wrap" data-card="fortinet">
             <div class="card-3d-inner">
               <div class="sec-card sec-card--yellow">
-                <div class="shine-layer"></div>
-                <div class="card-corner-tag"></div>
-                <div class="card-type-badge card-badge--yellow"><span class="badge-dot badge-dot--yellow"></span>Certification</div>
-                <div class="card-icon-ring card-ring--yellow">🔒</div>
+                <div class="shine-layer" aria-hidden="true"></div>
+                <div class="card-corner-tag" aria-hidden="true"></div>
+                <div class="card-type-badge card-badge--yellow"><span class="badge-dot badge-dot--yellow" aria-hidden="true"></span><span data-i18n="badge_certif">Certification</span></div>
+                <div class="card-icon-ring card-ring--yellow" aria-hidden="true">🔒</div>
                 <div>
                   <div class="card-title card-title--yellow">Threat Landscape</div>
                   <div class="card-org">Fortinet Training Institute</div>
-                  <div class="card-date">OBTENU</div>
+                  <div class="card-date" data-i18n="val_obtenu">OBTENU</div>
                 </div>
-                <div class="card-divider card-divider--yellow"></div>
+                <div class="card-divider card-divider--yellow" aria-hidden="true"></div>
                 <div class="card-progress">
-                  <div class="progress-label"><span>DOMAINE</span><span>THREAT INTEL</span></div>
+                  <div class="progress-label"><span data-i18n="lbl_domaine">DOMAINE</span><span>THREAT INTEL</span></div>
                   <div class="progress-bar-bg"><div class="progress-bar-fill progress-bar-fill--yellow" style="--fill: 100%"></div></div>
                 </div>
                 <div class="card-tags">
@@ -409,58 +490,58 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
 
     <!-- ===== SECTION : CONTACT ===== -->
     <section id="contact">
-      <div class="section-label">transmission</div>
-      <h2 class="section-title">Initier<br>Contact</h2>
+      <div class="section-label" data-i18n="contact_label">transmission</div>
+      <h2 class="section-title" data-i18n="contact_title">Initier<br>Contact</h2>
       <div class="contact-wrapper">
         <div class="contact-info">
-          <p style="font-family:'Exo 2',sans-serif;color:var(--text-dim);font-size:0.9rem;line-height:1.7;margin-bottom:40px;">
+          <p style="font-family:'Exo 2',sans-serif;color:var(--text-dim);font-size:0.9rem;line-height:1.7;margin-bottom:40px;" data-i18n="contact_desc">
             Je suis toujours ouvert à discuter de nouvelles opportunités, de projets créatifs ou de partenariats.
             Que vous ayez un projet spécifique en tête ou que vous souhaitiez explorer des possibilités,
             n'hésitez pas à me contacter.
           </p>
-          <div class="contact-item">
-            <div class="contact-icon">✉</div>
+          <a href="mailto:desouzajordan289@gmail.com" class="contact-item" style="text-decoration:none;">
+            <div class="contact-icon" aria-hidden="true">✉</div>
             <div>
               <span class="contact-label">EMAIL</span>
               <span class="contact-value">desouzajordan289@gmail.com</span>
             </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">☎</div>
+          </a>
+          <a href="tel:0164119794" class="contact-item" style="text-decoration:none;">
+            <div class="contact-icon" aria-hidden="true">☎</div>
             <div>
-              <span class="contact-label">TÉLÉPHONE</span>
+              <span class="contact-label" data-i18n="contact_phone_lbl">TÉLÉPHONE</span>
               <span class="contact-value">0164119794</span>
             </div>
-          </div>
+          </a>
           <div class="contact-item">
-            <div class="contact-icon">◉</div>
+            <div class="contact-icon" aria-hidden="true">◉</div>
             <div>
-              <span class="contact-label">LOCALISATION</span>
+              <span class="contact-label" data-i18n="contact_loc_lbl">LOCALISATION</span>
               <span class="contact-value">Cotonou, Bénin</span>
             </div>
           </div>
         </div>
         <div class="contact-form">
-          <div data-fs-success style="color:var(--green); margin-bottom:15px; display:none;">✓ Message envoyé ! Je te répondrai rapidement.</div>
-          <div data-fs-error style="color:var(--red); margin-bottom:15px; display:none;">❌ Erreur réseau, réessaie plus tard.</div>
+          <div data-fs-success style="color:var(--green); margin-bottom:15px; display:none;" data-i18n="contact_success">✓ Message envoyé ! Je te répondrai rapidement.</div>
+          <div data-fs-error style="color:var(--red); margin-bottom:15px; display:none;" data-i18n="contact_error">❌ Erreur réseau, réessaie plus tard.</div>
           
           <form id="fs-form">
             <div class="form-group">
-              <label class="form-label">nom</label>
-              <input class="form-input" type="text" name="name" data-fs-field placeholder="Votre nom..." required>
+              <label class="form-label" for="form-name" data-i18n="form_name_lbl">nom</label>
+              <input id="form-name" class="form-input" type="text" name="name" data-fs-field placeholder="Votre nom..." data-i18n-placeholder="form_name_ph" required>
               <span data-fs-error="name" style="color:var(--red); font-size:0.7rem;"></span>
             </div>
             <div class="form-group">
-              <label class="form-label">email</label>
-              <input class="form-input" type="email" name="email" data-fs-field placeholder="votre@email.com" required>
+              <label class="form-label" for="form-email" data-i18n="form_email_lbl">email</label>
+              <input id="form-email" class="form-input" type="email" name="email" data-fs-field placeholder="votre@email.com" data-i18n-placeholder="form_email_ph" required>
               <span data-fs-error="email" style="color:var(--red); font-size:0.7rem;"></span>
             </div>
             <div class="form-group">
-              <label class="form-label">message</label>
-              <textarea class="form-textarea" name="message" data-fs-field placeholder="Votre message..." required></textarea>
+              <label class="form-label" for="form-message" data-i18n="form_msg_lbl">message</label>
+              <textarea id="form-message" class="form-textarea" name="message" data-fs-field placeholder="Votre message..." data-i18n-placeholder="form_msg_ph" required></textarea>
               <span data-fs-error="message" style="color:var(--red); font-size:0.7rem;"></span>
             </div>
-            <button type="submit" data-fs-submit-btn class="form-submit">▶ ENVOYER_MESSAGE.sh</button>
+            <button type="submit" id="fs-submit-btn" data-fs-submit-btn class="form-submit" data-i18n="form_submit_btn">▶ ENVOYER_MESSAGE.sh</button>
           </form>
         </div>
       </div>
@@ -468,19 +549,36 @@ comportement TCP et l'adresse IP une fois couplet avec un VPN</p>
 
   </main>
 
+  <!-- ==========================================
+       LECTEUR AUDIO DISCRET (Cyber Ambient Player)
+  =========================================== -->
+  <div class="cyber-audio-player" id="audioPlayer" role="region" aria-label="Lecteur audio d'ambiance">
+    <button class="audio-play-btn" id="audioPlayBtn" type="button" aria-label="Jouer ou mettre en pause l'ambiance sonore" title="Lecture / Pause">
+      <span class="play-icon" id="playIcon">▶</span>
+    </button>
+    <div class="audio-info">
+      <span class="audio-title">BGM // Cyber_Ambient</span>
+      <div class="audio-equalizer" id="audioEqualizer" aria-hidden="true">
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+      </div>
+    </div>
+    <button class="audio-mute-btn" id="audioMuteBtn" type="button" aria-label="Couper ou activer le son" title="Activer / Couper le son">
+      <span id="muteIcon">🔊</span>
+    </button>
+    <audio id="bgmAudio" loop preload="auto">
+      <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mp3">
+    </audio>
+  </div>
+
   <footer>
-    <div>© 2025 Jordan de SOUZA — All rights reserved</div>
-    <div style="color:var(--green-dim)">jordan@sec-shell:~$ <span class="t-cursor" style="height:12px;width:6px"></span></div>
+    <div data-i18n="footer_rights">© 2025 Jordan de SOUZA — All rights reserved</div>
+    <div style="color:var(--green-dim)">jordan@sec-shell:~$ <span class="t-cursor" style="height:12px;width:6px" aria-hidden="true"></span></div>
   </footer>
 
   <script src="script.js"></script>
-  <script>
-  // Initialisation du formulaire Formspree
-  window.formspree = window.formspree || function() { (formspree.q = formspree.q || []).push(arguments); };
-  formspree('initForm', { 
-    formElement: '#fs-form', 
-    formId: 'xpqbjwpo'
-  });
-</script>
 </body>
 </html>
