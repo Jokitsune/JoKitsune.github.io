@@ -308,7 +308,6 @@ section {
 .social-stack-container {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   position: relative;
 }
 
@@ -321,6 +320,8 @@ section {
 }
 .social-trigger-btn .trigger-icon {
   color: var(--yellow);
+  display: inline-flex;
+  align-items: center;
 }
 .social-trigger-btn .trigger-arrow {
   font-size: 0.65rem;
@@ -338,19 +339,26 @@ section {
 }
 
 .social-links-pile {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
   display: inline-flex;
   align-items: center;
   gap: 8px;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transform: translateX(-15px) scale(0.92);
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 50;
+  white-space: nowrap;
 }
 
 .social-stack-container.open .social-links-pile {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
-  transform: translateX(0) scale(1);
+  transform: translateY(-50%) translateX(0);
 }
 
 .social-pile-item {
