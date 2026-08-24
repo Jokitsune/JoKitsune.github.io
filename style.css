@@ -428,6 +428,12 @@ section {
 .hero-title { font-family: 'Exo 2', sans-serif; font-size: 1.1rem; color: var(--cyan); font-weight: 300; letter-spacing: 2px; margin-bottom: 30px; opacity: 0; animation: fadeUp 0.6s 0.6s forwards; }
 .hero-bio   { font-family: 'Exo 2', sans-serif; font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; max-width: 500px; margin-bottom: 40px; opacity: 0; animation: fadeUp 0.6s 0.8s forwards; }
 .hero-cta   { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; opacity: 0; animation: fadeUp 0.6s 1s forwards; }
+.hero-cta-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
 
 /* -------- TERMINAL -------- */
 .hero-terminal {
