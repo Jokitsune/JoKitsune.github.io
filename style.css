@@ -856,9 +856,69 @@ footer { border-top: 1px solid var(--border); padding: 30px 10%; display: flex; 
   .cards-column        { grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 680px) {
   .cards-column { grid-template-columns: 1fr; }
-  .hero-cta { flex-direction: column; }
+  
+  /* Pile verticale complète des boutons sur mobile */
+  .hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
+  }
+  .hero-cta .btn-primary,
+  .hero-cta .btn-secondary {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+  .social-stack-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+  .social-trigger-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Déploiement des icônes réseaux vers le bas sur mobile */
+  .social-links-pile {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: translateY(-8px);
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .social-stack-container.open .social-links-pile {
+    max-height: 60px;
+    margin-top: 10px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  
+  .social-pile-item {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 /* -------- LECTEUR AUDIO DISCRET (Cyber Ambient Player) -------- */
