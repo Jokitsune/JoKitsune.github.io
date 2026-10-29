@@ -47,7 +47,9 @@ export function portfolioContent({ contentDir = CONTENT_DIR } = {}) {
 
     transformIndexHtml: {
       order: 'pre',
-      async handler(html) {
+      async handler(html, ctx) {
+        // Seule la page d'accueil est pré-rendue (pas le panneau /admin)
+        if (ctx?.path && ctx.path !== '/index.html') return html;
         const content = await loadContent(contentDir);
         return renderPage(html, content);
       }
