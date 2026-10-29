@@ -47,10 +47,14 @@ export function cookieNames(config) {
  * @param {number} nowSec
  * @returns {Promise<{ token: string, sid: string, exp: number }>}
  */
-export async function issueSession(config, user, nowSec) {
+export async function issueSession(config, user, nowSec, { stepUp = false } = {}) {
   const sid = randomBytes(16).toString('hex');
   const exp = nowSec + config.sessionTtl;
-  const token = await new SignJWT({ login: user.login, sid, ver: config.sessionVersion, auth_time: nowSec })
+  // stepup_at n'est posé QUE si la connexion a été initiée par l'action « Publier »
+  // (transaction OAuth stepup=1) : une connexion ordinaire ne vaut pas step-up.
+  const claims = { login: user.login, sid, ver: config.sessionVersion, auth_time: nowSec };
+  if (stepUp) claims.stepup_at = nowSec;
+  const token = await new SignJWT(claims)
     .setProtectedHeader({ alg: 'HS256', typ: SESSION_TYP })
     .setSubject(String(user.id))
     .setIssuer(config.origin)
@@ -81,7 +85,15 @@ export async function verifySession(config, token, nowSec) {
     if (payload.sub !== config.adminGithubId) return null;
     if (typeof payload.sid !== 'string' || typeof payload.login !== 'string') return null;
     if (!Number.isInteger(payload.auth_time)) return null;
-    return { sub: payload.sub, login: payload.login, sid: payload.sid, exp: payload.exp, authTime: payload.auth_time };
+    if (payload.stepup_at !== undefined && !Number.isInteger(payload.stepup_at)) return null;
+    return {
+      sub: payload.sub,
+      login: payload.login,
+      sid: payload.sid,
+      exp: payload.exp,
+      authTime: payload.auth_time,
+      stepUpAt: payload.stepup_at ?? null
+    };
   } catch {
     return null;
   }

@@ -160,9 +160,18 @@ describe('T-SES-06 — attributs du cookie de session', () => {
 
 describe('T-SES-07 — step-up pour publier et abandonner', () => {
   for (const [path, body] of [['/api/publish', { expectedHeadSha: 'a'.repeat(40) }], ['/api/draft/reset', { confirm: 'DISCARD' }]]) {
-    it(`${path} : auth_time > 900 s ⇒ 403 STEP_UP_REQUIRED, sans appel GitHub`, async () => {
+    it(`${path} : step-up > 900 s ⇒ 403 STEP_UP_REQUIRED, sans appel GitHub`, async () => {
       const { api, gh } = setup();
-      const cookie = await sessionCookieFor(config, { authAgeSec: 901 });
+      const cookie = await sessionCookieFor(config, { authAgeSec: 901, stepUp: true });
+      const res = await api.handle(req('POST', path, { cookie, json: body }));
+      expect(res.status).toBe(403);
+      expect((await bodyOf(res)).error.code).toBe('STEP_UP_REQUIRED');
+      expect(gh.calls).toHaveLength(0);
+    });
+
+    it(`${path} : M1 — connexion ordinaire TOUTE FRAÎCHE ⇒ 403 STEP_UP_REQUIRED`, async () => {
+      const { api, gh } = setup();
+      const cookie = await sessionCookieFor(config, { authAgeSec: 0, stepUp: false });
       const res = await api.handle(req('POST', path, { cookie, json: body }));
       expect(res.status).toBe(403);
       expect((await bodyOf(res)).error.code).toBe('STEP_UP_REQUIRED');
@@ -170,11 +179,52 @@ describe('T-SES-07 — step-up pour publier et abandonner', () => {
     });
   }
 
-  it('/api/auth/me signale stepUpValid', async () => {
+  it('/api/auth/me signale stepUpValid (seulement après une connexion step-up récente)', async () => {
     const { api } = setup();
-    const fresh = await bodyOf(await api.handle(req('GET', '/api/auth/me', { cookie: await sessionCookieFor(config) })));
-    const old = await bodyOf(await api.handle(req('GET', '/api/auth/me', { cookie: await sessionCookieFor(config, { authAgeSec: 1000 }) })));
-    expect(fresh).toMatchObject({ login: ADMIN_LOGIN, id: ADMIN_ID, stepUpValid: true });
-    expect(old.stepUpValid).toBe(false);
+    const me = async opts => bodyOf(await api.handle(req('GET', '/api/auth/me', { cookie: await sessionCookieFor(config, opts) })));
+    expect(await me({ stepUp: true })).toMatchObject({ login: ADMIN_LOGIN, id: ADMIN_ID, stepUpValid: true });
+    expect((await me({ stepUp: false })).stepUpValid).toBe(false);
+    expect((await me({ stepUp: true, authAgeSec: 1000 })).stepUpValid).toBe(false);
+  });
+
+  it('M1 — stepup_at falsifié (non entier) ⇒ session refusée', async () => {
+    const key = deriveKey(config.sessionSecret, 'jk-admin/session/v1');
+    expect(await verifySession(config, await signWith(key, claims({ stepup_at: 'now' })), now())).toBeNull();
+  });
+});
+
+describe('M1 — le step-up n’est posé que par une transaction OAuth stepup=1', () => {
+  async function loginAndCallback(query) {
+    const { api } = setup();
+    const login = await api.handle(req('GET', `/api/auth/login${query}`));
+    const state = new URL(login.headers.get('location')).searchParams.get('state');
+    const cookie = login.headers.getSetCookie()[0].split(';')[0];
+    const cb = await api.handle(req('GET', `/api/auth/callback?code=abc&state=${state}`, { cookie }));
+    const session = cb.headers.getSetCookie().find(c => c.startsWith('__Host-jk_admin=')).split(';')[0];
+    return bodyOf(await api.handle(req('GET', '/api/auth/me', { cookie: session })));
+  }
+
+  it('connexion normale ⇒ stepUpValid: false', async () => {
+    expect((await loginAndCallback('')).stepUpValid).toBe(false);
+  });
+
+  it('connexion initiée par Publier (stepup=1) ⇒ stepUpValid: true', async () => {
+    expect((await loginAndCallback('?stepup=1')).stepUpValid).toBe(true);
+  });
+
+  it('mode dev : même règle', async () => {
+    const { createApi } = await import('../../../api/_lib/app.js');
+    const { mkdtempSync } = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const api = createApi({ env: { ADMIN_DEV_MODE: '1', ADMIN_DEV_DATA_DIR: mkdtempSync(path.join(os.tmpdir(), 'jk-')) }, logSink: () => {} });
+    const O = 'http://localhost:5173';
+    const meFor = async q => {
+      const res = await api.handle(new Request(`${O}/api/auth/login${q}`));
+      const cookie = res.headers.getSetCookie()[0].split(';')[0];
+      return bodyOf(await api.handle(new Request(`${O}/api/auth/me`, { headers: { cookie } })));
+    };
+    expect((await meFor('')).stepUpValid).toBe(false);
+    expect((await meFor('?stepup=1')).stepUpValid).toBe(true);
   });
 });

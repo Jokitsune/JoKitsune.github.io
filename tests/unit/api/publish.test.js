@@ -8,7 +8,7 @@ let cookie;
 
 beforeEach(async () => {
   ctx = setup();
-  cookie = await sessionCookieFor(ctx.config);
+  cookie = await sessionCookieFor(ctx.config, { stepUp: true });
 });
 
 const status = async () => bodyOf(await ctx.api.handle(req('GET', '/api/publish/status', { cookie })));

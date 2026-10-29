@@ -33,9 +33,14 @@ export function checkCsrf(config, request) {
 
 /** Authentification récente exigée pour les opérations à fort impact. */
 export function requireStepUp(config, session, nowSec) {
-  if (nowSec - session.authTime > config.stepUpMaxAge) {
-    throw new ApiError(403, 'STEP_UP_REQUIRED', { reason: 'auth_too_old' });
+  if (!isStepUpValid(config, session, nowSec)) {
+    throw new ApiError(403, 'STEP_UP_REQUIRED', { reason: session.stepUpAt === null ? 'no_step_up' : 'step_up_too_old' });
   }
+}
+
+/** Step-up valide : connexion initiée par « Publier » (stepup=1) depuis moins de STEP_UP_MAX_AGE_SECONDS. */
+export function isStepUpValid(config, session, nowSec) {
+  return session.stepUpAt !== null && nowSec - session.stepUpAt <= config.stepUpMaxAge;
 }
 
 /** Content-Type imposé (sinon 415). */

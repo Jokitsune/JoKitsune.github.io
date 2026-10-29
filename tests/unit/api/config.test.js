@@ -119,7 +119,7 @@ describe('Mode développement (ADMIN_DEV_MODE=1) — impossible en production', 
     const fetchSpy = () => { throw new Error('aucun appel réseau attendu'); };
     const api = createApi({ env: { ADMIN_DEV_MODE: '1', ADMIN_DEV_DATA_DIR: dir }, fetch: fetchSpy, rootDir: ROOT, logSink: () => {} });
     const O = 'http://localhost:5173';
-    const login = await api.handle(new Request(`${O}/api/auth/login`));
+    const login = await api.handle(new Request(`${O}/api/auth/login?stepup=1`));
     expect(login.status).toBe(302);
     const cookie = login.headers.getSetCookie()[0].split(';')[0];
     expect(cookie.startsWith('jk_admin=')).toBe(true);

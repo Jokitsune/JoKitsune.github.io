@@ -190,10 +190,13 @@ export function setup({ env = makeEnv(), gh = createFakeGitHub(), now = () => Da
   return { api, logs, gh, config: loadConfig(env).config, now };
 }
 
-/** Cookie de session valide (auth_time = maintenant − authAgeSec). */
-export async function sessionCookieFor(config, { authAgeSec = 0, user = { id: ADMIN_ID, login: ADMIN_LOGIN } } = {}) {
+/**
+ * Cookie de session valide (auth_time = maintenant − authAgeSec).
+ * stepUp : session issue d'une connexion initiée par « Publier » (stepup=1).
+ */
+export async function sessionCookieFor(config, { authAgeSec = 0, stepUp = false, user = { id: ADMIN_ID, login: ADMIN_LOGIN } } = {}) {
   const now = Math.floor(Date.now() / 1000) - authAgeSec;
-  const { token } = await issueSession(config, user, now);
+  const { token } = await issueSession(config, user, now, { stepUp });
   return `${cookieNames(config).session}=${token}`;
 }
 

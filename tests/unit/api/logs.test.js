@@ -13,7 +13,7 @@ describe('T-LOG-01 — journaux sans secrets', () => {
     const secrets = [SENTINEL, SESSION_SECRET, CLIENT_SECRET, Buffer.from(testPrivateKey()).toString('base64').slice(0, 40), 'PRIVATE KEY'];
 
     // 1. Login + callback réussi
-    const login = await api.handle(req('GET', '/api/auth/login'));
+    const login = await api.handle(req('GET', '/api/auth/login?stepup=1'));
     const location = new URL(login.headers.get('location'));
     const state = location.searchParams.get('state');
     const challenge = location.searchParams.get('code_challenge');

@@ -2,6 +2,7 @@
    ROUTES D'AUTHENTIFICATION — login, callback, logout, me
    ================================================ */
 
+import { isStepUpValid } from '../guard.js';
 import { getCookie, json, redirect } from '../http.js';
 import {
   authorizeUrl, authorizeUser, createPkcePair, exchangeCode, fetchUser, revokeToken, safeEqual
@@ -20,9 +21,9 @@ export async function login(ctx) {
 
   if (config.devMode) {
     // Mode développement : aucune requête GitHub, session pour l'utilisateur fictif
-    const { token, sid } = await issueSession(config, { id: config.adminGithubId, login: config.adminGithubLogin }, nowSec);
+    const { token, sid } = await issueSession(config, { id: config.adminGithubId, login: config.adminGithubLogin }, nowSec, { stepUp: stepup });
     log.info('auth.success', { ...ctx.logFields, sid: sid.slice(0, 8), actorId: config.adminGithubId, devMode: true });
-    return redirect(ADMIN_PATH, 302, [sessionCookie(config, token)]);
+    return redirect(stepup ? '/admin/?stepup=ok' : ADMIN_PATH, 302, [sessionCookie(config, token)]);
   }
 
   const { state, verifier, challenge } = createPkcePair();
@@ -72,7 +73,7 @@ export async function callback(ctx) {
     return fail('auth.denied', { reason: decision.reason, githubId: user.id, login: user.login });
   }
 
-  const { token: jwt, sid } = await issueSession(config, user, nowSec);
+  const { token: jwt, sid } = await issueSession(config, user, nowSec, { stepUp: tx.stepup });
   log.info('auth.success', { ...ctx.logFields, sid: sid.slice(0, 8), actorId: user.id, login: user.login, reason: tx.stepup ? 'stepup' : 'login' });
   return redirect(tx.stepup ? '/admin/?stepup=ok' : ADMIN_PATH, 303, [clearTx, sessionCookie(config, jwt)]);
 }
@@ -93,7 +94,7 @@ export async function me(ctx) {
     id: session.sub,
     expiresAt: new Date(session.exp * 1000).toISOString(),
     authTime: new Date(session.authTime * 1000).toISOString(),
-    stepUpValid: nowSec - session.authTime <= config.stepUpMaxAge,
+    stepUpValid: isStepUpValid(config, session, nowSec),
     publishMode: config.publishMode,
     previewUrl: config.previewUrl,
     devMode: config.devMode

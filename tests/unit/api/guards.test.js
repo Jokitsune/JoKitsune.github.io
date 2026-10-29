@@ -56,7 +56,7 @@ describe('T-CSRF-02 — en-tête custom et Content-Type', () => {
   for (const type of ['text/plain', 'application/x-www-form-urlencoded', 'multipart/form-data; boundary=x']) {
     it(`Content-Type ${type} ⇒ 415 (PUT contenu, publish)`, async () => {
       const { api, config } = setup();
-      const cookie = await sessionCookieFor(config);
+      const cookie = await sessionCookieFor(config, { stepUp: true });
       const body = JSON.stringify({ baseSha: 'a'.repeat(40), data: {} });
       const put = await api.handle(req('PUT', '/api/content/projects', { cookie, body, headers: { 'content-type': type } }));
       expect(put.status).toBe(415);
