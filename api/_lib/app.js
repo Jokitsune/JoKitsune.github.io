@@ -20,7 +20,7 @@ import { createDevRepo } from './dev-backend.js';
 import { callback, login, logout, me } from './routes/auth.js';
 import { getContent, listContent, putContent } from './routes/content.js';
 import { upload } from './routes/upload.js';
-import { publish, publishStatus, resetDraft } from './routes/publish.js';
+import { mergeSync, publish, publishStatus, resetDraft } from './routes/publish.js';
 
 /**
  * access : public | session | mutation ; stepUp : publication/abandon ;
@@ -40,6 +40,7 @@ export const ROUTES = [
   { path: '/api/upload', group: 'api', methods: { POST: { access: 'mutation', run: upload } } },
   { path: '/api/publish/status', group: 'api', prOnly: true, methods: { GET: { access: 'session', run: publishStatus } } },
   { path: '/api/publish', group: 'api', prOnly: true, methods: { POST: { access: 'mutation', stepUp: true, run: publish } } },
+  { path: '/api/publish/sync', group: 'api', prOnly: true, methods: { POST: { access: 'mutation', run: mergeSync } } },
   { path: '/api/draft/reset', group: 'api', prOnly: true, methods: { POST: { access: 'mutation', stepUp: true, run: resetDraft } } }
 ];
 

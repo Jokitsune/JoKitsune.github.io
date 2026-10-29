@@ -1,6 +1,6 @@
 // Configuration « fail closed » (T-CFG-01, T-CFG-02) et verrou du mode développement.
 import { describe, it, expect } from 'vitest';
-import { mkdtempSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { loadConfig, assertDevModeAllowed, DevModeForbiddenError } from '../../../api/_lib/config.js';
@@ -137,5 +137,17 @@ describe('Mode développement (ADMIN_DEV_MODE=1) — impossible en production', 
       body: JSON.stringify({ expectedHeadSha: status.headSha })
     }));
     expect(pub.status).toBe(200);
+    // La synchronisation main → develop est simulée
+    expect((await bodyOf(pub)).sync.status).toBe('auto_merge');
+
+    // .admin-dev/ supprimé pendant que le serveur tourne : recréé à la volée
+    rmSync(dir, { recursive: true, force: true });
+    const again = await bodyOf(await api.handle(new Request(`${O}/api/content/skills`, { headers: { cookie } })));
+    const put2 = await api.handle(new Request(`${O}/api/content/skills`, {
+      method: 'PUT', headers: { cookie, origin: O, 'x-jk-admin': '1', 'content-type': 'application/json' },
+      body: JSON.stringify({ baseSha: again.sha, data: { ...again.data, categories: again.data.categories.slice(1) } })
+    }));
+    expect(put2.status).toBe(200);
+    expect(existsSync(path.join(dir, 'state.json'))).toBe(true);
   });
 });

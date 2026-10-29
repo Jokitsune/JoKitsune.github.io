@@ -27,11 +27,13 @@ export function createDevRepo({ config, env, rootDir = process.cwd() }) {
 
   const dirFor = branch => path.join(dataDir, branch === baseBranch ? 'main' : 'draft');
 
+  // Le dossier peut être supprimé pendant que le serveur tourne : état initial recréé à la volée
   function loadState() {
-    if (!existsSync(statePath)) return { refs: { [baseBranch]: sha1('init'), [draftBranch]: null }, commits: 0, pr: null, prSeq: 0 };
+    if (!existsSync(statePath)) return { refs: { [baseBranch]: sha1('init'), [draftBranch]: null }, commits: 0, pr: null, prSeq: 0, sync: null };
     return JSON.parse(readFileSync(statePath, 'utf8'));
   }
   function saveState(s) {
+    mkdirSync(dataDir, { recursive: true });
     writeFileSync(statePath, JSON.stringify(s, null, 2));
   }
   function sha1(s) {
@@ -130,20 +132,26 @@ export function createDevRepo({ config, env, rootDir = process.cwd() }) {
 
     async compare(base, head) {
       const s = loadState();
-      return { aheadBy: head === draftBranch && s.refs[draftBranch] ? s.commits : 0 };
+      // PR de synchronisation base → develop : « en avance » tant qu'une publication n'est pas reportée
+      if (head === baseBranch && base === config.syncBranch) return { aheadBy: s.syncPending ? 1 : 0, behindBy: 0 };
+      return { aheadBy: head === draftBranch && s.refs[draftBranch] ? s.commits : 0, behindBy: 0 };
     },
 
-    async findOpenPr() {
+    async findOpenPr(head, base) {
       const s = loadState();
-      return s.pr && s.pr.open ? { number: s.pr.number, url: null, headSha: s.refs[draftBranch] } : null;
+      if (head === baseBranch && base === config.syncBranch) {
+        return s.sync?.open ? { number: s.sync.number, url: null, headSha: s.refs[baseBranch], nodeId: 'dev-sync', autoMerge: s.sync.autoMerge } : null;
+      }
+      return s.pr && s.pr.open ? { number: s.pr.number, url: null, headSha: s.refs[draftBranch], nodeId: 'dev-pr', autoMerge: false } : null;
     },
 
-    async createPr() {
+    async createPr({ head }) {
       const s = loadState();
       s.prSeq += 1;
-      s.pr = { number: s.prSeq, open: true };
+      if (head === baseBranch) s.sync = { number: s.prSeq, open: true, autoMerge: false };
+      else s.pr = { number: s.prSeq, open: true };
       saveState(s);
-      return { number: s.prSeq, url: null, headSha: s.refs[draftBranch] };
+      return { number: s.prSeq, url: null, headSha: s.refs[head], nodeId: `dev-${s.prSeq}`, autoMerge: false };
     },
 
     async closePr() {
@@ -157,12 +165,30 @@ export function createDevRepo({ config, env, rootDir = process.cwd() }) {
       return 'success';
     },
 
-    async mergePr(number, { sha }) {
+    // Rien à faire : le brouillon simulé n'est jamais en retard sur la base
+    async updatePrBranch() {},
+
+    // Auto-merge simulé : la « CI » étant verte, la synchro est fusionnée aussitôt
+    async enableAutoMerge() {
       const s = loadState();
+      if (s.sync) s.sync = { ...s.sync, open: false, autoMerge: true };
+      s.syncPending = false;
+      saveState(s);
+    },
+
+    async mergePr(number, { sha, method = 'squash' }) {
+      const s = loadState();
+      if (method === 'merge' && s.sync?.number === number) {
+        s.sync.open = false;
+        s.syncPending = false;
+        saveState(s);
+        return { sha: s.refs[baseBranch] };
+      }
       if (sha !== s.refs[draftBranch]) throw new RepoConflictError('dev_head_moved');
       copyTree(dirFor(draftBranch), dirFor(baseBranch));
       s.refs[baseBranch] = sha1(`${s.refs[baseBranch]}:merge:${sha}`);
       if (s.pr) s.pr.open = false;
+      s.syncPending = true;
       saveState(s);
       return { sha: s.refs[baseBranch] };
     }

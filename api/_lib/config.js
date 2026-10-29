@@ -83,6 +83,7 @@ function devConfig(env) {
       adminGithubLogin: env.ADMIN_GITHUB_LOGIN && LOGIN_RE.test(env.ADMIN_GITHUB_LOGIN) ? env.ADMIN_GITHUB_LOGIN : 'dev-admin',
       baseBranch: 'main',
       draftBranch: 'content/draft',
+      syncBranch: 'develop',
       publishMode: env.PUBLISH_MODE === 'direct' ? 'direct' : 'pr',
       previewUrl: env.DRAFT_PREVIEW_URL || null,
       sessionSecret,
@@ -136,6 +137,10 @@ export function loadConfig(env) {
   check('CONTENT_BASE_BRANCH', BRANCH_RE.test(baseBranch) && baseBranch.length <= 100);
   const draftBranch = env.CONTENT_DRAFT_BRANCH || 'content/draft';
   check('CONTENT_DRAFT_BRANCH', DRAFT_BRANCH_RE.test(draftBranch));
+  // Branche resynchronisée après chaque publication (PR base → sync) ; « none » pour désactiver
+  const syncRaw = env.CONTENT_SYNC_BRANCH || 'develop';
+  const syncBranch = syncRaw === 'none' ? null : syncRaw;
+  check('CONTENT_SYNC_BRANCH', syncBranch === null || (BRANCH_RE.test(syncBranch) && syncBranch !== baseBranch && syncBranch !== draftBranch));
   const publishMode = env.PUBLISH_MODE || 'pr';
   check('PUBLISH_MODE', publishMode === 'pr' || publishMode === 'direct');
   const previewUrl = env.DRAFT_PREVIEW_URL || null;
@@ -175,6 +180,7 @@ export function loadConfig(env) {
       repoId: Number(env.GITHUB_REPO_ID),
       baseBranch,
       draftBranch,
+      syncBranch,
       publishMode,
       previewUrl,
       sessionSecret,

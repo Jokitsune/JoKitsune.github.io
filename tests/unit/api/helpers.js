@@ -81,12 +81,25 @@ export function createFakeGitHub({ user = { id: Number(ADMIN_ID), login: ADMIN_L
     tokenResponse: { access_token: USER_TOKEN, token_type: 'bearer', scope: '' },
     refs: { main: fakeSha('main-0'), 'content/draft': null },
     ahead: 0,
-    pr: null,
+    behind: 0,
+    prs: {},
+    prSeq: 11,
+    syncAhead: 0,
+    syncMerged: [],
+    autoMergeAvailable: true,
+    autoMergeRequests: [],
+    updateBranchConflict: false,
+    mergeNotMergeable: false,
+    pushDuringMerge: false,
     checks: [{ status: 'completed', conclusion: 'success' }],
     putConflict: false,
     mergeConflict: false,
     files,
-    revoked: []
+    revoked: [],
+    /** PR ouverte brouillon → main (compatibilité des anciens tests). */
+    get pr() {
+      return this.prs['content/draft->main'] ?? null;
+    }
   };
 
   const json = (status, body) => new Response(body === null ? null : JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -107,6 +120,13 @@ export function createFakeGitHub({ user = { id: Number(ADMIN_ID), login: ADMIN_L
     }
     if (/^\/app\/installations\/\d+\/access_tokens$/.test(url.pathname)) {
       return json(201, { token: INSTALLATION_TOKEN, expires_at: new Date(Date.now() + 3600_000).toISOString() });
+    }
+    if (url.pathname === '/graphql' && method === 'POST') {
+      if (!state.autoMergeAvailable) return json(200, { errors: [{ message: 'Pull request Auto merge is not allowed for this repository' }] });
+      const pr = Object.values(state.prs).find(x => x.node_id === body.variables.id);
+      if (pr) pr.auto_merge = { merge_method: body.variables.method };
+      state.autoMergeRequests.push(body.variables);
+      return json(200, { data: { enablePullRequestAutoMerge: { clientMutationId: null } } });
     }
     const m = url.pathname.match(/^\/repos\/Jokitsune\/JoKitsune\.github\.io(\/.*)$/);
     if (!m) return json(404, { message: 'Not Found' });
@@ -156,21 +176,50 @@ export function createFakeGitHub({ user = { id: Number(ADMIN_ID), login: ADMIN_L
         return json(200, { content: { sha: blobSha(bytes) }, commit: { sha: state.refs[body.branch] } });
       }
     }
-    if (p.startsWith('/compare/')) return json(200, { ahead_by: state.ahead });
-    if (p === '/pulls' && method === 'GET') return json(200, state.pr ? [state.pr] : []);
-    if (p === '/pulls' && method === 'POST') {
-      state.pr = { number: 12, html_url: 'https://github.com/Jokitsune/JoKitsune.github.io/pull/12', head: { sha: state.refs['content/draft'] } };
-      return json(201, state.pr);
+    if ((r = p.match(/^\/compare\/(.+)\.\.\.(.+)$/))) {
+      if (r[1] === 'develop' && r[2] === 'main') return json(200, { ahead_by: state.syncAhead, behind_by: 0 });
+      return json(200, { ahead_by: state.ahead, behind_by: state.behind });
     }
-    if (/^\/pulls\/\d+$/.test(p) && method === 'PATCH') {
-      state.pr = null;
+    if (p === '/pulls' && method === 'GET') {
+      const head = (url.searchParams.get('head') ?? '').split(':')[1];
+      const pr = state.prs[`${head}->${url.searchParams.get('base')}`];
+      return json(200, pr ? [pr] : []);
+    }
+    if (p === '/pulls' && method === 'POST') {
+      state.prSeq += 1;
+      const n = state.prSeq;
+      const pr = { number: n, node_id: `PR_node_${n}`, html_url: `https://github.com/Jokitsune/JoKitsune.github.io/pull/${n}`, head: { ref: body.head, sha: state.refs[body.head] }, base: { ref: body.base }, auto_merge: null, title: body.title };
+      state.prs[`${body.head}->${body.base}`] = pr;
+      return json(201, pr);
+    }
+    if ((r = p.match(/^\/pulls\/(\d+)$/)) && method === 'PATCH') {
+      for (const [k, pr] of Object.entries(state.prs)) if (pr.number === Number(r[1])) delete state.prs[k];
       return json(200, { state: 'closed' });
     }
-    if (/^\/pulls\/\d+\/merge$/.test(p) && method === 'PUT') {
+    if ((r = p.match(/^\/pulls\/(\d+)\/update-branch$/)) && method === 'PUT') {
+      if (state.updateBranchConflict || body.expected_head_sha !== state.refs['content/draft']) return json(422, { message: 'merge conflict' });
+      state.refs['content/draft'] = fakeSha(`update:${state.refs['content/draft']}`);
+      state.behind = 0;
+      return json(202, { message: 'Updating pull request branch.' });
+    }
+    if ((r = p.match(/^\/pulls\/(\d+)\/merge$/)) && method === 'PUT') {
+      const entry = Object.entries(state.prs).find(([, pr]) => pr.number === Number(r[1]));
+      if (!entry) return json(404, { message: 'Not Found' });
+      const [key] = entry;
+      if (key === 'main->develop') {
+        delete state.prs[key];
+        state.syncAhead = 0;
+        state.syncMerged.push(body.merge_method);
+        return json(200, { merged: true, sha: fakeSha('develop-merge') });
+      }
+      if (state.mergeNotMergeable) return json(405, { message: 'Head branch is not up to date with the base branch' });
       if (state.mergeConflict || body.sha !== state.refs['content/draft']) return json(409, { message: 'Head branch was modified' });
       state.refs.main = fakeSha(`merge:${body.sha}`);
       state.files.main = new Map(state.files['content/draft']);
-      state.pr = null;
+      delete state.prs[key];
+      state.syncAhead = 1;
+      // Simulation d'un commit poussé sur le brouillon pendant la fusion (F4)
+      if (state.pushDuringMerge) state.refs['content/draft'] = fakeSha('pushed-during-merge');
       return json(200, { merged: true, sha: state.refs.main });
     }
     if (/^\/commits\/[^/]+\/check-runs$/.test(p)) return json(200, { total_count: state.checks.length, check_runs: state.checks });

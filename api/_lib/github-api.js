@@ -41,11 +41,11 @@ function toBase64(bytes) {
 export function createGitHubRepo({ config, fetch: fetchImpl, getToken }) {
   const repoPath = `/repos/${encodeURIComponent(config.repoOwner)}/${encodeURIComponent(config.repoName)}`;
 
-  async function call(method, path, { body, allow = [] } = {}) {
+  async function call(method, path, { body, allow = [], absolute = false } = {}) {
     const token = await getToken();
     let res;
     try {
-      res = await fetchImpl(`${GITHUB_API}${repoPath}${path}`, {
+      res = await fetchImpl(absolute ? `${GITHUB_API}${path}` : `${GITHUB_API}${repoPath}${path}`, {
         method,
         headers: {
           Accept: 'application/vnd.github+json',
@@ -115,22 +115,47 @@ export function createGitHubRepo({ config, fetch: fetchImpl, getToken }) {
       return { sha: data?.content?.sha, commitSha: data?.commit?.sha };
     },
 
-    /** Nombre de commits de `head` absents de `base`. */
+    /** Commits de `head` absents de `base` (aheadBy) et de `base` absents de `head` (behindBy). */
     async compare(base, head) {
       const { data } = await call('GET', `/compare/${encodePath(base)}...${encodePath(head)}`);
-      return { aheadBy: Number(data?.ahead_by ?? 0) };
+      return { aheadBy: Number(data?.ahead_by ?? 0), behindBy: Number(data?.behind_by ?? 0) };
     },
 
     async findOpenPr(head, base) {
       const q = `?state=open&head=${encodeURIComponent(`${config.repoOwner}:${head}`)}&base=${encodeURIComponent(base)}&per_page=5`;
       const { data } = await call('GET', `/pulls${q}`);
       const pr = Array.isArray(data) ? data[0] : null;
-      return pr ? { number: pr.number, url: pr.html_url, headSha: pr.head?.sha } : null;
+      return pr ? toPr(pr) : null;
     },
 
     async createPr({ head, base, title, body }) {
       const { data } = await call('POST', '/pulls', { body: { head, base, title, body, maintainer_can_modify: false } });
-      return { number: data.number, url: data.html_url, headSha: data.head?.sha };
+      return toPr(data);
+    },
+
+    /**
+     * Met la branche de la PR à jour avec sa base (ruleset « branche à jour »).
+     * 422 GitHub (conflit ou tête déplacée) ⇒ RepoConflictError.
+     */
+    async updatePrBranch(number, expectedHeadSha) {
+      try {
+        await call('PUT', `/pulls/${Number(number)}/update-branch`, { body: { expected_head_sha: expectedHeadSha } });
+      } catch (err) {
+        if (err instanceof ApiError && err.reason === 'github_422') throw new RepoConflictError('update_branch_rejected');
+        throw err;
+      }
+    },
+
+    /** Active l'auto-merge GitHub (GraphQL) ; échoue si l'option n'est pas activée sur le dépôt. */
+    async enableAutoMerge(nodeId, mergeMethod = 'MERGE') {
+      const { data } = await call('POST', '/graphql', {
+        absolute: true,
+        body: {
+          query: 'mutation($id: ID!, $method: PullRequestMergeMethod!) { enablePullRequestAutoMerge(input: { pullRequestId: $id, mergeMethod: $method }) { clientMutationId } }',
+          variables: { id: nodeId, method: mergeMethod }
+        }
+      });
+      if (data?.errors?.length) throw new ApiError(502, 'UPSTREAM', { reason: 'auto_merge_unavailable' });
     },
 
     async closePr(number) {
@@ -143,11 +168,11 @@ export function createGitHubRepo({ config, fetch: fetchImpl, getToken }) {
       return aggregateChecks(data?.check_runs ?? []);
     },
 
-    /** Fusion squash ; `sha` = tête attendue (sinon 409 GitHub ⇒ RepoConflictError). */
-    async mergePr(number, { sha, title, message }) {
+    /** Fusion (squash par défaut) ; `sha` = tête attendue (sinon 409 GitHub ⇒ RepoConflictError). */
+    async mergePr(number, { sha, title, message, method = 'squash' }) {
       try {
         const { data } = await call('PUT', `/pulls/${Number(number)}/merge`, {
-          body: { merge_method: 'squash', sha, commit_title: title, commit_message: message }
+          body: { merge_method: method, sha, commit_title: title, commit_message: message }
         });
         return { sha: data?.sha };
       } catch (err) {
@@ -156,6 +181,11 @@ export function createGitHubRepo({ config, fetch: fetchImpl, getToken }) {
       }
     }
   };
+}
+
+/** Sous-ensemble utile d'une pull request GitHub. */
+function toPr(pr) {
+  return { number: pr.number, url: pr.html_url, headSha: pr.head?.sha, nodeId: pr.node_id, autoMerge: Boolean(pr.auto_merge) };
 }
 
 /** Réduit une liste de check runs à un statut unique. */
