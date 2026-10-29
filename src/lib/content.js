@@ -9,7 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { CONTENT_FILES, validateContent, formatIssues } from './schema.js';
 
 /** Dossier content/ du dépôt */
-export const CONTENT_DIR = fileURLToPath(new URL('../../content/', import.meta.url));
+// (fileURLToPath sur une chaîne : fonctionne aussi quand `URL` est remplacé, ex. jsdom)
+export const CONTENT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../content');
 
 /**
  * Lit les fichiers JSON de content/ (sans validation).

@@ -29,5 +29,15 @@ export default [
         ...globals.node
       }
     }
+  },
+  {
+    // Tests jsdom/Playwright et script de comparaison : code évalué aussi dans une page
+    files: ['tests/**/*.js', 'scripts/compare-sites.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      }
+    }
   }
 ];

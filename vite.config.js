@@ -8,5 +8,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true
+  },
+  // Vitest (tests unitaires ; les tests e2e Playwright sont dans tests/e2e)
+  test: {
+    include: ['tests/unit/**/*.test.js'],
+    environment: 'node'
   }
 });
