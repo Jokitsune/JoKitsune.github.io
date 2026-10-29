@@ -17,6 +17,29 @@ describe('i18n côté client', () => {
     localStorage.clear();
   });
 
+  it('CV localisé : le lien bascule entre cv.url.fr et cv.url.en (URL revalidée)', () => {
+    const content = loadRealContent();
+    content.site.cv.url = { fr: '/files/cv-fr.pdf', en: '/files/cv-en.pdf' };
+    mountPage(content);
+    localStorage.setItem('portfolio_lang', 'fr');
+    initI18n(buildDictionary(content), { defaultLang: 'fr' });
+    const link = document.querySelector('[data-i18n-href="cv.url"]');
+    expect(link.getAttribute('href')).toBe('/files/cv-fr.pdf');
+    setLanguage('en');
+    expect(link.getAttribute('href')).toBe('/files/cv-en.pdf');
+    // Dictionnaire altéré : jamais de javascript: dans le href
+    const dict = buildDictionary(content);
+    dict.en['cv.url'] = 'java\tscript:alert(1)';
+    initI18n(dict, { defaultLang: 'fr' });
+    setLanguage('en');
+    expect(link.getAttribute('href')).toBe('#');
+  });
+
+  it('CV : le rendu FR garde exactement le même href qu’avant', () => {
+    const html = renderPage(loadTemplate(), loadRealContent(), 'fr');
+    expect(html).toContain('<a href="asset/Jordan_de_SOUZA_CV.pdf" data-i18n-href="cv.url" download="CV_Jordan_de_SOUZA.pdf"');
+  });
+
   it('bascule tout le site en EN puis revient en FR', () => {
     const content = loadRealContent();
     mountPage(content);

@@ -96,6 +96,7 @@ export function renderHero({ site, ui }, ctx) {
   const ctaContact = ctx.t('hero.ctaContact', ui.hero.ctaContact);
   const ctaFormation = ctx.t('hero.ctaFormation', ui.hero.ctaFormation);
   const ctaCv = ctx.t('hero.ctaCv', ui.hero.ctaCv);
+  const cvHref = ctx.href('cv.url', cv.url);
   const ctaSocial = ctx.t('hero.ctaSocial', ui.hero.ctaSocial);
 
   const socials = visibleSorted(site.socials).map(s => `                <a href="${escapeAttr(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer" class="social-pile-item ${escapeAttr(s.network)}-item" title="${escapeAttr(s.title)}" aria-label="${escapeAttr(s.label)}">
@@ -145,7 +146,7 @@ export function renderHero({ site, ui }, ctx) {
 
           <!-- GROUPE CV + RÉSEAUX (Toujours indissociables et côte à côte) -->
           <div class="hero-cta-group">
-            <a href="${escapeAttr(safeUrl(cv.url))}" download="${escapeAttr(cv.downloadName)}" class="btn-secondary" title="${escapeAttr(ui.a11y.cvTitle)}">
+            <a href="${cvHref.value}"${cvHref.attr} download="${escapeAttr(cv.downloadName)}" class="btn-secondary" title="${escapeAttr(ui.a11y.cvTitle)}">
               <span aria-hidden="true">⇩</span>
               <span${ctaCv.attr}>${ctaCv.html}</span>
             </a>

@@ -122,7 +122,8 @@ export const siteSchema = z.strictObject({
     finalCommand: localizedSchema
   }),
   cv: z.strictObject({
-    url: urlSchema,
+    // Un CV par langue : le bouton bascule de fichier avec la langue du site
+    url: z.strictObject({ fr: urlSchema, en: urlSchema }),
     downloadName: z.string().regex(/^[A-Za-z0-9_.-]+$/, 'Nom de fichier invalide')
   }),
   socials: listOf(z.strictObject({

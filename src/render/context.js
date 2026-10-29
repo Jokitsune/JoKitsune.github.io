@@ -2,7 +2,7 @@
    CONTEXTE DE RENDU — langue courante + collecte du dictionnaire i18n
    ================================================ */
 
-import { escapeAttr, textToHtml } from './escape.js';
+import { escapeAttr, safeUrl, textToHtml } from './escape.js';
 
 export const LANGS = ['fr', 'en'];
 
@@ -63,6 +63,16 @@ export function createContext(lang) {
       if (!isLocalized(value)) return { attr: '', value: escapeAttr(text) };
       register(key, value, '');
       return { attr: ` data-i18n-placeholder="${escapeAttr(key)}"`, value: escapeAttr(text) };
+    },
+    /**
+     * Lien traduisible : href (sûr, échappé) dans la langue du rendu + attribut
+     * data-i18n-href pour la bascule FR/EN côté client (revalidée par safeUrl).
+     */
+    href(key, value) {
+      const url = escapeAttr(safeUrl(localize(value, lang)));
+      if (!isLocalized(value)) return { attr: '', value: url };
+      register(key, value, '');
+      return { attr: ` data-i18n-href="${escapeAttr(key)}"`, value: url };
     },
     /** Texte non traduit dynamiquement, échappé pour un attribut (méta…) */
     plain(value) {
