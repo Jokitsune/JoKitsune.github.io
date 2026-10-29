@@ -1,0 +1,55 @@
+{
+  "$schema": "./schema/timeline.schema.json",
+  "items": [
+    {
+      "id": "stage-devsecops",
+      "order": 1,
+      "visible": true,
+      "date": "03/2026 – 06/2026",
+      "role": { "fr": "Stage DevSecOps Junior", "en": "Junior DevSecOps Intern" },
+      "org": "Tics Master Sarl — Abomey-Calavi, Bénin",
+      "description": {
+        "fr": "Mise en place de solutions de sécurité réseau, incluant des WAF (ModSecurity), des systèmes de détection d'intrusion (IDS/IPS), et la gestion sécurisée des identités et des accès. Analyse de code statique, de dépendances, Tests de sécurité dynamiques, Gestion des secrets, Monitoring & réponse aux incidents.",
+        "en": "Deployment of network security solutions, including WAFs (ModSecurity), intrusion detection systems (IDS/IPS), and IAM access governance. Static code & dependency analysis, Dynamic security testing, Secrets management, Incident response & telemetry monitoring."
+      }
+    },
+    {
+      "id": "licence-esgis",
+      "order": 2,
+      "visible": true,
+      "date": "09/2022 — 06/2026",
+      "role": { "fr": "Licence Sécurité Informatique", "en": "Bachelor in Computer Security" },
+      "org": "ESGIS — Cotonou, Bénin",
+      "description": {
+        "fr": "Formation axée sur la cybersécurité, les réseaux et la gestion des systèmes d'information.",
+        "en": "Specialized curriculum covering cybersecurity, enterprise networking, and information systems administration."
+      }
+    },
+    {
+      "id": "benevole-rpc",
+      "order": 3,
+      "visible": true,
+      "date": "06/2024 — AUJOURD'HUI",
+      "role": { "fr": "Bénévole — Communication & Événementiel", "en": "Volunteer — Communication & Events" },
+      "org": "LE ROND POINT CLASSE — Cotonou, Bénin",
+      "bullets": [
+        { "fr": "Organisation et coordination du FESTICHILL", "en": "Organization and event coordination for FESTICHILL" },
+        { "fr": "Marketing digital et communication d'entreprise", "en": "Corporate communication and digital marketing strategy" },
+        { "fr": "Gestion du booking et accompagnement d'artistes", "en": "Artist booking management and backstage assistance" },
+        { "fr": "Gestion du stress et du travail sous pression", "en": "Stress management and high-pressure operational execution" }
+      ]
+    },
+    {
+      "id": "bac-d",
+      "order": 4,
+      "visible": true,
+      "date": "09/2021 — 06/2022",
+      "role": { "fr": "Baccalauréat Série D", "en": "High School Scientific Baccalaureate (Series D)" },
+      "org": "La Merveilleuse — Porto-Novo, Bénin",
+      "description": {
+        "fr": "Obtention du Baccalauréat série scientifique.",
+        "en": "Graduated in scientific curriculum (mathematics & life sciences)."
+      }
+    }
+  ]
+}

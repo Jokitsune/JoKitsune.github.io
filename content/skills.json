@@ -1,0 +1,53 @@
+{
+  "$schema": "./schema/skills.schema.json",
+  "categories": [
+    {
+      "id": "security",
+      "order": 1,
+      "visible": true,
+      "icon": "🛡️",
+      "title": { "fr": "Sécurité", "en": "Security" },
+      "tags": [
+        { "fr": "Analyse de vulnérabilités", "en": "Vulnerability Analysis" },
+        { "fr": "Test d'intrusion", "en": "Penetration Testing" },
+        { "fr": "Cybercriminalité", "en": "Cybercrime Investigation" },
+        { "fr": "Threat Landscape", "en": "Threat Landscape" }
+      ]
+    },
+    {
+      "id": "development",
+      "order": 2,
+      "visible": true,
+      "icon": "💻",
+      "title": { "fr": "Développement", "en": "Development" },
+      "tags": ["Python", "JavaScript", "Node.js", "PHP", "C / C#", "HTML5 / CSS"]
+    },
+    {
+      "id": "systems",
+      "order": 3,
+      "visible": true,
+      "icon": "🔧",
+      "title": { "fr": "Systèmes & Réseaux", "en": "Systems & Networks" },
+      "tags": [
+        { "fr": "Administration systèmes", "en": "System Administration" },
+        { "fr": "Réseaux informatiques", "en": "Computer Networks" },
+        { "fr": "Maintenance matérielle", "en": "Hardware Maintenance" },
+        { "fr": "Support technique", "en": "Technical Support" }
+      ]
+    },
+    {
+      "id": "soft",
+      "order": 4,
+      "visible": true,
+      "icon": "🎯",
+      "title": { "fr": "Soft Skills", "en": "Soft Skills" },
+      "tags": [
+        { "fr": "Gestion de projet", "en": "Project Management" },
+        { "fr": "Travail sous pression", "en": "Working Under Pressure" },
+        { "fr": "Communication", "en": "Communication" },
+        { "fr": "Marketing digital", "en": "Digital Marketing" },
+        { "fr": "Création de contenu", "en": "Content Creation" }
+      ]
+    }
+  ]
+}

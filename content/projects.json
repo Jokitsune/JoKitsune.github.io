@@ -1,0 +1,89 @@
+{
+  "$schema": "./schema/projects.schema.json",
+  "projects": [
+    {
+      "id": "network-scanner",
+      "order": 1,
+      "visible": true,
+      "title": { "fr": "Scanner Réseau", "en": "Network Scanner" },
+      "description": {
+        "fr": "Développement d'un scanner réseau en Python capable de détecter les hôtes actifs, les ports ouverts et les services disponibles sur un réseau donné.",
+        "en": "Development of a Python network scanner capable of discovering active hosts, open ports, and running services across a local subnet."
+      },
+      "stack": ["Python", "Scapy", "Network Analysis"],
+      "links": [
+        { "label": { "fr": "▶ VOIR_CODE.git", "en": "▶ VIEW_CODE.git" }, "url": "https://github.com/JoKitsune" }
+      ]
+    },
+    {
+      "id": "vulnerability-analysis",
+      "order": 2,
+      "visible": true,
+      "title": { "fr": "Analyse de Vulnérabilités", "en": "Vulnerability Analysis" },
+      "description": {
+        "fr": "Simulation de tests d'intrusion sur un environnement de lab contrôlé, appliquant les méthodologies des certifications CCEP et Fortinet.",
+        "en": "Penetration testing simulation on a controlled laboratory environment, implementing CCEP and Fortinet certification methodologies."
+      },
+      "stack": ["Python", "Kali Linux", "Network Analysis"],
+      "links": [
+        { "label": { "fr": "▶ RAPPORT_LAB.sh", "en": "▶ LAB_REPORT.sh" }, "url": "https://github.com/JoKitsune" }
+      ]
+    },
+    {
+      "id": "traffic-generator",
+      "order": 3,
+      "visible": true,
+      "title": { "fr": "Générateur de faux trafics internet", "en": "Internet Traffic Generator" },
+      "description": {
+        "fr": "Script en Python permettant de simuler du faux trafic internet en modifiant les en-têtes HTTP, le Referer, le comportement TCP et l'adresse IP une fois couplé à un VPN.",
+        "en": "Python script designed to simulate deceptive web traffic by randomizing HTTP headers, Referer, TCP fingerprints and IPs over VPN routing."
+      },
+      "stack": ["Python", { "fr": "Sécurité Offensive", "en": "Offensive Security" }],
+      "links": [
+        { "label": { "fr": "▶ VOIR_SCRIPT.py", "en": "▶ VIEW_SCRIPT.py" }, "url": "https://github.com/JoKitsune" }
+      ]
+    },
+    {
+      "id": "network-security-script",
+      "order": 4,
+      "visible": true,
+      "title": { "fr": "Script de Sécurité Réseau", "en": "Network Security Script" },
+      "description": {
+        "fr": "Outil de monitoring réseau en Python permettant la détection d'anomalies de trafic, en approfondissement des cours de sécurité informatique.",
+        "en": "Network monitoring tool in Python for abnormal traffic anomaly detection, building upon computer security coursework."
+      },
+      "stack": ["Python", "Scapy", "TCP/IP"],
+      "links": [
+        { "label": { "fr": "▶ VOIR_CODE.git", "en": "▶ VIEW_CODE.git" }, "url": "https://github.com/JoKitsune" }
+      ]
+    },
+    {
+      "id": "nextcloud-intranet",
+      "order": 5,
+      "visible": true,
+      "title": { "fr": "Mise en place d'un intranet avec Nextcloud", "en": "Intranet Deployment with Nextcloud" },
+      "description": {
+        "fr": "Déploiement, configuration et sécurisation complète d'un serveur Nextcloud interne visant à offrir un intranet collaboratif souverain.",
+        "en": "Deployment, full configuration and security hardening of an internal Nextcloud server delivering a sovereign collaborative intranet."
+      },
+      "stack": ["Nextcloud", "Linux", "SysAdmin", { "fr": "Sécurité Web", "en": "Web Security" }],
+      "links": [
+        { "label": { "fr": "▶ ARCHITECTURE.md", "en": "▶ ARCHITECTURE.md" }, "url": "https://github.com/JoKitsune" }
+      ]
+    },
+    {
+      "id": "modsecurity-waf",
+      "order": 6,
+      "visible": true,
+      "title": { "fr": "WAF avec ModSecurity", "en": "WAF with ModSecurity" },
+      "description": {
+        "fr": "Mise en place d'un Pare-Feu Applicatif Web (WAF) avec ModSecurity pour filtrer, monitorer et bloquer le trafic HTTP malveillant ciblant les vulnérabilités OWASP.",
+        "en": "Implementation of a Web Application Firewall (WAF) using ModSecurity to inspect, monitor, and mitigate malicious HTTP payloads targeting OWASP vulnerabilities."
+      },
+      "stack": ["ModSecurity", "Apache", "OWASP", { "fr": "Sécurité Web", "en": "Web Security" }],
+      "links": [
+        { "label": { "fr": "▶ REGLES_WAF.conf", "en": "▶ WAF_RULES.conf" }, "url": "https://github.com/JoKitsune" }
+      ]
+    }
+  ]
+}

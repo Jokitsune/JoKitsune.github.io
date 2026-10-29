@@ -1,0 +1,81 @@
+{
+  "$schema": "./schema/cards.schema.json",
+  "cards": [
+    {
+      "id": "formation",
+      "order": 1,
+      "visible": true,
+      "color": "green",
+      "icon": "🎓",
+      "badge": { "fr": "Formation", "en": "Education" },
+      "title": { "fr": "Licence Sécurité Informatique", "en": "Bachelor in Computer Security" },
+      "org": "ESGIS — Cotonou",
+      "date": "09/2022 — 06/2026",
+      "progress": {
+        "label": { "fr": "PROGRESSION", "en": "PROGRESSION" },
+        "value": { "fr": "Terminé", "en": "Completed" },
+        "percent": 100
+      },
+      "tags": [
+        { "fr": "Cybersécurité", "en": "Cybersecurity" },
+        { "fr": "Réseaux", "en": "Networking" },
+        "SysAdmin"
+      ]
+    },
+    {
+      "id": "experience",
+      "order": 2,
+      "visible": true,
+      "color": "cyan",
+      "icon": "⚡",
+      "badge": { "fr": "Expérience", "en": "Experience" },
+      "title": { "fr": "Bénévole Comm. & Évén.", "en": "Volunteer Comm. & Events" },
+      "org": "Le Rond Point Classe",
+      "date": { "fr": "06/2024 — AUJOURD'HUI", "en": "06/2024 — PRESENT" },
+      "progress": {
+        "label": "IMPACT",
+        "value": "FESTICHILL",
+        "percent": 80
+      },
+      "tags": [
+        "Marketing",
+        { "fr": "Événementiel", "en": "Events" },
+        "Booking"
+      ]
+    },
+    {
+      "id": "certif",
+      "order": 3,
+      "visible": true,
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": { "fr": "Certification", "en": "Certification" },
+      "title": "CCEP Certified",
+      "org": "Red Team Leaders",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": {
+        "label": { "fr": "ACCRÉDITATION", "en": "ACCREDITATION" },
+        "value": { "fr": "CERTIFIÉ", "en": "CERTIFIED" },
+        "percent": 100
+      },
+      "tags": ["Offensive Sec", "Educator"]
+    },
+    {
+      "id": "fortinet",
+      "order": 4,
+      "visible": true,
+      "color": "yellow",
+      "icon": "🔒",
+      "badge": { "fr": "Certification", "en": "Certification" },
+      "title": "Threat Landscape",
+      "org": "Fortinet Training Institute",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": {
+        "label": { "fr": "DOMAINE", "en": "DOMAIN" },
+        "value": "THREAT INTEL",
+        "percent": 100
+      },
+      "tags": ["Threat Intel", "Fortinet"]
+    }
+  ]
+}

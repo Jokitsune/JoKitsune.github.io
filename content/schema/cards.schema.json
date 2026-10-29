@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "green",
+              "cyan",
+              "yellow"
+            ]
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^<>]*$"
+          },
+          "badge": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "fr": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  }
+                },
+                "required": [
+                  "fr",
+                  "en"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "fr": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  }
+                },
+                "required": [
+                  "fr",
+                  "en"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "org": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "fr": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  }
+                },
+                "required": [
+                  "fr",
+                  "en"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "fr": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  }
+                },
+                "required": [
+                  "fr",
+                  "en"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "progress": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "fr": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      },
+                      "en": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      }
+                    },
+                    "required": [
+                      "fr",
+                      "en"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "fr": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      },
+                      "en": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      }
+                    },
+                    "required": [
+                      "fr",
+                      "en"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "percent": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "label",
+              "value",
+              "percent"
+            ],
+            "additionalProperties": false
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "fr": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    "en": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    }
+                  },
+                  "required": [
+                    "fr",
+                    "en"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "order",
+          "visible",
+          "color",
+          "icon",
+          "badge",
+          "title",
+          "org",
+          "date",
+          "progress",
+          "tags"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "cards"
+  ],
+  "additionalProperties": false
+}

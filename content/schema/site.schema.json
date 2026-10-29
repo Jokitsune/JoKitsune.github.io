@@ -1,0 +1,850 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "defaultLang": {
+      "type": "string",
+      "enum": [
+        "fr",
+        "en"
+      ]
+    },
+    "formspreeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]{4,32}$"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "keywords": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "author": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "robots": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+        },
+        "ogType": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "ogTitle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "ogDescription": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "ogSiteName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "keywords",
+        "author",
+        "robots",
+        "url",
+        "ogType",
+        "ogTitle",
+        "ogDescription",
+        "ogSiteName"
+      ],
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "lastName": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "brandInitial": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "brandInitial"
+      ],
+      "additionalProperties": false
+    },
+    "hero": {
+      "type": "object",
+      "properties": {
+        "greeting": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "bio": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "greeting",
+        "title",
+        "bio"
+      ],
+      "additionalProperties": false
+    },
+    "terminal": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "prompt": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "whoamiCommand": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "visible": {
+                "type": "boolean"
+              },
+              "key": {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "fr": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      },
+                      "en": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      }
+                    },
+                    "required": [
+                      "fr",
+                      "en"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "highlight": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "order",
+              "visible",
+              "key",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "skillsCommand": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "visible": {
+                "type": "boolean"
+              },
+              "label": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "fr": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      },
+                      "en": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      }
+                    },
+                    "required": [
+                      "fr",
+                      "en"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "order",
+              "visible",
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "finalCommand": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "prompt",
+        "path",
+        "whoamiCommand",
+        "fields",
+        "skillsCommand",
+        "skills",
+        "finalCommand"
+      ],
+      "additionalProperties": false
+    },
+    "cv": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+        },
+        "downloadName": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        }
+      },
+      "required": [
+        "url",
+        "downloadName"
+      ],
+      "additionalProperties": false
+    },
+    "socials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "network": {
+            "type": "string",
+            "enum": [
+              "github",
+              "linkedin",
+              "whatsapp",
+              "instagram"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^<>]*$"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^<>]*$"
+          }
+        },
+        "required": [
+          "id",
+          "order",
+          "visible",
+          "network",
+          "url",
+          "title",
+          "label"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "visible": {
+                "type": "boolean"
+              },
+              "icon": {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              "label": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "fr": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      },
+                      "en": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      }
+                    },
+                    "required": [
+                      "fr",
+                      "en"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "fr": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      },
+                      "en": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "pattern": "^[^<>]*$"
+                      }
+                    },
+                    "required": [
+                      "fr",
+                      "en"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "href": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000,
+                "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+              }
+            },
+            "required": [
+              "id",
+              "order",
+              "visible",
+              "icon",
+              "label",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "description",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "audio": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        },
+        "src": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^audio\\/[a-z0-9.+-]+$"
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "title",
+        "src",
+        "type",
+        "volume"
+      ],
+      "additionalProperties": false
+    },
+    "footer": {
+      "type": "object",
+      "properties": {
+        "rights": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "prompt": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^<>]*$"
+        }
+      },
+      "required": [
+        "rights",
+        "prompt"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "defaultLang",
+    "formspreeId",
+    "meta",
+    "identity",
+    "hero",
+    "terminal",
+    "cv",
+    "socials",
+    "contact",
+    "audio",
+    "footer"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "./schema/ui.schema.json",
+  "boot": {
+    "skip": { "fr": "[ESC] PASSER_BOOT.sh", "en": "[ESC] SKIP_BOOT.sh" },
+    "lines": [
+      { "id": "bios", "order": 1, "visible": true, "delay": 0.1, "variant": "default", "text": { "fr": "BIOS v2.4.1 — SECURE BOOT ENABLED", "en": "BIOS v2.4.1 — SECURE BOOT ENABLED" } },
+      { "id": "kernel", "order": 2, "visible": true, "delay": 0.3, "variant": "default", "text": { "fr": "Loading kernel modules...", "en": "Loading kernel modules..." } },
+      { "id": "warning", "order": 3, "visible": true, "delay": 0.6, "variant": "warn", "text": { "fr": "WARNING: Unauthorized access detected", "en": "WARNING: Unauthorized access detected" } },
+      { "id": "alert", "order": 4, "visible": true, "delay": 0.9, "variant": "error", "text": { "fr": "ALERT: Intrusion attempt blocked by firewall", "en": "ALERT: Intrusion attempt blocked by firewall" } },
+      { "id": "auth", "order": 5, "visible": true, "delay": 1.2, "variant": "default", "text": { "fr": "Authenticating user:", "en": "Authenticating user:" }, "value": "jordan@sec-shell" },
+      { "id": "mount", "order": 6, "visible": true, "delay": 1.5, "variant": "default", "text": { "fr": "Mounting filesystem... OK", "en": "Mounting filesystem... OK" } },
+      { "id": "daemon", "order": 7, "visible": true, "delay": 1.8, "variant": "default", "text": { "fr": "Starting portfolio daemon... OK", "en": "Starting portfolio daemon... OK" } },
+      { "id": "ready", "order": 8, "visible": true, "delay": 2.1, "variant": "highlight", "text": { "fr": "✓ System ready. Welcome, Jordan.", "en": "✓ System ready. Welcome, Jordan." } }
+    ]
+  },
+  "nav": {
+    "status": "ONLINE",
+    "links": [
+      { "id": "home", "order": 1, "visible": true, "href": "#hero", "label": { "fr": "./home", "en": "./home" } },
+      { "id": "skills", "order": 2, "visible": true, "href": "#skills", "label": { "fr": "./skills", "en": "./skills" } },
+      { "id": "projects", "order": 3, "visible": true, "href": "#projects", "label": { "fr": "./projects", "en": "./projects" } },
+      { "id": "formation", "order": 4, "visible": true, "href": "#formation", "label": { "fr": "./formation", "en": "./education" } },
+      { "id": "contact", "order": 5, "visible": true, "href": "#contact", "label": { "fr": "./contact", "en": "./contact" } }
+    ]
+  },
+  "hero": {
+    "ctaContact": { "fr": "INITIER CONTACT", "en": "INITIATE CONTACT" },
+    "ctaFormation": { "fr": "MON PARCOURS", "en": "MY JOURNEY" },
+    "ctaCv": { "fr": "TÉLÉCHARGER CV", "en": "DOWNLOAD CV" },
+    "ctaSocial": { "fr": "RÉSEAUX", "en": "SOCIALS" }
+  },
+  "sections": {
+    "skills": {
+      "label": { "fr": "competences", "en": "skills" },
+      "title": { "fr": "Arsenal\nTechnique", "en": "Technical\nArsenal" }
+    },
+    "projects": {
+      "label": { "fr": "projets personnels", "en": "personal projects" },
+      "title": { "fr": "Projets &\nRéalisations", "en": "Projects &\nAchievements" }
+    },
+    "formation": {
+      "label": { "fr": "parcours", "en": "journey" },
+      "title": { "fr": "Formation &\nExpériences", "en": "Education &\nExperience" }
+    },
+    "contact": {
+      "label": { "fr": "transmission", "en": "transmission" },
+      "title": { "fr": "Initier\nContact", "en": "Initiate\nContact" }
+    }
+  },
+  "form": {
+    "nameLabel": { "fr": "nom", "en": "name" },
+    "namePlaceholder": { "fr": "Votre nom...", "en": "Your name..." },
+    "emailLabel": { "fr": "email", "en": "email" },
+    "emailPlaceholder": { "fr": "votre@email.com", "en": "your@email.com" },
+    "messageLabel": { "fr": "message", "en": "message" },
+    "messagePlaceholder": { "fr": "Votre message...", "en": "Your message..." },
+    "submit": { "fr": "▶ ENVOYER_MESSAGE.sh", "en": "▶ SEND_MESSAGE.sh" },
+    "success": { "fr": "✓ Message envoyé ! Je te répondrai rapidement.", "en": "✓ Message sent! I will get back to you shortly." },
+    "error": { "fr": "❌ Erreur réseau, réessaie plus tard.", "en": "❌ Network error, please try again later." },
+    "status": {
+      "sending": "... ENVOI_EN_COURS.sh",
+      "sent": "✓ MESSAGE_ENVOYÉ.sh",
+      "idle": "▶ ENVOYER_MESSAGE.sh"
+    }
+  },
+  "a11y": {
+    "bootDialog": "Terminal de démarrage",
+    "bootSkipTitle": "Passer l'animation d'amorçage",
+    "langSwitch": "Langue / Language",
+    "navToggle": "Ouvrir le menu de navigation",
+    "cvTitle": "Télécharger le CV (PDF)",
+    "socialTrigger": "Afficher les réseaux sociaux",
+    "socialTriggerTitle": "Déployer les réseaux",
+    "audioRegion": "Lecteur audio d'ambiance",
+    "audioPlay": "Jouer ou mettre en pause l'ambiance sonore",
+    "audioPlayTitle": "Lecture / Pause",
+    "audioMute": "Couper ou activer le son",
+    "audioMuteTitle": "Activer / Couper le son"
+  }
+}
