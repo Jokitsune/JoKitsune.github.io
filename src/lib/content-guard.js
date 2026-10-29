@@ -159,6 +159,7 @@ function mapIssue(issue, prefix = []) {
       return [{ path, code: 'invalid_union' }];
     }
     case 'custom':
+      if (URL_KEYS.has(segs[segs.length - 1]) || URL_KEYS.has(segs[segs.length - 2])) return [{ path, code: 'invalid_url' }];
       if (/double/i.test(issue.message ?? '')) return [{ path, code: 'duplicate_id' }];
       if (/description|bullets/.test(issue.message ?? '')) return [{ path, code: 'description_xor_bullets' }];
       return [{ path, code: 'invalid' }];
