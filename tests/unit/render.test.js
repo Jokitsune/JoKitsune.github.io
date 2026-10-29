@@ -62,7 +62,7 @@ describe('rendu de la page', () => {
     );
     const cyan = doc.querySelector('[data-card="experience"]');
     expect(cyan.querySelector('.sec-card').className).toBe('sec-card sec-card--cyan');
-    expect(cyan.querySelector('.progress-bar-fill').getAttribute('style')).toBe('--fill: 80%');
+    expect(cyan.querySelector('.progress-bar-fill').getAttribute('data-fill')).toBe('80');
     expect(doc.querySelector('[data-card="formation"] .sec-card').className).toBe('sec-card');
     expect(doc.querySelector('.social-pile-item.github-item svg path')).not.toBeNull();
     expect(doc.querySelector('.hero-name').getAttribute('data-text')).toBe('de SOUZA');

@@ -26,8 +26,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
-        ...globals.browser,
-        formspree: 'readonly'
+        ...globals.browser
       }
     }
   },

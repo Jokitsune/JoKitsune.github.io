@@ -38,12 +38,13 @@ export function renderBoot({ ui }, ctx) {
   const skip = ctx.t('boot.skip', ui.boot.skip);
   const lines = visibleSorted(ui.boot.lines).map(line => {
     const cls = line.variant && line.variant !== 'default' ? `boot-line ${line.variant}` : 'boot-line';
-    const style = `animation-delay: ${Number(line.delay)}s`;
+    // Délai porté par un attribut : la règle CSS correspondante est générée au build (CSP sans style inline)
+    const delay = ` data-boot-delay="${Number(line.delay)}"`;
     const text = ctx.t(`boot.lines.${line.id}`, line.text);
     if (line.value !== undefined) {
-      return `    <div class="${cls}" style="${style}"><span${text.attr}>${text.html}</span> <span style="color:var(--green)">${escapeHtml(line.value)}</span></div>`;
+      return `    <div class="${cls}"${delay}><span${text.attr}>${text.html}</span> <span class="boot-value">${escapeHtml(line.value)}</span></div>`;
     }
-    return `    <div class="${cls}" style="${style}"${text.attr}>${text.html}</div>`;
+    return `    <div class="${cls}"${delay}${text.attr}>${text.html}</div>`;
   }).join('\n');
 
   return `<div id="boot-screen" role="dialog" aria-label="${escapeAttr(ui.a11y.bootDialog)}">
@@ -61,7 +62,7 @@ export function renderNav({ site, ui }, ctx) {
   }).join('\n');
 
   return `<nav>
-    <div class="nav-brand">${escapeHtml(id.brandInitial)}<span>.</span>${escapeHtml(id.lastName)}<span class="t-cursor" style="height:14px;width:6px;margin-left:4px" aria-hidden="true"></span></div>
+    <div class="nav-brand">${escapeHtml(id.brandInitial)}<span>.</span>${escapeHtml(id.lastName)}<span class="t-cursor t-cursor--brand" aria-hidden="true"></span></div>
 
     <ul class="nav-links" id="navLinks">
 ${links}
@@ -76,7 +77,7 @@ ${links}
       </div>
 
       <span class="status-dot" aria-hidden="true"></span>
-      <span style="font-size:0.75rem;color:var(--text-dim);letter-spacing:1px">${escapeHtml(ui.nav.status)}</span>
+      <span class="nav-status-text">${escapeHtml(ui.nav.status)}</span>
       <button class="nav-toggle" id="navToggle" aria-label="${escapeAttr(ui.a11y.navToggle)}" aria-expanded="false" aria-controls="navLinks">
         <span class="toggle-bar"></span>
         <span class="toggle-bar"></span>
@@ -106,8 +107,8 @@ export function renderHero({ site, ui }, ctx) {
   const pad = Math.max(0, ...fields.map(f => String(f.key).length)) + 2;
   const fieldLines = fields.map(f => {
     const val = ctx.t(`terminal.fields.${f.id}`, f.value);
-    const style = f.highlight ? ' style="color:var(--green)"' : '';
-    return `            <span class="t-output"><span class="t-key">${escapeHtml(f.key)}</span>${' '.repeat(Math.max(1, pad - String(f.key).length))}: <span class="t-val"${style}${val.attr}>${val.html}</span></span>`;
+    const highlight = f.highlight ? ' t-val--highlight' : '';
+    return `            <span class="t-output"><span class="t-key">${escapeHtml(f.key)}</span>${' '.repeat(Math.max(1, pad - String(f.key).length))}: <span class="t-val${highlight}"${val.attr}>${val.html}</span></span>`;
   }).join('\n');
 
   const skillLines = visibleSorted(terminal.skills).map(s => {
@@ -321,7 +322,7 @@ function renderCards(content, ctx) {
                 <div class="card-divider${variant('card-divider', c)}" aria-hidden="true"></div>
                 <div class="card-progress">
                   <div class="progress-label"><span${pLabel.attr}>${pLabel.html}</span><span${pValue.attr}>${pValue.html}</span></div>
-                  <div class="progress-bar-bg"><div class="progress-bar-fill${variant('progress-bar-fill', c)}" style="--fill: ${percent}%"></div></div>
+                  <div class="progress-bar-bg"><div class="progress-bar-fill${variant('progress-bar-fill', c)}" data-fill="${percent}"></div></div>
                 </div>
                 <div class="card-tags">
 ${tags}
@@ -374,7 +375,7 @@ export function renderContact(content, ctx) {
             </div>
           `;
     return item.href
-      ? `          <a href="${escapeAttr(safeUrl(item.href))}" class="contact-item" style="text-decoration:none;">${inner}</a>`
+      ? `          <a href="${escapeAttr(safeUrl(item.href))}" class="contact-item contact-item--link">${inner}</a>`
       : `          <div class="contact-item">${inner}</div>`;
   }).join('\n');
 
@@ -389,7 +390,7 @@ export function renderContact(content, ctx) {
     return `            <div class="form-group">
               <label class="form-label" for="${id}"${label.attr}>${label.html}</label>
               ${control}
-              <span data-fs-error="${name}" style="color:var(--red); font-size:0.7rem;"></span>
+              <span data-fs-error="${name}" class="form-field-error"></span>
             </div>`;
   };
   const submit = ctx.t('form.submit', f.submit);
@@ -398,12 +399,12 @@ export function renderContact(content, ctx) {
 ${sectionHeading('contact', content, ctx)}
       <div class="contact-wrapper">
         <div class="contact-info">
-          <p style="font-family:'Exo 2',sans-serif;color:var(--text-dim);font-size:0.9rem;line-height:1.7;margin-bottom:40px;"${desc.attr}>${desc.html}</p>
+          <p class="contact-desc"${desc.attr}>${desc.html}</p>
 ${items}
         </div>
         <div class="contact-form">
-          <div data-fs-success style="color:var(--green); margin-bottom:15px; display:none;"${success.attr}>${success.html}</div>
-          <div data-fs-error style="color:var(--red); margin-bottom:15px; display:none;"${error.attr}>${error.html}</div>
+          <div data-fs-success class="form-feedback form-feedback--success"${success.attr}>${success.html}</div>
+          <div data-fs-error class="form-feedback form-feedback--error"${error.attr}>${error.html}</div>
 
           <form id="fs-form">
 ${field('form-name', 'name', 'text', 'nameLabel', 'namePlaceholder')}
@@ -447,6 +448,6 @@ export function renderFooter({ site }, ctx) {
   const rights = ctx.t('footer.rights', site.footer.rights);
   return `<footer>
     <div${rights.attr}>${rights.html}</div>
-    <div style="color:var(--green-dim)">${escapeHtml(site.footer.prompt)} <span class="t-cursor" style="height:12px;width:6px" aria-hidden="true"></span></div>
+    <div class="footer-prompt">${escapeHtml(site.footer.prompt)} <span class="t-cursor t-cursor--footer" aria-hidden="true"></span></div>
   </footer>`;
 }

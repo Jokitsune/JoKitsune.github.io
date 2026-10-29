@@ -74,6 +74,27 @@ test('menu mobile : ouverture puis fermeture au clic sur un lien', async ({ page
   await expect(page.locator('#navLinks')).not.toHaveClass(/open/);
 });
 
+test('CSP appliquée (en-têtes vercel.json) : aucune violation, aucun script tiers', async ({ page }) => {
+  const violations = [];
+  const scripts = [];
+  page.on('console', msg => {
+    if (/Content Security Policy|Refused to/i.test(msg.text())) violations.push(msg.text());
+  });
+  page.on('request', req => {
+    if (req.resourceType() === 'script') scripts.push(req.url());
+  });
+  const response = await page.goto('/');
+  expect(response.headers()['content-security-policy']).toMatch(/^default-src 'self'; script-src 'self';/);
+  // Parcours qui exerce le boot, la langue, les cartes et le formulaire
+  await page.keyboard.press('Escape');
+  await page.locator('.lang-btn[data-lang="en"]').click();
+  await page.locator('#contact').scrollIntoViewIfNeeded();
+  await page.locator('#formation').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
+  expect(violations).toEqual([]);
+  expect(scripts.every(u => new URL(u).origin === new URL(page.url()).origin)).toBe(true);
+});
+
 test('formulaire de contact : envoi vers Formspree (réponse simulée)', async ({ page }) => {
   let posted = null;
   await page.route('https://formspree.io/**', async route => {

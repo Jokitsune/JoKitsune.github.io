@@ -10,6 +10,7 @@
 import path from 'node:path';
 import { CONTENT_DIR, loadContent } from '../lib/content.js';
 import { renderPage, buildDictionary } from '../render/index.js';
+import { renderContentCss } from '../render/content-css.js';
 
 const VIRTUAL_ID = 'virtual:portfolio-content';
 const RESOLVED_ID = '\0' + VIRTUAL_ID;
@@ -25,11 +26,39 @@ export function clientPayload(content) {
   };
 }
 
+const MAIN_CSS_RE = /[\\/]src[\\/]styles[\\/]main\.css$/;
+
 /**
- * @param {{ contentDir?: string }} [options]
+ * Règles CSS dérivées du contenu (délais du boot, progression des cartes),
+ * ajoutées à la FIN de src/styles/main.css avant son traitement par Vite :
+ * elles partagent le bundle CSS principal (même chargement qu'avant, rendu
+ * identique) et remplacent les anciens style="…" interdits par la CSP.
  * @returns {import('vite').Plugin}
  */
+function contentStylesheet(contentDir) {
+  return {
+    name: 'portfolio-content-css',
+    enforce: 'pre',
+    async transform(code, id) {
+      if (!MAIN_CSS_RE.test(id.split('?')[0])) return null;
+      return { code: `${code}\n${renderContentCss(await loadContent(contentDir))}`, map: null };
+    }
+  };
+}
+
+/**
+ * @param {{ contentDir?: string }} [options]
+ * @returns {import('vite').Plugin[]}
+ */
 export function portfolioContent({ contentDir = CONTENT_DIR } = {}) {
+  return [portfolioContentHtml({ contentDir }), contentStylesheet(contentDir)];
+}
+
+/**
+ * @param {{ contentDir: string }} options
+ * @returns {import('vite').Plugin}
+ */
+function portfolioContentHtml({ contentDir }) {
   const isContentFile = file => path.resolve(file).startsWith(path.resolve(contentDir)) && file.endsWith('.json');
 
   return {
@@ -61,6 +90,10 @@ export function portfolioContent({ contentDir = CONTENT_DIR } = {}) {
         if (!isContentFile(file)) return;
         const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
         if (mod) server.moduleGraph.invalidateModule(mod);
+        // La feuille principale embarque des règles dérivées du contenu
+        for (const m of server.moduleGraph.idToModuleMap.values()) {
+          if (m.file && MAIN_CSS_RE.test(m.file)) server.moduleGraph.invalidateModule(m);
+        }
         server.ws.send({ type: 'full-reload' });
       };
       server.watcher.on('change', reload);

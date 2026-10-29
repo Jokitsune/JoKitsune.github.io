@@ -19,7 +19,31 @@ describe('vercel.json — en-têtes', () => {
       expect(get(p, 'Cross-Origin-Opener-Policy')).toBe('same-origin');
       expect(get(p, 'Permissions-Policy')).toContain('camera=()');
     }
-    expect(get('/', 'Content-Security-Policy-Report-Only')).toContain("frame-ancestors 'none'");
+  });
+
+  it('E1 : CSP du site public APPLIQUÉE, sans script tiers ni unsafe-inline', () => {
+    for (const p of ['/', '/index.html', '/assets/index-abc.js']) {
+      const csp = get(p, 'Content-Security-Policy');
+      expect(csp, p).toMatch(/^default-src 'self'; script-src 'self';/);
+      expect(csp).not.toMatch(/unsafe-|unpkg|\*/);
+      expect(csp).toContain('connect-src \'self\' https://formspree.io');
+      expect(csp).toContain('media-src \'self\' https://cdn.pixabay.com');
+      expect(csp).toContain("frame-ancestors 'none'");
+    }
+    expect(JSON.stringify(vercel)).not.toContain('Report-Only');
+    // /admin et /api gardent leur propre CSP (la CSP publique ne s'y applique pas)
+    expect(get('/admin/', 'Content-Security-Policy')).toBe(ADMIN_CSP);
+    expect(get('/api/auth/me', 'Content-Security-Policy')).toBe("default-src 'none'; frame-ancestors 'none'");
+    const publicRule = vercel.headers.find(r => r.headers.some(h => h.value.startsWith("default-src 'self'; script-src 'self'")));
+    expect(new RegExp(`^${publicRule.source}$`).test('/admin/')).toBe(false);
+    expect(new RegExp(`^${publicRule.source}$`).test('/api/content')).toBe(false);
+  });
+
+  it('E1 : aucun script tiers ni style inline dans la page publique', () => {
+    const html = readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    expect(html).not.toMatch(/unpkg|<script[^>]+src="https?:/);
+    const sections = readFileSync(path.join(ROOT, 'src/render/sections.js'), 'utf8');
+    expect(sections).not.toMatch(/style=/);
   });
 
   it('T-HDR-02 : /admin et /admin/ — CSP exacte, noindex, no-store, no-referrer', () => {
