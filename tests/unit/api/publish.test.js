@@ -13,6 +13,13 @@ beforeEach(async () => {
 
 const status = async () => bodyOf(await ctx.api.handle(req('GET', '/api/publish/status', { cookie })));
 const publish = expectedHeadSha => ctx.api.handle(req('POST', '/api/publish', { cookie, json: { expectedHeadSha } }));
+/** Flux en deux temps : le 1er clic ouvre la PR (CHECKS_PENDING), le 2e fusionne. */
+async function publishReady(expectedHeadSha) {
+  const first = await publish(expectedHeadSha);
+  expect(first.status).toBe(409);
+  expect((await bodyOf(first)).error.code).toBe('CHECKS_PENDING');
+  return publish(expectedHeadSha);
+}
 
 async function makeDraftChange() {
   const current = await bodyOf(await ctx.api.handle(req('GET', '/api/content/skills', { cookie })));
@@ -48,7 +55,7 @@ describe('Publication', () => {
   it('flux complet : PR créée, fusion squash avec sha attendu, brouillon réaligné', async () => {
     await makeDraftChange();
     const { headSha } = await status();
-    const res = await publish(headSha);
+    const res = await publishReady(headSha);
     expect(res.status).toBe(200);
     const body = await bodyOf(res);
     expect(body).toMatchObject({ merged: true, prUrl: expect.stringContaining('/pull/12') });
@@ -60,6 +67,17 @@ describe('Publication', () => {
     expect(reset.body).toEqual({ sha: body.mainSha, force: true });
     expect(reset.pathname).toContain('content/draft');
     expect(ctx.logs.some(l => l.includes('publish.done'))).toBe(true);
+  });
+
+  it('1er clic : PR tout juste créée ⇒ 409 CHECKS_PENDING sans fusion, même si les checks existants sont verts', async () => {
+    await makeDraftChange();
+    const { headSha, checks } = await status();
+    expect(checks).toBe('success');
+    const res = await publish(headSha);
+    expect(res.status).toBe(409);
+    expect((await bodyOf(res)).error).toMatchObject({ code: 'CHECKS_PENDING', prUrl: expect.stringContaining('/pull/') });
+    expect(ctx.gh.calls.some(c => c.pathname.endsWith('/merge'))).toBe(false);
+    expect(ctx.gh.calls.some(c => c.pathname.endsWith('/update-branch'))).toBe(false);
   });
 
   it('T-GIT-05 — expectedHeadSha périmé ⇒ 409 CONFLICT, rien de fusionné', async () => {
@@ -90,7 +108,7 @@ describe('Publication', () => {
   it('checks en échec ⇒ 422 CHECKS_FAILED', async () => {
     await makeDraftChange();
     ctx.gh.state.checks = [{ status: 'completed', conclusion: 'failure' }];
-    const res = await publish((await status()).headSha);
+    const res = await publishReady((await status()).headSha);
     expect(res.status).toBe(422);
     expect((await bodyOf(res)).error.code).toBe('CHECKS_FAILED');
   });
@@ -98,7 +116,7 @@ describe('Publication', () => {
   it('la tête bouge pendant la fusion (409 GitHub) ⇒ 409 CONFLICT', async () => {
     await makeDraftChange();
     ctx.gh.state.mergeConflict = true;
-    expect((await publish((await status()).headSha)).status).toBe(409);
+    expect((await publishReady((await status()).headSha)).status).toBe(409);
   });
 
   it('rien à publier ⇒ 409 NOTHING_TO_PUBLISH', async () => {
@@ -131,13 +149,15 @@ describe('Ruleset « branche à jour » (strict) : brouillon en retard sur main'
     expect((await publish(next.headSha)).status).toBe(200);
   });
 
-  it('405 « non fusionnable » ⇒ update-branch puis CHECKS_PENDING (plus de boucle sur CONFLICT)', async () => {
+  it('405 « non fusionnable » sans retard (check requis pas encore terminé) ⇒ CHECKS_PENDING, sans update-branch', async () => {
     await makeDraftChange();
+    const { headSha } = await status();
+    await publish(headSha); // 1er clic : ouvre la PR
     ctx.gh.state.mergeNotMergeable = true;
-    const res = await publish((await status()).headSha);
+    const res = await publish(headSha);
     expect(res.status).toBe(409);
-    expect((await bodyOf(res)).error).toMatchObject({ code: 'CHECKS_PENDING', branchUpdated: true });
-    expect(ctx.gh.calls.some(c => c.pathname.endsWith('/update-branch'))).toBe(true);
+    expect((await bodyOf(res)).error).toMatchObject({ code: 'CHECKS_PENDING' });
+    expect(ctx.gh.calls.some(c => c.pathname.endsWith('/update-branch'))).toBe(false);
   });
 
   it('update-branch impossible (conflit) ⇒ 409 CONFLICT explicite', async () => {
@@ -154,7 +174,7 @@ describe('F4 — brouillon modifié pendant la fusion', () => {
   it('ne réinitialise PAS content/draft (aucun PATCH force) et répond 409 avec merged: true', async () => {
     await makeDraftChange();
     ctx.gh.state.pushDuringMerge = true;
-    const res = await publish((await status()).headSha);
+    const res = await publishReady((await status()).headSha);
     expect(res.status).toBe(409);
     expect((await bodyOf(res)).error).toMatchObject({ code: 'CONFLICT', merged: true, currentSha: expect.stringMatching(/^[0-9a-f]{40}$/) });
     expect(ctx.gh.calls.some(c => c.method === 'PATCH' && c.pathname.includes('/git/refs/heads/'))).toBe(false);
@@ -164,7 +184,7 @@ describe('F4 — brouillon modifié pendant la fusion', () => {
 describe('Synchronisation main → develop après publication', () => {
   it('ouvre la PR « chore: synchroniser develop… » et active l’auto-merge en mode MERGE', async () => {
     await makeDraftChange();
-    const body = await bodyOf(await publish((await status()).headSha));
+    const body = await bodyOf(await publishReady((await status()).headSha));
     expect(body.sync).toEqual({ status: 'auto_merge', prUrl: expect.stringContaining('/pull/13') });
     const create = ctx.gh.calls.filter(c => c.method === 'POST' && c.pathname.endsWith('/pulls'))[1];
     expect(create.body).toMatchObject({ head: 'main', base: 'develop', title: 'chore: synchroniser develop avec la publication de contenu' });
@@ -175,9 +195,9 @@ describe('Synchronisation main → develop après publication', () => {
 
   it('PR de synchro déjà ouverte ⇒ aucune nouvelle PR', async () => {
     await makeDraftChange();
-    await publish((await status()).headSha);
+    await publishReady((await status()).headSha);
     await makeDraftChange();
-    const res = await bodyOf(await publish((await status()).headSha));
+    const res = await bodyOf(await publishReady((await status()).headSha));
     expect(res.sync.status).toBe('auto_merge');
     const syncCreates = ctx.gh.calls.filter(c => c.method === 'POST' && c.pathname.endsWith('/pulls') && c.body.base === 'develop');
     expect(syncCreates).toHaveLength(1);
@@ -186,7 +206,7 @@ describe('Synchronisation main → develop après publication', () => {
   it('auto-merge indisponible ⇒ sync « opened », puis POST /api/publish/sync fusionne (merge commit) quand la CI est verte', async () => {
     ctx.gh.state.autoMergeAvailable = false;
     await makeDraftChange();
-    const body = await bodyOf(await publish((await status()).headSha));
+    const body = await bodyOf(await publishReady((await status()).headSha));
     expect(body.sync.status).toBe('opened');
     const st = await status();
     expect(st.sync).toMatchObject({ open: true, checks: 'success', autoMerge: false });
@@ -212,7 +232,7 @@ describe('Synchronisation main → develop après publication', () => {
     ctx = mk({ env: makeEnv({ CONTENT_SYNC_BRANCH: 'none' }) });
     cookie = await sessionCookieFor(ctx.config, { stepUp: true });
     await makeDraftChange();
-    const body = await bodyOf(await publish((await status()).headSha));
+    const body = await bodyOf(await publishReady((await status()).headSha));
     expect(body.sync).toEqual({ status: 'disabled' });
     expect(ctx.gh.calls.some(c => c.pathname === '/graphql')).toBe(false);
   });
@@ -225,7 +245,7 @@ describe('Synchronisation main → develop après publication', () => {
       : base(url, init));
     ctx = setup({ gh });
     await makeDraftChange();
-    const res = await publish((await status()).headSha);
+    const res = await publishReady((await status()).headSha);
     expect(res.status).toBe(200);
     expect((await bodyOf(res)).sync).toEqual({ status: 'failed' });
     expect(ctx.logs.some(l => l.includes('publish.sync'))).toBe(true);

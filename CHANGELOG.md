@@ -7,6 +7,14 @@ et le projet adhère au [Versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Corrigé
+
+- Publication depuis `/admin` : le premier clic ouvre la pull request et renvoie « CI en cours », sans tenter de fusion. Avant, les checks déjà présents sur le commit (Vercel) étaient pris pour la CI requise : la fusion échouait (405) et l'admin affichait à tort « le brouillon a changé ». Un 405 sans retard sur `main` signifie désormais « CI en cours », sans mise à jour de branche inutile.
+
+### Documentation
+
+- `docs/ADMIN.md` : connexion par GitHub App privée sans permission (configuration de production) et pare-feu limité à 3 règles sur l'offre Hobby.
+
 ## [2.0.0] - 2026-10-29
 
 ### Ajouté
