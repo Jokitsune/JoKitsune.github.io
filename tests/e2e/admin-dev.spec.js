@@ -43,6 +43,10 @@ test('connexion, édition, enregistrement et publication', async ({ page }) => {
   await expect(page.locator('#toast')).toContainText('Ré-authentification effectuée');
 
   await page.goto('/admin/#/publish');
+  // Publication en deux temps : le 1er clic ouvre la pull request et lance la CI…
+  await page.getByRole('button', { name: 'Publier', exact: true }).click();
+  await expect(page.getByText('Étape 1/2 faite')).toBeVisible();
+  // … le 2e clic fusionne une fois la CI verte (toujours verte en mode dev)
   await page.getByRole('button', { name: 'Publier', exact: true }).click();
   const done = page.locator('.panel--ok');
   await expect(done).toContainText('Publication effectuée');
