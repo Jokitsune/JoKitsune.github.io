@@ -33,10 +33,13 @@ Navigateur /admin/ ──fetch──▶ api/* (Vercel, Node) ──▶ GitHub
 - **Connexion** : OAuth GitHub avec `state` + PKCE S256. Le serveur vérifie l'**ID numérique** du compte (`ADMIN_GITHUB_ID`), puis le login et le type `User`. Le jeton GitHub de l'utilisateur est **révoqué immédiatement** après lecture du profil : il n'est jamais conservé.
 - **Session** : JWT HS256 dans le cookie `__Host-jk_admin` (`HttpOnly; Secure; SameSite=Strict`), d'une durée absolue de 4 h.
 - **Écriture** : uniquement via la GitHub App, avec un jeton d'installation de 1 h restreint à ce dépôt. Les commits sont signés par le bot `…[bot]` et portent les trailers `Admin-Actor`, `Admin-Session` et `Admin-Request-Id`.
-- **Brouillon** (`PUBLISH_MODE=pr`) : toutes les modifications vont sur `content/draft`. « Publier » ouvre (ou réutilise) une PR `content/draft → main`, attend une CI verte, puis la fusionne en squash. Cette action exige une connexion GitHub de **moins de 15 minutes** (step-up).
-- **Concurrence** : chaque écriture porte le `sha` lu. Si le fichier a changé entre-temps, l'API répond `409` et l'admin affiche les différences, sans jamais écraser automatiquement.
+- **Brouillon** (`PUBLISH_MODE=pr`) : toutes les modifications vont sur `content/draft`. « Publier » ouvre (ou réutilise) une PR `content/draft → main`, attend une CI verte, puis la fusionne en squash.
+- **Publication en deux temps** : le premier clic sur « Publier » ouvre la PR et lance la CI (1 à 2 minutes). Si le brouillon est en retard sur `main`, il est d'abord mis à jour (`update-branch`) et la CI repart. Une fois la CI verte, un second clic fusionne. L'interface l'indique à chaque étape.
+- **Ré-authentification dédiée (step-up)** : publier ou abandonner le brouillon exige une connexion GitHub **lancée depuis le bouton « Se ré-authentifier » de la vue Publication** (`/api/auth/login?stepup=1`) et datant de moins de 15 minutes. Une connexion ordinaire, même récente, ne suffit pas.
+- **Synchronisation de `develop`** : après chaque fusion dans `main`, l'App ouvre la PR `main → develop` « chore: synchroniser develop avec la publication de contenu » (sauf si elle est déjà ouverte). Elle active ensuite l'**auto-merge en mode merge commit**. Si l'auto-merge est indisponible, la vue Publication propose « Fusionner la synchronisation » dès que la CI est verte (`POST /api/publish/sync`).
+- **Concurrence** : chaque écriture porte le `sha` lu. Si le fichier a changé entre-temps, l'API répond `409` et l'admin affiche les différences, sans jamais écraser automatiquement. Après une fusion, le brouillon n'est réaligné sur `main` que s'il n'a pas bougé entre-temps.
 
-> ⚠ Les publications fusionnent dans `main` sans passer par `develop`. Après une publication, reporter `main` sur `develop` comme après un hotfix (voir `CONTRIBUTING.md`, « Après un hotfix, resynchroniser develop »).
+> **Limite résiduelle du step-up** : GitHub OAuth ne propose ni `prompt=login` ni `max_age`. Si la session GitHub du navigateur est active, la ré-authentification se fait sans saisie. Le step-up prouve donc la **possession actuelle de la session GitHub du propriétaire**, ce qui empêche un cookie admin volé seul de publier. Il ne prouve pas une présence humaine interactive. L'évolution prévue est une confirmation **WebAuthn** (passkey) côté admin avant publication ; elle demande un stockage de clé publique et n'est pas couverte par cette version.
 
 ## 2. Récupérer les identifiants numériques
 
@@ -136,6 +139,7 @@ Vercel → projet → **Settings → Environment Variables**. Pour **chaque** va
 | `GITHUB_REPO_ID` | résultat de `gh api repos/… --jq .id` | |
 | `CONTENT_BASE_BRANCH` | `main` | |
 | `CONTENT_DRAFT_BRANCH` | `content/draft` | |
+| `CONTENT_SYNC_BRANCH` | `develop` (défaut ; `none` désactive la PR de synchronisation) | |
 | `PUBLISH_MODE` | `pr` | |
 | `DRAFT_PREVIEW_URL` | alias de preview de `content/draft` (voir § 7) | |
 | `SESSION_SECRET` | généré au § 5 | 🔒 |
@@ -160,11 +164,23 @@ Les variables ne s'appliquent qu'aux **nouveaux** déploiements : redéployez la
 
 - *Require a pull request before merging*.
 - *Require status checks to pass* : le check **« Lint, tests et build »** du workflow CI. Il valide le contenu (`npm run validate:content`), lance les tests, construit le site et contrôle `dist/`.
-- *Block force pushes*, *Restrict deletions*, *Require linear history*.
+- **Règle « branche à jour »** (*Require branches to be up to date before merging*) : recommandée. Elle garantit que la CI a validé le contenu **combiné** à la dernière version de `main`. L'admin la gère : si le brouillon est en retard, « Publier » le met à jour (`PUT /pulls/{n}/update-branch`), la CI repart, puis un nouveau clic fusionne.
+- *Block force pushes* et *Restrict deletions*.
+- **Ne cochez pas** *Require linear history* : `CONTRIBUTING.md` impose des merge commits pour `develop → main` (releases) et pour la synchronisation `main → develop`.
 - **Aucun** acteur de contournement, y compris la GitHub App.
 - Facultatif (mode « B+ ») : *Required approvals: 1*. La publication se fait alors en approuvant la PR sur GitHub.
 
+**GitHub** (ruleset de `develop`) : PR obligatoire, check « Lint, tests et build », 0 approbation, merge commits autorisés. La PR de synchronisation `main → develop` s'y conforme.
+
+**GitHub** (Settings → General → Pull Requests) : cochez **Allow auto-merge** (pour la fusion automatique de la synchronisation) et **Allow merge commits** (merge commit de synchronisation). Sans auto-merge, la synchronisation reste possible depuis l'admin, en un clic, une fois la CI verte.
+
+Les permissions de la GitHub App (§ 4) **suffisent** : *Contents: write* et *Pull requests: write* couvrent l'ouverture de la PR de synchronisation, la mise à jour de branche (`update-branch`), l'activation de l'auto-merge (GraphQL `enablePullRequestAutoMerge`) et la fusion. *Checks: read* sert à lire la CI. Aucune permission *Workflows* ni *Administration* n'est nécessaire.
+
 Activez aussi **Settings → Code security → Secret scanning** et **Push protection**.
+
+> **PDF et en-têtes** : la CSP `sandbox` et `nosniff` des PDF (`/files/*.pdf`, `/asset/*.pdf`) ne sont appliquées que par **Vercel**. Sur le miroir GitHub Pages, aucun en-tête personnalisé n'est possible : le PDF y est servi sans sandbox. L'admin refuse donc à l'envoi les PDF actifs (noms décodés des `#xx`) et les PDF non inspectables (`/ObjStm`, `/Encrypt`, flux non décodables).
+
+> **CSP du site public** : elle est **appliquée** (et non plus en Report-Only), sans aucun script tiers ni `unsafe-inline`. Le formulaire de contact utilise `fetch` vers `formspree.io` (le script `unpkg.com/@formspree/ajax` a été supprimé : il s'exécutait sur l'origine de l'admin). Tout nouveau domaine externe (police, script, média) doit être ajouté explicitement dans `vercel.json`.
 
 ## 8. Régler le pare-feu Vercel (WAF)
 
@@ -202,8 +218,8 @@ npm run dev:admin        # http://localhost:5173/admin/
 
 - `ADMIN_DEV_MODE=1` est positionné automatiquement : l'API est montée dans le serveur Vite, sur un **backend fichier local**.
 - La connexion est fictive (utilisateur `dev-admin`) et aucun appel réseau n'est fait vers GitHub.
-- Les écritures vont dans `.admin-dev/` (ignoré par Git) : `draft/` pour le brouillon, `main/` pour la version « publiée ». Les fichiers du dépôt (`content/`, `public/`) ne sont **jamais** modifiés. Pour repartir de zéro, supprimez `.admin-dev/`.
-- La « CI » y est toujours considérée verte, et le step-up est immédiat.
+- Les écritures vont dans `.admin-dev/` (ignoré par Git) : `draft/` pour le brouillon, `main/` pour la version « publiée ». Les fichiers du dépôt (`content/`, `public/`) ne sont **jamais** modifiés. Pour repartir de zéro, supprimez `.admin-dev/` (il est recréé à la volée, même serveur lancé).
+- La « CI » y est toujours considérée verte. Le step-up suit la même règle qu’en production : seul le lien « Se ré-authentifier » (`/api/auth/login?stepup=1`) l’accorde. La synchronisation `main → develop` est simulée (auto-merge immédiat).
 - Port différent : `PORT=5180 npm run dev:admin` (`ADMIN_ORIGIN` suit automatiquement).
 - **Garde-fou** : le serveur refuse de démarrer, et l'API répond 503, si `VERCEL_ENV` vaut `production` ou `preview` (ou toute autre valeur que `development`), si `NODE_ENV=production`, ou sur Vercel hors `vercel dev`. Ce comportement est couvert par `tests/unit/api/config.test.js`.
 
@@ -211,7 +227,8 @@ Le serveur de développement Vite n'applique pas la CSP. Pour vérifier l'admin 
 
 ```bash
 npm run build && npm run preview   # applique les en-têtes de vercel.json, /admin/ inclus
-npm run test:e2e                   # tests Playwright, dont tests/e2e/admin.spec.js
+npm run test:e2e                   # Playwright : site public sous CSP, admin sous CSP (API simulée)
+                                   # et parcours complet sur le vrai backend de dev (tests/e2e/admin-dev.spec.js)
 ```
 
 ### Avec `vercel dev` et un vrai GitHub (optionnel)

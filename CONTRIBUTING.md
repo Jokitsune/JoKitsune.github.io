@@ -116,6 +116,14 @@ Bonnes pratiques :
 
 5. La branche est supprimée après fusion.
 
+### Publications de contenu depuis `/admin`
+
+Le panneau `/admin` publie le contenu par une PR `content/draft → main`, fusionnée en squash (voir [docs/ADMIN.md](docs/ADMIN.md)). Ces commits arrivent donc sur `main` **sans passer par `develop`**. Pour éviter la dérive, la GitHub App ouvre automatiquement, après chaque publication, la PR `main → develop` intitulée `chore: synchroniser develop avec la publication de contenu`. Elle la fusionne en **merge commit**, par auto-merge dès que la CI est verte, ou depuis l'admin si l'auto-merge est désactivé sur le dépôt.
+
+- Ne fermez pas cette PR : laissez-la se fusionner, ou fusionnez-la vous-même en *merge commit*.
+- En cas de conflit (contenu modifié aussi sur `develop`), résolvez-le comme pour un hotfix (ci-dessous), puis fermez la PR automatique.
+- Les branches `content/*` sont réservées à l'admin : n'y poussez pas à la main.
+
 Après un hotfix, resynchroniser `develop` :
 
 ```bash
