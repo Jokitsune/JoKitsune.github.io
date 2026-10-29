@@ -4,7 +4,8 @@ import { defineConfig, devices } from '@playwright/test';
 // Par défaut : build + `vite preview`. Pour cibler un autre site (ex. l'ancienne
 // version), définir E2E_BASE_URL=http://hôte:port/ (aucun serveur n'est alors lancé).
 const externalUrl = process.env.E2E_BASE_URL;
-const PORT = 4173;
+// E2E_PORT : port du serveur de preview (défaut 4173), utile si le port est déjà pris
+const PORT = Number(process.env.E2E_PORT) || 4173;
 
 export default defineConfig({
   testDir: 'tests/e2e',
