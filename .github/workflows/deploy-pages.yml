@@ -52,9 +52,16 @@ jobs:
         if: steps.guard.outputs.has_package == 'true'
         run: npm ci
 
+      # Le miroir Pages n'embarque PAS le panneau /admin (servi uniquement par Vercel)
       - name: Build
         if: steps.guard.outputs.has_package == 'true'
+        env:
+          BUILD_TARGET: pages
         run: npm run build
+
+      - name: Vérifier l'absence de /admin
+        if: steps.guard.outputs.has_package == 'true'
+        run: node scripts/check-dist.mjs --pages
 
       - uses: actions/configure-pages@v5
         if: steps.guard.outputs.has_package == 'true'

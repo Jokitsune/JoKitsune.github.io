@@ -46,6 +46,11 @@ jobs:
         if: hashFiles('package.json') != ''
         run: npm run lint --if-present
 
+      # Même schéma + garde-fous que l'API /admin (échoue si un JSON est invalide)
+      - name: Valider le contenu
+        if: hashFiles('package.json') != ''
+        run: npm run validate:content --if-present
+
       - name: Tests
         if: hashFiles('package.json') != ''
         run: npm test --if-present
@@ -53,3 +58,8 @@ jobs:
       - name: Build
         if: hashFiles('package.json') != ''
         run: npm run build
+
+      # Aucun secret dans dist/, /admin sans script ni style inline (CSP + Trusted Types)
+      - name: Contrôler le build
+        if: hashFiles('scripts/check-dist.mjs') != ''
+        run: node scripts/check-dist.mjs
