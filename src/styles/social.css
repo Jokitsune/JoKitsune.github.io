@@ -1,0 +1,117 @@
+/* Partial : Pile de réseaux sociaux — extrait de l'ancien style.css (l. 307-421) */
+
+/* -------- PILE DE RÉSEAUX SOCIAUX DÉPLOYABLE -------- */
+.social-stack-container {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.social-trigger-btn {
+  gap: 8px;
+  user-select: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  min-height: 48px;
+}
+.social-trigger-btn .trigger-icon {
+  color: var(--yellow);
+  display: inline-flex;
+  align-items: center;
+}
+.social-trigger-btn .trigger-arrow {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s;
+}
+.social-stack-container.open .social-trigger-btn {
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+.social-stack-container.open .social-trigger-btn .trigger-arrow {
+  transform: rotate(90deg);
+  color: var(--green);
+}
+
+.social-links-pile {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 50;
+  white-space: nowrap;
+}
+
+.social-stack-container.open .social-links-pile {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+.social-pile-item {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  transform: scale(0.85);
+  opacity: 0;
+}
+
+.social-stack-container.open .social-pile-item {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.social-stack-container.open .social-pile-item:nth-child(1) { transition-delay: 0.05s; }
+.social-stack-container.open .social-pile-item:nth-child(2) { transition-delay: 0.1s; }
+.social-stack-container.open .social-pile-item:nth-child(3) { transition-delay: 0.15s; }
+.social-stack-container.open .social-pile-item:nth-child(4) { transition-delay: 0.2s; }
+
+.social-pile-item:hover {
+  transform: translateY(-3px) scale(1.08) !important;
+}
+
+.github-item:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(0, 255, 136, 0.08);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.35);
+}
+
+.linkedin-item:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+}
+
+.whatsapp-item:hover {
+  border-color: #25D366;
+  color: #25D366;
+  background: rgba(37, 211, 102, 0.08);
+  box-shadow: 0 0 20px rgba(37, 211, 102, 0.35);
+}
+
+.instagram-item:hover {
+  border-color: #ff3377;
+  color: #ff3377;
+  background: rgba(255, 51, 119, 0.08);
+  box-shadow: 0 0 20px rgba(255, 51, 119, 0.35);
+}

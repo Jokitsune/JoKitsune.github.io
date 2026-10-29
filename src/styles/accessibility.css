@@ -1,0 +1,21 @@
+/* Partial : Accessibilité : réduction de mouvement — extrait de l'ancien style.css (l. 1048-1066) */
+
+/* -------- ACCESSIBILITÉ : RÉDUCTION DE MOUVEMENT -------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .glitch:hover::before, .glitch:hover::after {
+    display: none;
+  }
+  .card-3d-inner {
+    transform: none !important;
+  }
+  .cyber-audio-player.playing .eq-bar {
+    animation: none !important;
+    height: 6px !important;
+  }
+}

@@ -1,0 +1,17 @@
+/* Partial : Variables (design tokens) — extrait de l'ancien style.css (l. 5-19) */
+
+/* -------- VARIABLES -------- */
+:root {
+  --green: #00ff88;
+  --green-dim: #00cc66;
+  --green-dark: #004422;
+  --cyan: #00e5ff;
+  --red: #ff3355;
+  --yellow: #ffd600;
+  --bg: #050a0e;
+  --bg2: #0a1218;
+  --bg3: #0f1e28;
+  --border: #1a3344;
+  --text: #c8e6d0;
+  --text-dim: #4a7a5a;
+}

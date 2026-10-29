@@ -1,0 +1,22 @@
+/* Partial : Compétences — extrait de l'ancien style.css (l. 472-491) */
+
+/* -------- SKILLS -------- */
+#skills { background: var(--bg); }
+.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.skill-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: default;
+}
+.skill-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 0; background: var(--green); transition: height 0.3s; }
+.skill-card:hover           { border-color: var(--green); transform: translateY(-4px); }
+.skill-card:hover::before   { height: 100%; }
+.skill-card-icon  { font-size: 1.5rem; margin-bottom: 12px; }
+.skill-card-title { font-family: 'Orbitron', monospace; font-size: 0.75rem; color: var(--cyan); letter-spacing: 2px; margin-bottom: 16px; text-transform: uppercase; }
+.skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.skill-tag  { background: var(--bg3); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.72rem; padding: 4px 10px; letter-spacing: 1px; transition: all 0.2s; }
+.skill-tag:hover { border-color: var(--green); color: var(--green); background: rgba(0,255,136,0.05); }

@@ -1,0 +1,27 @@
+/* Partial : Terminal du hero — extrait de l'ancien style.css (l. 446-470) */
+
+/* -------- TERMINAL -------- */
+.hero-terminal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0,255,136,0.1), 0 40px 80px rgba(0,0,0,0.5);
+  opacity: 0;
+  animation: fadeIn 1s 0.5s forwards;
+}
+.terminal-bar { background: var(--bg3); padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+.t-dot        { width: 12px; height: 12px; border-radius: 50%; }
+.t-dot.red    { background: #ff5f57; }
+.t-dot.yellow { background: #febc2e; }
+.t-dot.green  { background: #28c840; }
+.terminal-title { margin-left: 8px; font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; }
+.terminal-body  { padding: 24px; font-size: 0.82rem; line-height: 2; min-height: 300px; }
+.t-line   { display: flex; flex-wrap: wrap; gap: 8px; }
+.t-prompt { color: var(--green); }
+.t-path   { color: var(--cyan); }
+.t-cmd    { color: var(--text); }
+.t-output { color: var(--text-dim); display: block; }
+.t-key    { color: var(--yellow); }
+.t-val    { color: var(--green-dim); }
+.t-cursor { display: inline-block; width: 8px; height: 1.2em; background: var(--green); animation: blink 1s infinite; vertical-align: text-bottom; }

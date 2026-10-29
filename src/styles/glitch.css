@@ -1,0 +1,7 @@
+/* Partial : Effet glitch — extrait de l'ancien style.css (l. 794-798) */
+
+/* -------- GLITCH -------- */
+.glitch { position: relative; }
+.glitch:hover::before, .glitch:hover::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.glitch:hover::before { color: var(--red); clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%); transform: translateX(-3px); animation: glitch1 0.3s infinite; }
+.glitch:hover::after  { color: var(--cyan); clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translateX(3px); animation: glitch2 0.3s infinite; }

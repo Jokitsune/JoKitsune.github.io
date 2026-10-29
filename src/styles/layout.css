@@ -1,0 +1,34 @@
+/* Partial : Layout & titres de sections — extrait de l'ancien style.css (l. 237-268) */
+
+/* -------- LAYOUT -------- */
+main { padding-top: 70px; }
+section {
+  min-height: 100vh;
+  padding: 80px 10% 60px;
+  position: relative;
+}
+.section-label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.section-label::before { content: '// '; color: var(--green-dim); }
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: var(--green);
+  margin-bottom: 50px;
+  line-height: 1.1;
+  text-shadow: 0 0 40px rgba(0,255,136,0.3);
+}
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
