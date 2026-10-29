@@ -6,11 +6,20 @@
    Refuse de démarrer si VERCEL_ENV vaut « production » ou « preview ».
    ================================================ */
 
+import { rmSync } from 'node:fs';
+import path from 'node:path';
 import { createServer } from 'vite';
 import { assertDevModeAllowed } from '../api/_lib/config.js';
 
 process.env.ADMIN_DEV_MODE = '1';
 assertDevModeAllowed(process.env);
+
+// --reset : repart d'un bac à sable vide (tests e2e)
+if (process.argv.includes('--reset')) {
+  const dir = path.resolve(process.env.ADMIN_DEV_DATA_DIR || '.admin-dev');
+  if (!/[\\/]\.admin-dev[^\\/]*$/.test(dir)) throw new Error(`--reset refusé hors d'un dossier .admin-dev* : ${dir}`);
+  rmSync(dir, { recursive: true, force: true });
+}
 
 const port = Number(process.env.PORT) || 5173;
 process.env.ADMIN_ORIGIN ??= `http://localhost:${port}`;

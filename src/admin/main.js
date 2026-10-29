@@ -148,9 +148,13 @@ function renderShell() {
       if (a.dataset.route === current) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
-    if (view === 'edit') await renderEditor(main, arg, ctx);
-    else if (view === 'uploads') renderUploads(main, ctx);
-    else if (view === 'publish' && me.publishMode === 'pr') await renderPublish(main, ctx);
+    // Conteneur neuf à chaque navigation : un rendu asynchrone plus ancien (ex. l'éditeur
+    // encore en chargement) se termine dans un nœud détaché et n'écrase pas la vue courante
+    const container = h('div', { class: 'view' });
+    main.replaceChildren(container);
+    if (view === 'edit') await renderEditor(container, arg, ctx);
+    else if (view === 'uploads') renderUploads(container, ctx);
+    else if (view === 'publish' && me.publishMode === 'pr') await renderPublish(container, ctx);
   }
 
   let lastHash = location.hash;

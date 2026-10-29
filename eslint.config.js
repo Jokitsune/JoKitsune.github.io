@@ -16,7 +16,7 @@ const NO_HTML_SINKS = {
 // Configuration ESLint « flat config »
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'test-results/**', 'playwright-report/**', '.claude/**', '.admin-dev/**', '.vercel/**']
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'test-results/**', 'playwright-report/**', '.claude/**', '.admin-dev*/**', '.vercel/**']
   },
   js.configs.recommended,
   {

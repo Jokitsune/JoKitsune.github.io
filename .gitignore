@@ -38,4 +38,4 @@ desktop.ini
 .claude/
 
 # Panneau /admin : données du backend fichier local (ADMIN_DEV_MODE=1)
-.admin-dev/
+.admin-dev*/
