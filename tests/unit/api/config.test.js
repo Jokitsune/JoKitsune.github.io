@@ -17,7 +17,8 @@ const ROUTES = [
 
 describe('T-CFG-01 — variable absente ou mal formée ⇒ 503 partout, log du NOM seulement', () => {
   const cases = {
-    'ADMIN_GITHUB_ID=abc': { ADMIN_GITHUB_ID: 'abc' },
+    // Valeur hors alphabet hexadécimal : « abc » apparaissait parfois par hasard dans les UUID des requestId
+    'ADMIN_GITHUB_ID non numérique': { ADMIN_GITHUB_ID: 'pas-un-id' },
     'ADMIN_GITHUB_ID absent': { ADMIN_GITHUB_ID: undefined },
     'SESSION_SECRET < 32 octets': { SESSION_SECRET: Buffer.alloc(16, 1).toString('base64url') },
     'ADMIN_ORIGIN avec slash final': { ADMIN_ORIGIN: 'https://jokitsune.vercel.app/' },
