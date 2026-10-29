@@ -497,7 +497,7 @@ if (window.formspree) {
       } else {
         if (errorDiv) errorDiv.style.display = 'block';
       }
-    } catch (err) {
+    } catch {
       const errorDiv = document.querySelector('[data-fs-error]');
       if (errorDiv) errorDiv.style.display = 'block';
     } finally {
