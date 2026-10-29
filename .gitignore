@@ -34,6 +34,8 @@ desktop.ini
 .vscode/*
 !.vscode/extensions.json
 
-# Claude Code (worktrees et réglages locaux)
-.claude/worktrees/
-.claude/settings.local.json
+# Claude Code (worktrees, réglages et journaux locaux)
+.claude/
+
+# Panneau /admin : données du backend fichier local (ADMIN_DEV_MODE=1)
+.admin-dev*/

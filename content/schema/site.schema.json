@@ -548,10 +548,26 @@
       "type": "object",
       "properties": {
         "url": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 2000,
-          "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+          "type": "object",
+          "properties": {
+            "fr": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+            },
+            "en": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+            }
+          },
+          "required": [
+            "fr",
+            "en"
+          ],
+          "additionalProperties": false
         },
         "downloadName": {
           "type": "string",

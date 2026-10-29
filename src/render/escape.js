@@ -27,9 +27,27 @@ export function textToHtml(value) {
 
 // Mêmes règles que urlSchema (défense en profondeur si le contenu n'a pas été validé)
 const SAFE_URL = /^(https?:\/\/|mailto:|tel:|#|(?![A-Za-z][A-Za-z0-9+.-]*:))/;
+// Contrôles C0, espace, DEL et C1 : les navigateurs les ignorent dans un schéma
+// (« java\tscript: » == « javascript: ») ; on les retire avant de tester.
+// eslint-disable-next-line no-control-regex
+const IGNORED_BY_URL_PARSER = /[\u0000- \u007F-\u009F]/g;
+const BASE = 'https://origin.invalid';
 
-/** Retourne l'URL si son schéma est autorisé, sinon "#". */
+/**
+ * Retourne l'URL si elle est sûre, sinon "#".
+ * Liste blanche : http(s), mailto:, tel:, #ancre, chemin relatif restant sur la même origine.
+ */
 export function safeUrl(url) {
   const s = String(url ?? '').trim();
-  return SAFE_URL.test(s) ? s : '#';
+  const probe = s.replace(IGNORED_BY_URL_PARSER, '');
+  if (!probe || probe.includes('\\') || probe.startsWith('//')) return '#';
+  if (!SAFE_URL.test(probe)) return '#';
+  if (!/^[A-Za-z][A-Za-z0-9+.-]*:/.test(probe)) {
+    try {
+      if (new URL(probe, BASE).origin !== BASE) return '#';
+    } catch {
+      return '#';
+    }
+  }
+  return s;
 }

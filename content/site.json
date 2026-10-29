@@ -56,7 +56,7 @@
     "finalCommand": { "fr": "ping recruteur", "en": "ping recruiter" }
   },
   "cv": {
-    "url": "asset/Jordan_de_SOUZA_CV.pdf",
+    "url": { "fr": "asset/Jordan_de_SOUZA_CV.pdf", "en": "asset/Jordan_de_SOUZA_CV.pdf" },
     "downloadName": "CV_Jordan_de_SOUZA.pdf"
   },
   "socials": [

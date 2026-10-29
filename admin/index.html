@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="dark">
+  <title>Admin · JoKitsune</title>
+  <!--
+    Panneau d'administration (servi uniquement par Vercel).
+    CSP stricte + Trusted Types (vercel.json) : aucun script ni style inline,
+    aucune ressource externe. Toute la logique est dans src/admin/.
+  -->
+  <link rel="icon" href="data:,">
+  <script type="module" src="/src/admin/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div id="app">
+    <main id="main" class="login">
+      <noscript>Le panneau d'administration nécessite JavaScript.</noscript>
+      <p class="muted">Chargement…</p>
+    </main>
+  </div>
+  <div id="toast" class="toast-region" role="status" aria-live="polite"></div>
+</body>
+</html>

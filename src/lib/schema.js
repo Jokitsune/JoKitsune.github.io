@@ -26,11 +26,29 @@ export const localizedSchema = z.union([
 // URL sûre : http(s), mailto:, tel:, ancre (#...) ou chemin relatif sans schéma.
 // Refuse javascript:, data:, vbscript:, etc.
 const SAFE_URL = /^(?![\s\S]*[<>"'`])(https?:\/\/[^\s]+|mailto:[^\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\s:]*)$/;
+const SAME_ORIGIN_BASE = 'https://origin.invalid';
+
+/**
+ * Un chemin relatif doit rester sur la même origine : refuse les URL
+ * protocol-relative (//hôte), toute barre oblique inverse (/\hôte, que les
+ * navigateurs lisent comme //hôte) et tout chemin qui sortirait de l'origine.
+ */
+export function staysSameOriginIfRelative(value) {
+  if (value.includes('\\') || value.startsWith('//')) return false;
+  if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)) return true; // schéma explicite : contrôlé par la regex
+  try {
+    return new URL(value, SAME_ORIGIN_BASE).origin === SAME_ORIGIN_BASE;
+  } catch {
+    return false;
+  }
+}
+
 export const urlSchema = z
   .string()
   .min(1)
   .max(2000)
-  .regex(SAFE_URL, 'URL non autorisée (http(s), mailto:, tel:, #ancre ou chemin relatif uniquement)');
+  .regex(SAFE_URL, 'URL non autorisée (http(s), mailto:, tel:, #ancre ou chemin relatif uniquement)')
+  .refine(staysSameOriginIfRelative, 'URL non autorisée (chemin relatif hors du site, « // » ou « \\ » interdits)');
 
 export const idSchema = z
   .string()
@@ -104,7 +122,8 @@ export const siteSchema = z.strictObject({
     finalCommand: localizedSchema
   }),
   cv: z.strictObject({
-    url: urlSchema,
+    // Un CV par langue : le bouton bascule de fichier avec la langue du site
+    url: z.strictObject({ fr: urlSchema, en: urlSchema }),
     downloadName: z.string().regex(/^[A-Za-z0-9_.-]+$/, 'Nom de fichier invalide')
   }),
   socials: listOf(z.strictObject({

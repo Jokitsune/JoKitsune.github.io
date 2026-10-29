@@ -7,6 +7,8 @@
    empêche tout XSS stocké.
 =========================================== */
 
+import { safeUrl } from '../../render/escape.js';
+
 const STORAGE_KEY = 'portfolio_lang';
 
 let dictionary = { fr: {}, en: {} };
@@ -48,6 +50,14 @@ export function setLanguage(lang) {
     const key = el.getAttribute('data-i18n-placeholder');
     if (strings && strings[key] !== undefined) {
       el.placeholder = strings[key];
+    }
+  });
+
+  // Liens traduits (ex. CV FR / EN) : URL revalidée côté client (liste blanche)
+  document.querySelectorAll('[data-i18n-href]').forEach(el => {
+    const key = el.getAttribute('data-i18n-href');
+    if (strings && strings[key] !== undefined) {
+      el.setAttribute('href', safeUrl(strings[key]));
     }
   });
 
