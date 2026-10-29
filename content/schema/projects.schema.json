@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "fr": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  }
+                },
+                "required": [
+                  "fr",
+                  "en"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^[^<>]*$"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "fr": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "pattern": "^[^<>]*$"
+                  }
+                },
+                "required": [
+                  "fr",
+                  "en"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "fr": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    "en": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    }
+                  },
+                  "required": [
+                    "fr",
+                    "en"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "fr": {
+                          "type": "string",
+                          "maxLength": 2000,
+                          "pattern": "^[^<>]*$"
+                        },
+                        "en": {
+                          "type": "string",
+                          "maxLength": 2000,
+                          "pattern": "^[^<>]*$"
+                        }
+                      },
+                      "required": [
+                        "fr",
+                        "en"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "url": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000,
+                  "pattern": "^(?![\\s\\S]*[<>\"'`])(https?:\\/\\/[^\\s]+|mailto:[^\\s]+|tel:[+0-9 ().-]+|#[A-Za-z0-9_-]*|(?![A-Za-z][A-Za-z0-9+.-]*:)[A-Za-z0-9_./-][^\\s:]*)$"
+                }
+              },
+              "required": [
+                "label",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "order",
+          "visible",
+          "title",
+          "description",
+          "stack",
+          "links"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "projects"
+  ],
+  "additionalProperties": false
+}

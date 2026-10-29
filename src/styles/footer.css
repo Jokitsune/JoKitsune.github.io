@@ -1,0 +1,4 @@
+/* Partial : Footer — extrait de l'ancien style.css (l. 791-792) */
+
+/* -------- FOOTER -------- */
+footer { border-top: 1px solid var(--border); padding: 30px 10%; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-dim); }

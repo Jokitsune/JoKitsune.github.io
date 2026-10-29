@@ -1,0 +1,28 @@
+/* ================================================
+   JORDAN DE SOUZA — PORTFOLIO
+   ================================================ */
+
+/* Point d'entrée CSS : l'ordre des imports reproduit EXACTEMENT l'ordre
+   des règles de l'ancien style.css (ne pas réordonner : cascade). */
+@import './variables.css';
+@import './base.css';
+@import './cursor.css';
+@import './crt.css';
+@import './boot.css';
+@import './nav.css';
+@import './layout.css';
+@import './buttons.css';
+@import './social.css';
+@import './hero.css';
+@import './terminal.css';
+@import './skills.css';
+@import './projects.css';
+@import './formation.css';
+@import './cards.css';
+@import './contact.css';
+@import './footer.css';
+@import './glitch.css';
+@import './animations.css';
+@import './responsive.css';
+@import './audio.css';
+@import './accessibility.css';

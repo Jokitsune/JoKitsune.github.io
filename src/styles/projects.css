@@ -1,0 +1,58 @@
+/* Partial : Projets — extrait de l'ancien style.css (l. 493-548) */
+
+/* -------- PROJECTS -------- */
+#projects { background: linear-gradient(to bottom, var(--bg), var(--bg2)); }
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
+.project-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+.project-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,255,136,0.05) 0%, transparent 60%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.project-card:hover  { border-color: rgba(0,255,136,0.4); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+.project-card:hover::after { opacity: 1; }
+.project-number { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 12px; }
+.project-name   { font-family: 'Orbitron', monospace; font-size: 1rem; color: var(--green); font-weight: 700; margin-bottom: 12px; }
+.project-desc   { font-family: 'Exo 2', sans-serif; font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 20px; }
+.project-stack  { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.stack-item     { font-size: 0.7rem; color: var(--cyan); letter-spacing: 1px; padding: 3px 8px; border: 1px solid rgba(0,229,255,0.3); }
+
+/* Boutons d'action cartes projets */
+.project-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 1px dashed var(--border);
+  padding-top: 16px;
+  margin-top: auto;
+  position: relative;
+  z-index: 10;
+}
+.project-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--green);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.project-btn:hover {
+  background: var(--green);
+  color: var(--bg);
+  border-color: var(--green);
+  box-shadow: 0 0 15px rgba(0,255,136,0.25);
+  transform: translateY(-2px);
+}

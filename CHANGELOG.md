@@ -14,6 +14,19 @@ et le projet adhère au [Versionnage sémantique](https://semver.org/lang/fr/).
 - Intégration continue GitHub Actions (lint, tests, build) sur les PR et pushs vers `develop` et `main`.
 - Déploiement GitHub Pages du build Vite (`dist/`) depuis `main`.
 - `.gitignore` et `.editorconfig`.
+- Contenu du site extrait dans `content/*.json` (textes bilingues `{ "fr", "en" }`, listes avec `id` / `order` / `visible`), validé par un schéma zod réutilisable (`src/lib/schema.js`) et `npm run validate:content` ; JSON Schema dérivés dans `content/schema/`.
+- Pré-rendu du contenu au build (plugin Vite, HTML final en français pour le SEO) ; le dictionnaire i18n client est généré depuis les mêmes JSON.
+- Tests Vitest (schéma, rendu, i18n, protection XSS), tests e2e Playwright et script de comparaison visuelle/DOM entre deux versions (`npm run compare`).
+- `vercel.json` (build Vite, sortie `dist/`).
+
+### Modifié
+
+- Migration vers Vite : `index.html` devient un gabarit, JavaScript découpé en modules ES (`src/js/modules/`), CSS découpé en partials (`src/styles/`) dans l'ordre de cascade d'origine, CV servi depuis `public/asset/` (même URL). Rendu visuel et comportement inchangés.
+- Le pied de page pré-rendu affiche « Tous droits réservés » en français (auparavant le HTML statique contenait la version anglaise, corrigée seulement par le JavaScript).
+
+### Sécurité
+
+- Plus aucun `innerHTML` pour le contenu : l'i18n insère du texte (les `\n` deviennent des `<br>` créés via le DOM), le rendu au build échappe tout le texte, le schéma refuse `<` / `>` et les URL non sûres (`javascript:`…).
 
 ## [1.0.0] - 2026-08-25
 
