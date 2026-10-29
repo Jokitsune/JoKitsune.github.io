@@ -1,0 +1,182 @@
+/* Partial : Cartes 3D tilt — extrait de l'ancien style.css (l. 583-762) */
+
+/* -------- CARTES 3D TILT -------- */
+.cards-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-content: start;
+}
+
+/* Wrapper perspective */
+.card-3d-wrap {
+  perspective: 900px;
+  cursor: pointer;
+}
+
+.card-3d-inner {
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.08s linear;
+}
+
+/* Carte de base */
+.sec-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 18px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 220px;
+  transition: border-color 0.3s;
+}
+
+/* Bordure lumineuse gradient au survol — vert */
+.sec-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--green), transparent 40%, transparent 60%, var(--cyan));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s;
+  pointer-events: none;
+}
+.card-3d-wrap:hover .sec-card::before { opacity: 1; }
+
+/* Halo de fond au survol */
+.sec-card::after {
+  content: '';
+  position: absolute;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,136,0.07) 0%, transparent 70%);
+  top: -50px; right: -50px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.card-3d-wrap:hover .sec-card::after { opacity: 1; }
+
+/* Variante cyan */
+.sec-card--cyan::before  { background: linear-gradient(135deg, var(--cyan), transparent 40%, transparent 60%, var(--green)); }
+.sec-card--cyan::after   { background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%); }
+
+/* Variante yellow */
+.sec-card--yellow::before { background: linear-gradient(135deg, var(--yellow), transparent 40%, transparent 60%, #ff8800); }
+.sec-card--yellow::after  { background: radial-gradient(circle, rgba(255,214,0,0.07) 0%, transparent 70%); }
+
+/* Couche de reflet suivant la souris */
+.shine-layer {
+  position: absolute; inset: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(0,255,136,0.05) 0%, transparent 60%);
+}
+.card-3d-wrap:hover .shine-layer { opacity: 1; }
+
+/* Encoche coin */
+.card-corner-tag { position: absolute; top: 0; right: 0; width: 36px; height: 36px; overflow: hidden; }
+.card-corner-tag::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  border-style: solid;
+  border-width: 0 36px 36px 0;
+  border-color: transparent rgba(0,255,136,0.12) transparent transparent;
+}
+
+/* Badge type */
+.card-type-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; color: var(--green-dim);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.card-badge--cyan   { color: #00aabb; }
+.card-badge--yellow { color: #ccaa00; }
+
+/* Point clignotant */
+.badge-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; animation: pulse-dot 2s infinite; }
+.badge-dot--cyan   { background: var(--cyan); animation: none; }
+.badge-dot--yellow { background: var(--yellow); animation: none; }
+@keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* Icône ronde */
+.card-icon-ring {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  background: var(--bg2);
+  position: relative;
+  flex-shrink: 0;
+}
+.card-icon-ring::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,255,136,0.25);
+  animation: spin-ring 8s linear infinite;
+}
+.card-ring--cyan::after   { border-color: rgba(0,229,255,0.25); }
+.card-ring--yellow::after { border-color: rgba(255,214,0,0.25); }
+@keyframes spin-ring {
+  0%   { transform: rotate(0deg);   border-top-color: inherit; border-right-color: transparent; border-bottom-color: transparent; border-left-color: transparent; }
+  100% { transform: rotate(360deg); border-top-color: inherit; border-right-color: transparent; border-bottom-color: transparent; border-left-color: transparent; }
+}
+
+/* Textes carte */
+.card-title { font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700; color: var(--green); line-height: 1.3; text-shadow: 0 0 16px rgba(0,255,136,0.2); }
+.card-title--cyan   { color: var(--cyan);   text-shadow: 0 0 16px rgba(0,229,255,0.15); }
+.card-title--yellow { color: var(--yellow); text-shadow: 0 0 16px rgba(255,214,0,0.2); }
+.card-org  { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--cyan); letter-spacing: 1px; }
+.card-date { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px; }
+
+/* Séparateur */
+.card-divider { width: 100%; height: 1px; background: linear-gradient(90deg, rgba(0,255,136,0.2), rgba(0,229,255,0.1), transparent); flex-shrink: 0; }
+.card-divider--cyan   { background: linear-gradient(90deg, rgba(0,229,255,0.2), rgba(0,255,136,0.1), transparent); }
+.card-divider--yellow { background: linear-gradient(90deg, rgba(255,214,0,0.2), rgba(255,136,0,0.1), transparent); }
+
+/* Barre de progression */
+.card-progress { margin-top: 2px; }
+.progress-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem; color: var(--text-dim);
+  letter-spacing: 1px;
+  display: flex; justify-content: space-between;
+  margin-bottom: 5px;
+}
+.progress-bar-bg { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-bar-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+  animation: grow-bar 1.6s cubic-bezier(0.22,1,0.36,1) forwards;
+  width: 0;
+}
+.progress-bar-fill--cyan   { background: linear-gradient(90deg, var(--cyan), var(--green)); }
+.progress-bar-fill--yellow { background: linear-gradient(90deg, var(--yellow), #ff8800); }
+@keyframes grow-bar { to { width: var(--fill); } }
+
+/* Tags carte */
+.card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; }
+.card-tag  {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem; color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 3px 7px;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+.card-3d-wrap:hover .card-tag { border-color: rgba(0,255,136,0.3); color: var(--green-dim); }
+.sec-card--cyan .card-tag:hover   { border-color: rgba(0,229,255,0.3); color: var(--cyan); }
+.sec-card--yellow .card-tag:hover { border-color: rgba(255,214,0,0.3); color: var(--yellow); }

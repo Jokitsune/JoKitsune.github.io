@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  build:
+    name: Lint, tests et build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      # Garde : tant que la migration Vite n'est pas fusionnée, il n'y a pas
+      # de package.json. hashFiles() n'est pas disponible au niveau du job,
+      # d'où la condition sur chaque étape.
+      - name: Projet non-npm détecté
+        if: hashFiles('package.json') == ''
+        run: echo "::notice::Pas de package.json — lint, tests et build ignorés."
+
+      - uses: actions/setup-node@v5
+        if: hashFiles('package.json') != ''
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Installer les dépendances
+        if: hashFiles('package.json') != ''
+        run: npm ci
+
+      - name: Lint
+        if: hashFiles('package.json') != ''
+        run: npm run lint --if-present
+
+      # Même schéma + garde-fous que l'API /admin (échoue si un JSON est invalide)
+      - name: Valider le contenu
+        if: hashFiles('package.json') != ''
+        run: npm run validate:content --if-present
+
+      - name: Tests
+        if: hashFiles('package.json') != ''
+        run: npm test --if-present
+
+      - name: Build
+        if: hashFiles('package.json') != ''
+        run: npm run build
+
+      # Aucun secret dans dist/, /admin sans script ni style inline (CSP + Trusted Types)
+      - name: Contrôler le build
+        if: hashFiles('scripts/check-dist.mjs') != ''
+        run: node scripts/check-dist.mjs

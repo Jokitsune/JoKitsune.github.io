@@ -1,0 +1,85 @@
+name: Déploiement GitHub Pages
+
+# Publie le site statique buildé par Vite (dist/) sur https://jokitsune.github.io.
+# Prérequis : Settings > Pages > Source = "GitHub Actions".
+# Les fonctions serverless (api/) et le panneau /admin ne sont servis que par Vercel.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un seul déploiement à la fois ; on n'annule pas un déploiement en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  build:
+    name: Build Vite
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      has_package: ${{ steps.guard.outputs.has_package }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Garde package.json
+        id: guard
+        run: |
+          if [ -f package.json ]; then
+            echo "has_package=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_package=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Pas de package.json — déploiement Pages ignoré."
+          fi
+
+      - uses: actions/setup-node@v5
+        if: steps.guard.outputs.has_package == 'true'
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Installer les dépendances
+        if: steps.guard.outputs.has_package == 'true'
+        run: npm ci
+
+      # Le miroir Pages n'embarque PAS le panneau /admin (servi uniquement par Vercel)
+      - name: Build
+        if: steps.guard.outputs.has_package == 'true'
+        env:
+          BUILD_TARGET: pages
+        run: npm run build
+
+      - name: Vérifier l'absence de /admin
+        if: steps.guard.outputs.has_package == 'true'
+        run: node scripts/check-dist.mjs --pages
+
+      - uses: actions/configure-pages@v5
+        if: steps.guard.outputs.has_package == 'true'
+
+      - uses: actions/upload-pages-artifact@v4
+        if: steps.guard.outputs.has_package == 'true'
+        with:
+          path: dist
+
+  deploy:
+    name: Déployer
+    needs: build
+    if: needs.build.outputs.has_package == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

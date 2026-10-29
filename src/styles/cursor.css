@@ -1,0 +1,32 @@
+/* Partial : Curseur personnalisé — extrait de l'ancien style.css (l. 31-60) */
+
+/* -------- CURSEUR (Desktop souris uniquement) -------- */
+.cursor, .cursor-dot {
+  display: none;
+}
+
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+  .cursor {
+    display: block;
+    width: 20px; height: 20px;
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s, border-color 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-dot {
+    display: block;
+    width: 4px; height: 4px;
+    background: var(--green);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+  }
+}

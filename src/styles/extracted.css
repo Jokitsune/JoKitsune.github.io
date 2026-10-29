@@ -1,0 +1,32 @@
+/* Partial : anciens styles inline du HTML pré-rendu, déplacés ici pour permettre
+   une CSP appliquée sans 'unsafe-inline' (rendu identique). Importé EN DERNIER.
+   Les valeurs issues du contenu (délais du boot, progression des cartes) sont
+   produites au build dans une feuille dédiée (src/render/content-css.js). */
+
+.boot-line .boot-value { color: var(--green); }
+
+.t-cursor.t-cursor--brand { height: 14px; width: 6px; margin-left: 4px; }
+.t-cursor.t-cursor--footer { height: 12px; width: 6px; }
+
+.nav-status-wrapper .nav-status-text { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; }
+
+.t-val.t-val--highlight { color: var(--green); }
+
+a.contact-item.contact-item--link { text-decoration: none; }
+
+.contact-info .contact-desc {
+  font-family: 'Exo 2', sans-serif;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+span.form-field-error { color: var(--red); font-size: 0.7rem; }
+
+/* display:none de départ ; le script affiche le message via element.style (CSSOM, autorisé par la CSP) */
+.form-feedback { margin-bottom: 15px; display: none; }
+.form-feedback--success { color: var(--green); }
+.form-feedback--error { color: var(--red); }
+
+footer .footer-prompt { color: var(--green-dim); }

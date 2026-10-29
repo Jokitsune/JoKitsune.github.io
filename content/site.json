@@ -1,0 +1,89 @@
+{
+  "$schema": "./schema/site.schema.json",
+  "defaultLang": "fr",
+  "formspreeId": "xpqbjwpo",
+  "meta": {
+    "title": { "fr": "Jordan de SOUZA — Security Portfolio & DevSecOps", "en": "Jordan de SOUZA — Security Portfolio & DevSecOps" },
+    "description": {
+      "fr": "Portfolio de Jordan de SOUZA, étudiant en Sciences du Numérique et passionné de cybersécurité & DevSecOps. Projets en sécurité offensive, réseau et développement sécurisé.",
+      "en": "Portfolio of Jordan de SOUZA, Digital Sciences student passionate about cybersecurity & DevSecOps. Projects in offensive security, networking and secure development."
+    },
+    "keywords": "Jordan de SOUZA, Cybersécurité, DevSecOps, Sécurité Informatique, Portfolio Sécurité, CCEP, Fortinet, Python, Pentest",
+    "author": "Jordan de SOUZA",
+    "robots": "index, follow",
+    "url": "https://jokitsune.github.io/",
+    "ogType": "website",
+    "ogTitle": { "fr": "Jordan de SOUZA — Portfolio Cybersécurité & DevSecOps", "en": "Jordan de SOUZA — Cybersecurity & DevSecOps Portfolio" },
+    "ogDescription": {
+      "fr": "Découvrez mes projets en sécurité offensive, développement web sécurisé et analyse de vulnérabilités.",
+      "en": "Discover my projects in offensive security, secure web development and vulnerability analysis."
+    },
+    "ogSiteName": "Jordan de SOUZA — Portfolio"
+  },
+  "identity": {
+    "firstName": "Jordan",
+    "lastName": "de SOUZA",
+    "brandInitial": "J"
+  },
+  "hero": {
+    "greeting": { "fr": "// IDENTIFICATION DU SYSTÈME", "en": "// SYSTEM IDENTIFICATION" },
+    "title": { "fr": "Étudiant en Sciences du Numérique & Passionné de Cybersécurité", "en": "Digital Sciences Student & Cybersecurity Enthusiast" },
+    "bio": {
+      "fr": "Je construis des applications web et je les défends. De l'écriture du code à la configuration de sécurité opérationnelle, je conçois des solutions numériques robustes face aux menaces actuelles.",
+      "en": "I build web applications and defend them. From writing code to operational security hardening, I engineer resilient digital solutions against modern threats."
+    }
+  },
+  "terminal": {
+    "title": "bash — jordan@sec-shell: ~",
+    "prompt": "jordan@sec-shell",
+    "path": ":~$",
+    "whoamiCommand": "whoami --verbose",
+    "fields": [
+      { "id": "name", "order": 1, "visible": true, "key": "name", "value": "Jordan de SOUZA" },
+      { "id": "role", "order": 2, "visible": true, "key": "role", "value": "DevSecOps junior" },
+      { "id": "location", "order": 3, "visible": true, "key": "location", "value": "Cotonou, Bénin" },
+      { "id": "clearance", "order": 4, "visible": true, "key": "clearance", "value": "CCEP Certified" },
+      { "id": "status", "order": 5, "visible": true, "key": "status", "value": { "fr": "Project hunting", "en": "Project hunting" }, "highlight": true }
+    ],
+    "skillsCommand": "cat skills.txt | head -5",
+    "skills": [
+      { "id": "vuln", "order": 1, "visible": true, "label": { "fr": "Vulnerability Analysis", "en": "Vulnerability Analysis" } },
+      { "id": "pentest", "order": 2, "visible": true, "label": { "fr": "Penetration Testing", "en": "Penetration Testing" } },
+      { "id": "netsec", "order": 3, "visible": true, "label": { "fr": "Network Security", "en": "Network Security" } },
+      { "id": "langs", "order": 4, "visible": true, "label": { "fr": "Python / Node.js / C", "en": "Python / Node.js / C" } },
+      { "id": "webdev", "order": 5, "visible": true, "label": { "fr": "Web Development", "en": "Web Development" } }
+    ],
+    "finalCommand": { "fr": "ping recruteur", "en": "ping recruiter" }
+  },
+  "cv": {
+    "url": { "fr": "asset/Jordan_de_SOUZA_CV.pdf", "en": "asset/Jordan_de_SOUZA_CV.pdf" },
+    "downloadName": "CV_Jordan_de_SOUZA.pdf"
+  },
+  "socials": [
+    { "id": "github", "order": 1, "visible": true, "network": "github", "url": "https://github.com/JoKitsune", "title": "GitHub — JoKitsune", "label": "GitHub" },
+    { "id": "linkedin", "order": 2, "visible": true, "network": "linkedin", "url": "https://www.linkedin.com/in/jordandesouza-jokitsune", "title": "LinkedIn", "label": "LinkedIn" },
+    { "id": "whatsapp", "order": 3, "visible": true, "network": "whatsapp", "url": "https://wa.me/22964119794", "title": "WhatsApp — +229 64 11 97 94", "label": "WhatsApp" },
+    { "id": "instagram", "order": 4, "visible": true, "network": "instagram", "url": "https://www.instagram.com/call_me_jordyy/", "title": "Instagram", "label": "Instagram" }
+  ],
+  "contact": {
+    "description": {
+      "fr": "Je suis toujours ouvert à discuter de nouvelles opportunités, de projets créatifs ou de partenariats. Que vous ayez un projet spécifique en tête ou que vous souhaitiez explorer des possibilités, n'hésitez pas à me contacter.",
+      "en": "I am always open to discussing new opportunities, creative projects, or cybersecurity partnerships. Whether you have a specific initiative in mind or wish to explore synergies, feel free to reach out."
+    },
+    "items": [
+      { "id": "email", "order": 1, "visible": true, "icon": "✉", "label": "EMAIL", "value": "desouzajordan289@gmail.com", "href": "mailto:desouzajordan289@gmail.com" },
+      { "id": "phone", "order": 2, "visible": true, "icon": "☎", "label": { "fr": "TÉLÉPHONE", "en": "PHONE" }, "value": "0164119794", "href": "tel:0164119794" },
+      { "id": "location", "order": 3, "visible": true, "icon": "◉", "label": { "fr": "LOCALISATION", "en": "LOCATION" }, "value": "Cotonou, Bénin" }
+    ]
+  },
+  "audio": {
+    "title": "BGM // Cyber_Ambient",
+    "src": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
+    "type": "audio/mp3",
+    "volume": 0.3
+  },
+  "footer": {
+    "rights": { "fr": "© 2025 Jordan de SOUZA — Tous droits réservés", "en": "© 2025 Jordan de SOUZA — All rights reserved" },
+    "prompt": "jordan@sec-shell:~$"
+  }
+}

@@ -1,0 +1,24 @@
+/* Partial : Hero — extrait de l'ancien style.css (l. 423-444) */
+
+/* -------- HERO -------- */
+#hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 60px;
+  padding-top: 100px;
+  overflow: hidden;
+}
+.hero-greeting { font-size: 0.8rem; color: var(--cyan); letter-spacing: 3px; margin-bottom: 16px; opacity: 0; animation: fadeUp 0.6s 0.2s forwards; }
+.hero-name { font-family: 'Orbitron', monospace; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 900; line-height: 1; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.6s 0.4s forwards; }
+.hero-name .first { color: var(--text); }
+.hero-name .last  { color: var(--green); display: block; text-shadow: 0 0 60px rgba(0,255,136,0.5); }
+.hero-title { font-family: 'Exo 2', sans-serif; font-size: 1.1rem; color: var(--cyan); font-weight: 300; letter-spacing: 2px; margin-bottom: 30px; opacity: 0; animation: fadeUp 0.6s 0.6s forwards; }
+.hero-bio   { font-family: 'Exo 2', sans-serif; font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; max-width: 500px; margin-bottom: 40px; opacity: 0; animation: fadeUp 0.6s 0.8s forwards; }
+.hero-cta   { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; opacity: 0; animation: fadeUp 0.6s 1s forwards; }
+.hero-cta-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+}

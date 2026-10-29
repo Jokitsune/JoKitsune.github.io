@@ -1,0 +1,6 @@
+# Fichiers sensibles du panneau /admin : revue obligatoire du propriétaire
+/api/                   @Jokitsune
+/vercel.json            @Jokitsune
+/src/lib/schema.js      @Jokitsune
+/src/lib/content-guard.js @Jokitsune
+/.github/               @Jokitsune

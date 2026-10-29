@@ -1,0 +1,11 @@
+/* Partial : Reset & body — extrait de l'ancien style.css (l. 21-29) */
+
+/* -------- RESET -------- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  overflow-x: hidden;
+}

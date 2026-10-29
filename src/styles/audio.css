@@ -1,0 +1,125 @@
+/* Partial : Lecteur audio — extrait de l'ancien style.css (l. 924-1046) */
+
+/* -------- LECTEUR AUDIO DISCRET (Cyber Ambient Player) -------- */
+.cyber-audio-player {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 990;
+  background: rgba(10, 18, 24, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 6px 14px 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 255, 136, 0.08);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+.cyber-audio-player:hover {
+  border-color: rgba(0, 255, 136, 0.4);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 136, 0.15);
+}
+
+.audio-play-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--green);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.65rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  outline: none;
+}
+.audio-play-btn:hover {
+  background: var(--green);
+  color: var(--bg);
+  box-shadow: 0 0 12px var(--green);
+  transform: scale(1.05);
+}
+
+.audio-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.audio-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.cyber-audio-player.playing .audio-title {
+  color: var(--green);
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+/* Equalizer Bars */
+.audio-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 10px;
+}
+.eq-bar {
+  width: 2px;
+  height: 2px;
+  background: var(--text-dim);
+  border-radius: 1px;
+  transition: height 0.2s, background 0.2s;
+}
+.cyber-audio-player.playing .eq-bar {
+  background: var(--green);
+  animation: eqBounce 1s ease-in-out infinite alternate;
+}
+.cyber-audio-player.playing .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+.cyber-audio-player.playing .eq-bar:nth-child(2) { animation-delay: 0.3s; background: var(--cyan); }
+.cyber-audio-player.playing .eq-bar:nth-child(3) { animation-delay: 0.5s; }
+.cyber-audio-player.playing .eq-bar:nth-child(4) { animation-delay: 0.2s; background: var(--cyan); }
+.cyber-audio-player.playing .eq-bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes eqBounce {
+  0%   { height: 2px; }
+  50%  { height: 10px; }
+  100% { height: 4px; }
+}
+
+.audio-mute-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, transform 0.2s;
+  outline: none;
+}
+.audio-mute-btn:hover {
+  color: var(--cyan);
+  transform: scale(1.1);
+}
+
+@media (max-width: 560px) {
+  .cyber-audio-player {
+    bottom: 16px;
+    right: 16px;
+    padding: 4px 10px 4px 6px;
+    gap: 8px;
+  }
+  .audio-title {
+    display: none;
+  }
+}
