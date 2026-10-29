@@ -19,6 +19,8 @@ Tout le contenu (FR/EN) vit dans `content/*.json` ; il est **pré-rendu au build
 | `npm run validate:content` | Valide `content/*.json` (`-- --write-schemas` régénère `content/schema/`) |
 | `npm run test:e2e` | Tests Playwright desktop + mobile sur le build (`npx playwright install chromium` la première fois) |
 | `npm run compare -- <réf> <candidat>` | Diff DOM + pixel entre deux versions (URL ou dossier), FR/EN, desktop/mobile |
+| `npm run dev:admin` | Panneau `/admin` en local sur backend fichier, sans GitHub (voir [docs/ADMIN.md](docs/ADMIN.md)) |
+| `npm run check:dist` | Contrôle le build : aucun secret, `/admin` sans script ni style inline |
 
 ## Architecture
 
@@ -88,6 +90,7 @@ const html = renderPage(templateHtml, all.data, 'fr');   // prévisualisation co
 
 - **GitHub Pages** : workflow `.github/workflows/deploy-pages.yml` (build Vite → `dist/`) depuis `main`
   (Settings › Pages › Source = « GitHub Actions »).
-- **Vercel** : `vercel.json` (framework Vite, sortie `dist/`).
+- **Vercel** : `vercel.json` (framework Vite, sortie `dist/`, en-têtes de sécurité). Sert aussi le panneau
+  `/admin` et l'API `api/` : configuration pas à pas dans [docs/ADMIN.md](docs/ADMIN.md).
 
 Voir aussi [CONTRIBUTING.md](CONTRIBUTING.md) et [CHANGELOG.md](CHANGELOG.md).
