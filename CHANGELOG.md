@@ -7,6 +7,8 @@ et le projet adhère au [Versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-29
+
 ### Ajouté
 
 - Workflow Git documenté (`CONTRIBUTING.md`) : branches `main` / `develop` / `feat/*`…, Conventional Commits, cycle de PR et releases SemVer.
@@ -70,5 +72,6 @@ Version reconstituée rétroactivement à partir de l'historique de `main`
 
 - Commentaires superflus dans `script.js` et `style.css` (`6e42947`, `9c19c14`, 2026-05-07).
 
-[Unreleased]: https://github.com/Jokitsune/JoKitsune.github.io/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Jokitsune/JoKitsune.github.io/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/Jokitsune/JoKitsune.github.io/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Jokitsune/JoKitsune.github.io/commits/v1.0.0
