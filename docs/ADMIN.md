@@ -53,9 +53,13 @@ gh api users/Jokitsune --jq .id
 gh api repos/Jokitsune/JoKitsune.github.io --jq .id
 ```
 
-## 3. Créer l'OAuth App (connexion)
+## 3. Créer l'application de connexion
 
-GitHub → **Settings → Developer settings → OAuth Apps → New OAuth App** :
+> **Configuration en production** : la connexion utilise une **GitHub App privée sans aucune permission** (`jokitsune-admin-login`), créée par le flux *manifest*. Le code est identique : mêmes points d'entrée `/login/oauth/authorize` et `/login/oauth/access_token`, PKCE S256, révocation `DELETE /applications/{client_id}/token`. Cette option est plus stricte qu'une OAuth App : l'application est privée, donc seul le compte propriétaire peut l'autoriser, et son jeton utilisateur ne peut rien faire au-delà de la lecture du profil. Avec le flux *manifest*, le secret client est renvoyé par l'API et n'a jamais besoin d'être copié depuis l'écran.
+>
+> Pour la recréer : GitHub → **Settings → Developer settings → GitHub Apps → New GitHub App**, nom `jokitsune-admin-login`, *Callback URL* `https://jokitsune.vercel.app/api/auth/callback`, *Request user authorization during installation* décoché, webhook inactif, **aucune permission**, *Only on this account*. Ensuite, **Generate a new client secret**. Il n'est pas nécessaire d'installer cette application. La clé privée de l'App ne sert pas : ne la générez pas.
+
+L'alternative documentée d'origine, une **OAuth App**, reste compatible. GitHub → **Settings → Developer settings → OAuth Apps → New OAuth App** :
 
 | Champ | Valeur |
 |---|---|
@@ -194,6 +198,8 @@ Vercel → projet → **Firewall → Configure → New Rule**. Le limiteur en m�
 | Coupe-circuit (**désactivée**) | Request path *starts with* `/api/` | **Deny**. À activer en cas d'incident : effet immédiat, sans redéploiement |
 
 Vérifiez le nombre de règles disponibles dans votre offre Vercel. *Attack Challenge Mode* peut aussi être activé en cas d'abus.
+
+> **Configuration en production (offre Hobby, 3 règles maximum)** : les règles **Auth**, **API** et **Coupe-circuit** (désactivée) sont en place. La règle **Upload** n'existe pas : `/api/upload` reste couvert par la règle API (120 req/min/IP), par le limiteur en mémoire du code et par l'authentification obligatoire. Avec une offre supérieure, ajoutez-la.
 
 ## 9. Mise en service et recette
 
