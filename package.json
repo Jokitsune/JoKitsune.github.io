@@ -1,6 +1,6 @@
 {
   "name": "jokitsune-portfolio",
-  "version": "3.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Portfolio de Jordan de SOUZA — cybersécurité & DevSecOps (Vite, contenu JSON bilingue pré-rendu)",
   "type": "module",
