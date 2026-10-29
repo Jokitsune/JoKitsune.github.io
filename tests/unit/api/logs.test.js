@@ -53,6 +53,8 @@ describe('T-LOG-01 — journaux sans secrets', () => {
 
     // 5. Publication
     const st = await bodyOf(await api.handle(req('GET', '/api/publish/status', { cookie })));
+    // Flux en deux temps : ouverture de la PR, puis fusion
+    await api.handle(req('POST', '/api/publish', { cookie, json: { expectedHeadSha: st.headSha } }));
     await api.handle(req('POST', '/api/publish', { cookie, json: { expectedHeadSha: st.headSha } }));
 
     // 6. Configuration invalide (valeur sentinelle dans la variable fautive)

@@ -17,7 +17,8 @@ const ROUTES = [
 
 describe('T-CFG-01 — variable absente ou mal formée ⇒ 503 partout, log du NOM seulement', () => {
   const cases = {
-    'ADMIN_GITHUB_ID=abc': { ADMIN_GITHUB_ID: 'abc' },
+    // Valeur hors alphabet hexadécimal : « abc » apparaissait parfois par hasard dans les UUID des requestId
+    'ADMIN_GITHUB_ID non numérique': { ADMIN_GITHUB_ID: 'pas-un-id' },
     'ADMIN_GITHUB_ID absent': { ADMIN_GITHUB_ID: undefined },
     'SESSION_SECRET < 32 octets': { SESSION_SECRET: Buffer.alloc(16, 1).toString('base64url') },
     'ADMIN_ORIGIN avec slash final': { ADMIN_ORIGIN: 'https://jokitsune.vercel.app/' },
@@ -132,10 +133,13 @@ describe('Mode développement (ADMIN_DEV_MODE=1) — impossible en production', 
     expect(put.status).toBe(200);
     const status = await bodyOf(await api.handle(new Request(`${O}/api/publish/status`, { headers: { cookie } })));
     expect(status.ahead).toBe(1);
-    const pub = await api.handle(new Request(`${O}/api/publish`, {
+    const publishOnce = () => api.handle(new Request(`${O}/api/publish`, {
       method: 'POST', headers: { cookie, origin: O, 'x-jk-admin': '1', 'content-type': 'application/json' },
       body: JSON.stringify({ expectedHeadSha: status.headSha })
     }));
+    // 1er clic : ouvre la PR (CI à venir) ; 2e clic : fusionne
+    expect((await publishOnce()).status).toBe(409);
+    const pub = await publishOnce();
     expect(pub.status).toBe(200);
     // La synchronisation main → develop est simulée
     expect((await bodyOf(pub)).sync.status).toBe('auto_merge');

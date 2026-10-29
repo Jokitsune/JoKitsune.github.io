@@ -7,6 +7,16 @@ et le projet adhère au [Versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-10-29
+
+### Corrigé
+
+- Publication depuis `/admin` : le premier clic ouvre la pull request et renvoie « CI en cours », sans tenter de fusion. Avant, les checks déjà présents sur le commit (Vercel) étaient pris pour la CI requise : la fusion échouait (405) et l'admin affichait à tort « le brouillon a changé ». Un 405 sans retard sur `main` signifie désormais « CI en cours », sans mise à jour de branche inutile.
+
+### Documentation
+
+- `docs/ADMIN.md` : connexion par GitHub App privée sans permission (configuration de production) et pare-feu limité à 3 règles sur l'offre Hobby.
+
 ## [2.0.0] - 2026-10-29
 
 ### Ajouté
@@ -72,6 +82,7 @@ Version reconstituée rétroactivement à partir de l'historique de `main`
 
 - Commentaires superflus dans `script.js` et `style.css` (`6e42947`, `9c19c14`, 2026-05-07).
 
-[Unreleased]: https://github.com/Jokitsune/JoKitsune.github.io/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/Jokitsune/JoKitsune.github.io/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/Jokitsune/JoKitsune.github.io/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Jokitsune/JoKitsune.github.io/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Jokitsune/JoKitsune.github.io/commits/v1.0.0

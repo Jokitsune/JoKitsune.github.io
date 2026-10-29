@@ -116,7 +116,8 @@ export async function publish(ctx) {
   if (aheadBy === 0) throw new ApiError(409, 'NOTHING_TO_PUBLISH');
 
   const title = `content: publication de ${aheadBy} modification(s) depuis /admin`;
-  const pr = (await repo.findOpenPr(config.draftBranch, config.baseBranch)) ?? (await repo.createPr({
+  const existingPr = await repo.findOpenPr(config.draftBranch, config.baseBranch);
+  const pr = existingPr ?? (await repo.createPr({
     head: config.draftBranch,
     base: config.baseBranch,
     title,
@@ -125,6 +126,10 @@ export async function publish(ctx) {
 
   // Ruleset « branche à jour » (strict) : un brouillon en retard sur la base ne peut pas être fusionné
   if (behindBy > 0) await updateDraftBranch(ctx, pr, headSha);
+
+  // PR tout juste créée : la CI requise (déclenchée par pull_request) n'a pas encore démarré.
+  // Les checks déjà présents sur ce commit (ex. Vercel) ne suffisent pas à fusionner.
+  if (!existingPr) throw new ApiError(409, 'CHECKS_PENDING', { extra: { prUrl: pr.url ?? null } });
 
   const checks = await repo.getChecks(headSha);
   if (checks === 'pending' || checks === 'none') {
@@ -138,8 +143,13 @@ export async function publish(ctx) {
   } catch (err) {
     if (!(err instanceof RepoConflictError)) throw err;
     log.info('content.conflict', { ...ctx.logFields, reason: err.reason, prNumber: pr.number });
-    // 405 « non fusionnable » : souvent la base a avancé entre-temps ⇒ mise à jour du brouillon
-    if (err.reason === 'not_mergeable') await updateDraftBranch(ctx, pr, headSha);
+    if (err.reason === 'not_mergeable') {
+      // 405 « non fusionnable » : soit la base a avancé entre-temps (⇒ mise à jour du brouillon),
+      // soit un check requis n'est pas encore terminé (⇒ simplement patienter).
+      const { behindBy: behindNow } = await repo.compare(config.baseBranch, config.draftBranch);
+      if (behindNow > 0) await updateDraftBranch(ctx, pr, headSha);
+      throw new ApiError(409, 'CHECKS_PENDING', { extra: { prUrl: pr.url ?? null } });
+    }
     throw new ApiError(409, 'CONFLICT', { extra: { currentSha: await repo.getRef(config.draftBranch).catch(() => null) } });
   }
   const mainSha = merged.sha ?? (await repo.getRef(config.baseBranch));
