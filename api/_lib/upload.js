@@ -5,6 +5,7 @@
    ================================================ */
 
 import { createHash } from 'node:crypto';
+import { inflateSync, constants as zlibConstants } from 'node:zlib';
 
 export const MIN_SIZE = 100;
 export const LIMITS = { cv: 3 * 1024 * 1024, image: 1.5 * 1024 * 1024 };
@@ -41,11 +42,80 @@ export function hasPdfEof(bytes) {
   return latin1(bytes, Math.max(0, bytes.length - 1024)).includes('%%EOF');
 }
 
-// Noms PDF « actifs » (heuristique : un filet, la vraie défense est CSP sandbox + nosniff)
+// Noms PDF « actifs » (heuristique : un filet, la vraie défense est CSP sandbox + nosniff,
+// qui n'existe QUE sur Vercel : GitHub Pages ne permet pas d'en-têtes personnalisés)
 const ACTIVE_PDF_RE = /\/(JavaScript|JS|Launch|EmbeddedFile|OpenAction|AA|XFA|RichMedia)(?![A-Za-z0-9])/;
+// Structures qui cachent des dictionnaires à l'inspection textuelle
+const OPAQUE_PDF_RE = /\/(ObjStm|Encrypt)(?![A-Za-z0-9])/;
+// Filtres d'image : données binaires sans objets PDF, inutiles à décoder
+const IMAGE_FILTERS = new Set(['DCTDecode', 'JPXDecode', 'CCITTFaxDecode', 'JBIG2Decode']);
+const MAX_INFLATED = 64 * 1024 * 1024;
+
+/**
+ * Décode les échappements « #xx » des noms PDF (/Java#53cript == /JavaScript).
+ * Appliqué à tout le texte : utilisé seulement pour la détection.
+ */
+export function normalizePdfNames(text) {
+  return text.replace(/#([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
 
 export function hasActivePdfContent(bytes) {
-  return ACTIVE_PDF_RE.test(latin1(bytes));
+  return ACTIVE_PDF_RE.test(normalizePdfNames(latin1(bytes)));
+}
+
+/** Dictionnaire << … >> qui précède immédiatement un mot-clé « stream ». */
+function streamDictionary(text, streamIndex) {
+  const end = text.lastIndexOf('>>', streamIndex);
+  if (end === -1) return null;
+  let depth = 0;
+  for (let i = end + 1; i >= 1; i--) {
+    if (text[i] === '>' && text[i - 1] === '>') { depth++; i--; continue; }
+    if (text[i] === '<' && text[i - 1] === '<') {
+      depth--;
+      i--;
+      if (depth === 0) return text.slice(i, end + 2);
+    }
+  }
+  return null;
+}
+
+/**
+ * Tous les flux doivent être inspectables : sans filtre, FlateDecode décodable,
+ * ou filtre d'image. Pas d'objets compressés (/ObjStm) ni de chiffrement (/Encrypt).
+ * @returns {string | null} raison du refus, ou null
+ */
+export function pdfInspectionProblem(bytes) {
+  const raw = latin1(bytes);
+  const names = normalizePdfNames(raw);
+  if (OPAQUE_PDF_RE.test(names)) return 'pdf_uninspectable';
+  const streamRe = /stream\r?\n/g;
+  let m;
+  let inflated = 0;
+  while ((m = streamRe.exec(raw))) {
+    if (raw.slice(m.index - 3, m.index) === 'end') continue; // « endstream »
+    const dict = streamDictionary(raw, m.index);
+    if (dict === null) return 'pdf_uninspectable';
+    const filterMatch = normalizePdfNames(dict).match(/\/Filter\s*(\[[^\]]*\]|\/[A-Za-z0-9]+)/);
+    const filters = filterMatch ? [...filterMatch[1].matchAll(/\/([A-Za-z0-9]+)/g)].map(x => x[1]) : [];
+    const start = m.index + m[0].length;
+    const end = raw.indexOf('endstream', start);
+    if (end === -1) return 'pdf_uninspectable';
+    streamRe.lastIndex = end + 9;
+    for (const filter of filters) {
+      if (IMAGE_FILTERS.has(filter)) break; // la suite est une image
+      if (filter !== 'FlateDecode') return 'pdf_uninspectable';
+    }
+    if (filters[0] === 'FlateDecode') {
+      const data = bytes.subarray(start, end);
+      try {
+        inflated += inflateSync(data, { finishFlush: zlibConstants.Z_SYNC_FLUSH, maxOutputLength: MAX_INFLATED }).length;
+      } catch {
+        return 'pdf_uninspectable';
+      }
+      if (inflated > MAX_INFLATED) return 'pdf_uninspectable';
+    }
+  }
+  return null;
 }
 
 /** Présence d'un segment APP1 « Exif » dans un JPEG. */
@@ -112,6 +182,8 @@ export function inspectUpload(kind, declaredType, bytes) {
   if (detected === 'application/pdf') {
     if (!hasPdfEof(bytes)) return { ok: false, status: 422, code: 'UPLOAD_INVALID', reason: 'magic_mismatch' };
     if (hasActivePdfContent(bytes)) return { ok: false, status: 422, code: 'UPLOAD_INVALID', reason: 'pdf_active_content' };
+    const problem = pdfInspectionProblem(bytes);
+    if (problem) return { ok: false, status: 422, code: 'UPLOAD_INVALID', reason: problem };
   }
   if (detected === 'image/jpeg' && hasExif(bytes)) warnings.push('exif_present');
   return { ok: true, detected, warnings };

@@ -1,7 +1,10 @@
 // Upload (T-UPL-01 à T-UPL-07) : types, magic bytes, taille, noms, verrou sha.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { detectType, hasExif, slugify, inspectUpload, PUBLIC_PATH_RE } from '../../../api/_lib/upload.js';
-import { setup, req, sessionCookieFor, bodyOf } from './helpers.js';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { deflateSync } from 'node:zlib';
+import { detectType, hasExif, slugify, inspectUpload, normalizePdfNames, pdfInspectionProblem, PUBLIC_PATH_RE } from '../../../api/_lib/upload.js';
+import { setup, req, sessionCookieFor, bodyOf, ROOT } from './helpers.js';
 
 const PNG_SIG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
@@ -104,6 +107,52 @@ describe('T-UPL-03 / T-UPL-04 — PDF', () => {
       await expectRejected(await upload('kind=cv&lang=fr', pdf(`<< ${name} (x) >>`), 'application/pdf'), 422, 'pdf_active_content');
     });
   }
+});
+
+describe('F3 — PDF : noms encodés, objets compressés, flux non inspectables', () => {
+  const flate = text => deflateSync(Buffer.from(text));
+  /** PDF avec un flux binaire (latin1 conservé octet pour octet). */
+  function pdfWithStream(dict, data) {
+    const head = Buffer.from(`%PDF-1.7\n1 0 obj\n${dict}\nstream\n`, 'latin1');
+    const tail = Buffer.from(`\nendstream\nendobj\n${'%'.repeat(200)}\n%%EOF\n`, 'latin1');
+    return new Uint8Array(Buffer.concat([head, Buffer.from(data), tail]));
+  }
+
+  it('le CV réel du dépôt est accepté', () => {
+    const cv = new Uint8Array(readFileSync(path.join(ROOT, 'public/asset/Jordan_de_SOUZA_CV.pdf')));
+    expect(inspectUpload('cv', 'application/pdf', cv)).toMatchObject({ ok: true });
+  });
+
+  for (const name of ['/Java#53cript', '/#4A#53', '/Open#41ction', '/#41#41', '/Launc#68', '/Embedded#46ile']) {
+    it(`nom encodé ${name} ⇒ pdf_active_content`, () => {
+      expect(normalizePdfNames(name)).toMatch(/^\/(JavaScript|JS|OpenAction|AA|Launch|EmbeddedFile)$/);
+      expect(inspectUpload('cv', 'application/pdf', pdf(`<< ${name} (x) >>`))).toMatchObject({ ok: false, reason: 'pdf_active_content' });
+    });
+  }
+
+  for (const marker of ['/Type /ObjStm', '/Type /Obj#53tm', '/Encrypt 5 0 R']) {
+    it(`${marker} ⇒ pdf_uninspectable`, () => {
+      expect(inspectUpload('cv', 'application/pdf', pdf(`<< ${marker} >>`))).toMatchObject({ ok: false, reason: 'pdf_uninspectable' });
+    });
+  }
+
+  it('flux FlateDecode valide ⇒ accepté', () => {
+    expect(pdfInspectionProblem(pdfWithStream('<< /Length 10 /Filter /FlateDecode >>', flate('BT /F1 12 Tf (Bonjour) Tj ET')))).toBeNull();
+  });
+  it('flux image DCTDecode ⇒ accepté sans décodage', () => {
+    expect(pdfInspectionProblem(pdfWithStream('<< /Subtype /Image /Filter /DCTDecode >>', [0xff, 0xd8, 0xff, 1, 2, 3]))).toBeNull();
+  });
+  it('flux FlateDecode corrompu ⇒ pdf_uninspectable', () => {
+    expect(pdfInspectionProblem(pdfWithStream('<< /Filter /FlateDecode >>', [1, 2, 3, 4, 5, 6]))).toBe('pdf_uninspectable');
+  });
+  for (const filter of ['/LZWDecode', '/ASCII85Decode', '/Crypt', '[/ASCIIHexDecode /FlateDecode]', '/Flate#44ecode#20']) {
+    it(`filtre ${filter} ⇒ pdf_uninspectable`, () => {
+      expect(pdfInspectionProblem(pdfWithStream(`<< /Filter ${filter} >>`, Buffer.from('abc')))).toBe('pdf_uninspectable');
+    });
+  }
+  it('via l’API : 422 UPLOAD_INVALID pdf_uninspectable', async () => {
+    await expectRejected(await upload('kind=cv&lang=fr', pdf('<< /Type /ObjStm /N 3 >>'), 'application/pdf'), 422, 'pdf_uninspectable');
+  });
 });
 
 describe('T-UPL-05 — taille', () => {
