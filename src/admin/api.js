@@ -58,5 +58,6 @@ export const api = {
     }),
   publishStatus: () => apiRequest('GET', '/api/publish/status'),
   publish: expectedHeadSha => apiRequest('POST', '/api/publish', { json: { expectedHeadSha } }),
+  mergeSync: () => apiRequest('POST', '/api/publish/sync', { json: {} }),
   resetDraft: () => apiRequest('POST', '/api/draft/reset', { json: { confirm: 'DISCARD' } })
 };

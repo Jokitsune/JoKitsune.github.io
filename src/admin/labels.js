@@ -101,7 +101,9 @@ const FIELD_LABELS = {
   progress: 'Progression',
   percent: 'Pourcentage',
   id: 'Identifiant',
-  visible: 'Visible sur le site'
+  visible: 'Visible sur le site',
+  fr: 'FR',
+  en: 'EN'
 };
 
 /** Libellé d'un champ (repli : la clé brute). */

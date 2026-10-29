@@ -75,20 +75,48 @@ function summaryText(item) {
 /**
  * @param {{ schema: object, data: object, onChange: () => void }} opts
  */
-export function createForm({ schema, data, onChange }) {
+export function createForm({ schema, data, onChange, advanced = [] }) {
   const root = h('div', { class: 'schema-form' });
   const openItems = new Set();
+  // Champs techniques regroupés dans une section repliée « Avancé »
+  const advancedPaths = new Set(advanced);
+  let advancedNodes = [];
+  let advancedOpen = false;
 
   function changed() {
     onChange();
+  }
+
+  const byFocusKey = key => [...root.querySelectorAll('[data-focus-key]')].find(el => el.dataset.focusKey === key);
+
+  /**
+   * Cible du focus après reconstruction. Si le bouton est devenu désactivé
+   * (Monter en tête de liste, Descendre en fin), on passe au bouton inverse,
+   * sinon à l'élément lui-même : le focus n'est jamais perdu.
+   */
+  function focusTarget(key) {
+    let el = byFocusKey(key);
+    if (!el || !el.disabled) return el;
+    const alt = key.endsWith('#up') ? key.replace(/#up$/, '#down') : key.endsWith('#down') ? key.replace(/#down$/, '#up') : null;
+    const altEl = alt ? byFocusKey(alt) : null;
+    if (altEl && !altEl.disabled) return altEl;
+    el = el.closest('details')?.querySelector('summary') ?? el.closest('li')?.querySelector('input, textarea, select');
+    return el ?? null;
   }
 
   /** Reconstruit le formulaire en gardant le focus (même data-path / data-action). */
   function rerender(focusKey) {
     const active = document.activeElement;
     const key = focusKey ?? (active && root.contains(active) ? active.dataset.focusKey : null);
-    mount(root, renderObjectFields(data, schema, ''));
-    if (key) [...root.querySelectorAll('[data-focus-key]')].find(el => el.dataset.focusKey === key)?.focus();
+    advancedNodes = [];
+    const main = renderObjectFields(data, schema, '');
+    const section = advancedNodes.length
+      ? h('details', { class: 'advanced', open: advancedOpen, onToggle: e => { advancedOpen = e.target.open; } },
+        h('summary', { dataset: { focusKey: '#advanced' } }, 'Avancé ', h('span', { class: 'muted' }, '(réglages techniques : Formspree, robots, Open Graph, audio…)')),
+        h('div', { class: 'group' }, advancedNodes))
+      : null;
+    mount(root, main, section);
+    if (key) focusTarget(key)?.focus();
   }
 
   function structural(focusKey) {
@@ -247,6 +275,12 @@ export function createForm({ schema, data, onChange }) {
         }
         continue;
       }
+      if (advancedPaths.has(childPath)) {
+        // Libellé complet (le champ est affiché hors de son groupe d'origine)
+        const label = childPath.split('.').map(fieldLabel).join(' › ');
+        advancedNodes.push(renderField(obj, key, sub, childPath, { optional: !required.has(key), label }));
+        continue;
+      }
       out.push(renderField(obj, key, sub, childPath, { optional: !required.has(key) }));
     }
     return out;
@@ -344,7 +378,7 @@ export function createForm({ schema, data, onChange }) {
         const target = index + delta;
         if (target < 0 || target >= items.length) return;
         [items[index], items[target]] = [items[target], items[index]];
-        structural(`${itemPath}#${delta < 0 ? 'up' : 'down'}`.replace(`[${index}]`, `[${target}]`));
+        structural(`${joinPath(path, target)}#${delta < 0 ? 'up' : 'down'}`);
       };
       const sub = schema.items;
       const field = sub?.type === 'object' && !isLocalizedSchema(sub)

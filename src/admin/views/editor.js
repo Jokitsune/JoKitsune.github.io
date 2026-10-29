@@ -18,6 +18,11 @@ import cards from '../../../content/schema/cards.schema.json';
 
 const JSON_SCHEMAS = { site, ui, skills, projects, timeline, cards };
 
+// Champs techniques regroupés dans la section repliée « Avancé »
+export const ADVANCED_FIELDS = {
+  site: ['formspreeId', 'meta.url', 'meta.robots', 'meta.ogType', 'meta.ogTitle', 'meta.ogDescription', 'meta.ogSiteName', 'cv.downloadName', 'audio.src', 'audio.type']
+};
+
 const toMessages = issues => issues.map(i => ({ path: i.path, message: ISSUE_LABELS[i.code] ?? i.code }));
 
 /**
@@ -51,10 +56,12 @@ export async function renderEditor(container, file, app) {
   const conflictBox = h('div', { class: 'panel panel--warn', role: 'alert', hidden: true });
   const saveBtn = h('button', { type: 'submit', class: 'btn btn--primary' }, 'Enregistrer dans le brouillon');
   const shaInfo = h('span', { class: 'muted mono' });
-  const updateShaInfo = () => { shaInfo.textContent = `sha ${baseSha.slice(0, 7)} · branche ${loaded.branch}`; };
+  // Libellé lisible : « brouillon » dès que l’écriture vise la branche content/*
+  const branchLabel = b => (b.startsWith('content/') ? `brouillon (${b})` : `publiée (${b})`);
+  const updateShaInfo = () => { shaInfo.textContent = `sha ${baseSha.slice(0, 7)} · ${branchLabel(loaded.branch)}`; };
   updateShaInfo();
 
-  const form = createForm({ schema: JSON_SCHEMAS[file], data, onChange });
+  const form = createForm({ schema: JSON_SCHEMAS[file], data, onChange, advanced: ADVANCED_FIELDS[file] ?? [] });
 
   function isDirty() {
     return JSON.stringify(data) !== savedJson;
@@ -100,6 +107,7 @@ export async function renderEditor(container, file, app) {
     try {
       const out = await api.putContent(file, { baseSha, data, summary: summaryInput.value || undefined });
       baseSha = out.sha;
+      if (out.branch) loaded.branch = out.branch;
       savedJson = JSON.stringify(data);
       app.setDirty(false);
       conflictBox.hidden = true;

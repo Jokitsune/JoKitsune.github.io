@@ -123,6 +123,7 @@ function renderShell() {
     }
   }, 'Déconnexion');
 
+  const navWrap = h('div', { class: 'sidenav-wrap' }, nav);
   const main = h('main', { id: 'main', class: 'content', tabindex: '-1' });
   mount(app,
     h('header', { class: 'topbar' },
@@ -131,7 +132,12 @@ function renderShell() {
         me.devMode ? h('span', { class: 'badge badge--warn' }, 'MODE DEV') : null,
         ` ${me.login} · session jusqu’à ${new Date(me.expiresAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} `,
         logoutBtn)),
-    h('div', { class: 'layout' }, nav, main));
+    h('div', { class: 'layout' }, navWrap, main));
+  // Indice de défilement de la navigation (mobile) masqué en fin de course
+  const updateNavHint = () => navWrap.classList.toggle('at-end', nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 4);
+  nav.addEventListener('scroll', updateNavHint, { passive: true });
+  window.addEventListener('resize', updateNavHint);
+  updateNavHint();
 
   const ctx = { toast, setDirty, handleError };
 

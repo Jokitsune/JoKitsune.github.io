@@ -66,6 +66,9 @@ a { color: var(--cyan); }
 }
 .btn:hover { border-color: var(--green); color: var(--green); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+/* Bouton principal désactivé : nettement différent de l'état actif (pas seulement plus pâle) */
+.btn--primary:disabled,
+.btn--primary:disabled:hover { opacity: 1; background: transparent; border: 1px dashed var(--text-dim); color: var(--text-dim); }
 .btn--primary { background: var(--green); border-color: var(--green); color: var(--bg); }
 .btn--primary:hover { background: var(--cyan); border-color: var(--cyan); color: var(--bg); }
 .btn--ghost { background: transparent; }
@@ -96,6 +99,7 @@ a { color: var(--cyan); }
 }
 .session { margin: 0; font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: calc(100vh - 56px); }
+.sidenav-wrap { display: grid; min-width: 0; }
 .sidenav { border-right: 1px solid var(--border); padding: 16px; background: var(--bg2); }
 .sidenav-title { margin: 16px 0 6px; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
 .sidenav-title:first-child { margin-top: 0; }
@@ -193,6 +197,13 @@ input[type='checkbox'] { width: 20px; height: 20px; accent-color: var(--green); 
 .diff-table caption { text-align: left; color: var(--text-dim); padding: 6px 0; }
 .diff-table th, .diff-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; word-break: break-word; }
 
+/* -------- Section repliée « Avancé » -------- */
+.advanced { border: 1px dashed var(--border); border-radius: 8px; background: var(--bg2); }
+.advanced > summary { min-height: 44px; padding: 12px 16px; cursor: pointer; font-family: var(--display); font-size: 0.8rem; color: var(--cyan); letter-spacing: 1px; }
+.advanced > summary .muted { font-family: var(--body); font-size: 0.8rem; letter-spacing: 0; }
+.advanced > .group { border: 0; border-top: 1px dashed var(--border); border-radius: 0 0 8px 8px; }
+.publish-help p { margin: 0 0 6px; }
+
 /* -------- Fichiers et publication -------- */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .card { display: grid; gap: 12px; align-content: start; }
@@ -216,7 +227,16 @@ input[type='checkbox'] { width: 20px; height: 20px; accent-color: var(--green); 
 /* -------- Mobile -------- */
 @media (max-width: 760px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
-  .sidenav { min-width: 0; border-right: 0; border-bottom: 1px solid var(--border); padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; }
+  .sidenav { min-width: 0; border-right: 0; border-bottom: 1px solid var(--border); padding: 8px 32px 8px 12px; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; }
+  /* Indice de défilement : fondu + chevron à droite de la navigation horizontale */
+  .sidenav-wrap { position: relative; }
+  .sidenav-wrap::after {
+    content: '›'; position: absolute; top: 0; right: 0; bottom: 1px; width: 40px;
+    display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+    color: var(--green); font-family: var(--mono); font-size: 1.4rem; pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--bg2) 60%);
+  }
+  .sidenav-wrap.at-end::after { display: none; }
   .topbar { position: static; }
   .savebar { padding: 8px 12px; gap: 8px; }
   .savebar-summary { flex-basis: 100%; }

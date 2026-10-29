@@ -55,6 +55,38 @@ function result(url, extra, app) {
   return h('p', { class: 'upload-result' }, h('span', { class: 'mono' }, url), ' ', copyButton(url, app), extra ? ` ${extra}` : '');
 }
 
+/**
+ * Après un upload de CV : propose de renseigner Site › CV › URL (langue correspondante)
+ * dans le brouillon, sous verrou sha comme toute écriture.
+ */
+function useForSiteButton(lang, url, app) {
+  const status = h('span', { class: 'muted', 'aria-live': 'polite' });
+  const btn = h('button', {
+    type: 'button', class: 'btn btn--small', onClick: async () => {
+      btn.disabled = true;
+      try {
+        const site = await api.getContent('site');
+        if (site.data.cv.url[lang] === url) {
+          status.textContent = ' Déjà utilisé par le site.';
+          return;
+        }
+        const data = structuredClone(site.data);
+        data.cv.url[lang] = url;
+        await api.putContent('site', { baseSha: site.sha, data, summary: `CV ${lang}` });
+        status.textContent = ` Site › CV › URL (${lang.toUpperCase()}) mis à jour dans le brouillon.`;
+        app.toast(`Le bouton CV (${lang.toUpperCase()}) pointe désormais vers ce fichier (brouillon).`, 'ok');
+        app.refreshStatus?.();
+      } catch (err) {
+        if (err instanceof AdminApiError && err.code === 'CONFLICT') status.textContent = ' Site modifié entre-temps : réessayez.';
+        else app.handleError(err);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  }, `Utiliser ce CV sur le site (${lang.toUpperCase()})`);
+  return h('p', {}, btn, status);
+}
+
 function cvCard(lang, app) {
   const id = nextId();
   const input = h('input', { id, type: 'file', accept: 'application/pdf', class: 'input-file' });
@@ -84,8 +116,7 @@ function cvCard(lang, app) {
             res = await send(file, err.body.currentSha);
           } else throw err;
         }
-        mount(out, result(res.url, res.duplicate ? '(identique au fichier existant)' : '', app),
-          h('p', { class: 'muted' }, 'Pour que le bouton « CV » du site pointe vers ce fichier, renseignez ce chemin dans Site › CV › URL.'));
+        mount(out, result(res.url, res.duplicate ? '(identique au fichier existant)' : '', app), useForSiteButton(lang, res.url, app));
         app.toast(`CV ${lang.toUpperCase()} envoyé dans le brouillon.`, 'ok');
         app.refreshStatus?.();
       } catch (err) {

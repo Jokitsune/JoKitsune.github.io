@@ -14,10 +14,10 @@ let data;
 let changes;
 let form;
 
-function build(file = 'projects') {
+function build(file = 'projects', advanced = []) {
   data = loadRealContent()[file];
   changes = 0;
-  form = createForm({ schema: schemas[file], data, onChange: () => { changes += 1; } });
+  form = createForm({ schema: schemas[file], data, advanced, onChange: () => { changes += 1; } });
   document.body.replaceChildren(form.element);
   return form;
 }
@@ -151,6 +151,65 @@ describe('Listes gérées', () => {
     down.focus();
     down.click();
     expect(document.activeElement?.dataset.focusKey).toMatch(/#down$/);
+  });
+});
+
+describe('Focus quand un bouton devient désactivé', () => {
+  it('Descendre jusqu’en fin de liste ⇒ focus sur « Monter » du même élément', () => {
+    build();
+    const n = data.projects.length;
+    const toolbars = () => document.querySelectorAll('.item > .item-toolbar');
+    const down = [...toolbars()[n - 2].querySelectorAll('button')].find(x => x.textContent.includes('Descendre'));
+    const movedId = data.projects[n - 2].id;
+    down.focus();
+    down.click();
+    expect(data.projects.at(-1).id).toBe(movedId);
+    expect(document.activeElement.textContent).toContain('Monter');
+    expect(document.activeElement.disabled).toBe(false);
+    expect(document.activeElement.dataset.focusKey).toBe(`projects@${movedId}#up`);
+  });
+
+  it('liste simple dans un élément d’index identique (projects[1].stack[1]) : le focus suit la bonne entrée', () => {
+    build();
+    const section = [...document.querySelectorAll('.list--simple')].find(s => s.dataset.path === 'projects[1].stack');
+    const second = data.projects[1].stack[1];
+    const down = section.querySelectorAll('.simple-item')[1].querySelector('[aria-label^="Descendre"]');
+    down.focus();
+    down.click();
+    expect(data.projects[1].stack[2]).toEqual(second);
+    // Arrivée en fin de liste : « Descendre » désactivé ⇒ focus sur « Monter » de la même entrée
+    expect(document.activeElement.dataset.focusKey).toBe('projects[1].stack[2]#up');
+  });
+
+  it('Monter jusqu’en tête (liste simple) ⇒ focus sur « Descendre »', () => {
+    build();
+    const section = [...document.querySelectorAll('.list--simple')].find(s => s.dataset.path === 'projects[0].stack');
+    const up = section.querySelectorAll('.simple-item')[1].querySelector('[aria-label^="Monter"]');
+    up.focus();
+    up.click();
+    expect(document.activeElement.getAttribute('aria-label')).toMatch(/^Descendre l’entrée 1/);
+  });
+});
+
+describe('Section « Avancé » (Site)', () => {
+  const ADVANCED = ['formspreeId', 'meta.robots', 'meta.ogType', 'audio.type'];
+
+  it('les champs techniques sont regroupés dans un <details> replié, avec un libellé complet', () => {
+    build('site', ADVANCED);
+    const section = document.querySelector('details.advanced');
+    expect(section.open).toBe(false);
+    for (const p of ADVANCED) expect(section.contains(byPath(p)), p).toBe(true);
+    expect(section.textContent).toContain('Métadonnées (SEO) › Directive robots');
+    expect(byPath('hero.bio.fr').closest('details.advanced')).toBeNull();
+  });
+
+  it('les champs avancés restent liés au modèle, et focusPath ouvre la section', () => {
+    build('site', ADVANCED);
+    type(byPath('meta.robots'), 'noindex');
+    expect(data.meta.robots).toBe('noindex');
+    form.focusPath('audio.type');
+    expect(document.querySelector('details.advanced').open).toBe(true);
+    expect(document.activeElement).toBe(byPath('audio.type'));
   });
 });
 
