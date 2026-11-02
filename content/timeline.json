@@ -33,10 +33,22 @@
       "role": { "fr": "Bénévole — Communication & Événementiel", "en": "Volunteer — Communication & Events" },
       "org": "LE ROND POINT CLASSE — Cotonou, Bénin",
       "bullets": [
-        { "fr": "Organisation et coordination du FESTICHILL", "en": "Organization and event coordination for FESTICHILL" },
-        { "fr": "Marketing digital et communication d'entreprise", "en": "Corporate communication and digital marketing strategy" },
-        { "fr": "Gestion du booking et accompagnement d'artistes", "en": "Artist booking management and backstage assistance" },
-        { "fr": "Gestion du stress et du travail sous pression", "en": "Stress management and high-pressure operational execution" }
+        {
+          "fr": "Organisation et coordination du FESTICHILL",
+          "en": "Organization and event coordination for FESTICHILL"
+        },
+        {
+          "fr": "Marketing digital et communication d'entreprise",
+          "en": "Corporate communication and digital marketing strategy"
+        },
+        {
+          "fr": "Gestion du booking et accompagnement d'artistes",
+          "en": "Artist booking management and backstage assistance"
+        },
+        {
+          "fr": "Gestion du stress et du travail sous pression",
+          "en": "Stress management and high-pressure operational execution"
+        }
       ]
     },
     {
@@ -49,6 +61,18 @@
       "description": {
         "fr": "Obtention du Baccalauréat série scientifique.",
         "en": "Graduated in scientific curriculum (mathematics & life sciences)."
+      }
+    },
+    {
+      "id": "consultant-cyber",
+      "order": 5,
+      "visible": true,
+      "date": "08/2026",
+      "role": { "fr": "Consultant Cybersécurité", "en": "Cybersecurity Consultant" },
+      "org": "KPS GROUPE BENIN",
+      "description": {
+        "fr": "Accompagne les organisations dans l'identification des risques cyber, l'évaluation de la sécurité de leurs systèmes d'information et la mise en œuvre de mesures de protection adaptées. Intervient sur la sécurité des applications web, des infrastructures réseau et des bonnes pratiques de cybersécurité.",
+        "en": "Support organizations in identifying cyber risks, assessing the security of their information systems, and implementing appropriate protection measures. Contribute to web application security, network security, and cybersecurity best practices."
       }
     }
   ]
