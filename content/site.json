@@ -30,12 +30,12 @@
   "hero": {
     "greeting": { "fr": "// IDENTIFICATION DU SYSTÈME", "en": "// SYSTEM IDENTIFICATION" },
     "title": {
-      "fr": "Étudiant en Sciences du Numérique & Passionné de Cybersécurité",
-      "en": "Digital Sciences Student & Cybersecurity Enthusiast"
+      "fr": "Consultant en Cybersécurité & Passionné des sciences du Numérique",
+      "en": "Cybersecurity Consultant & Digital Sciences Enthusiast"
     },
     "bio": {
-      "fr": "Je construis des applications web et je les défends. De l'écriture du code à la configuration de sécurité opérationnelle, je conçois des solutions numériques robustes face aux menaces actuelles.",
-      "en": "I build web applications and defend them. From writing code to operational security hardening, I engineer resilient digital solutions against modern threats."
+      "fr": "Diplômée en Informatique, réseau et télécommunication option sécurité informatique, J'établis des système d'information sécurisé, construis des applications web et les défends, de l'écriture du code à la configuration de sécurité opérationnelle. Je conçois des solutions numériques robustes face aux menaces actuelles.",
+      "en": "Computer Science, Networks and Telecommunications graduate, specialized in Information Security. I design secure information systems, develop and defend web applications, and manage security across the entire lifecycle, from coding to operational deployment. I build resilient digital solutions designed to withstand modern cyber threats."
     }
   },
   "terminal": {
