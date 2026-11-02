@@ -2,8 +2,20 @@
   "$schema": "./schema/timeline.schema.json",
   "items": [
     {
-      "id": "stage-devsecops",
+      "id": "consultant-cyber",
       "order": 1,
+      "visible": true,
+      "date": "08/2026",
+      "role": { "fr": "Consultant Cybersécurité", "en": "Cybersecurity Consultant" },
+      "org": "KPS GROUPE BENIN",
+      "description": {
+        "fr": "Accompagne les organisations dans l'identification des risques cyber, l'évaluation de la sécurité de leurs systèmes d'information et la mise en œuvre de mesures de protection adaptées. Intervient sur la sécurité des applications web, des infrastructures réseau et des bonnes pratiques de cybersécurité.",
+        "en": "Support organizations in identifying cyber risks, assessing the security of their information systems, and implementing appropriate protection measures. Contribute to web application security, network security, and cybersecurity best practices."
+      }
+    },
+    {
+      "id": "stage-devsecops",
+      "order": 2,
       "visible": true,
       "date": "03/2026 – 06/2026",
       "role": { "fr": "Stage DevSecOps Junior", "en": "Junior DevSecOps Intern" },
@@ -15,7 +27,7 @@
     },
     {
       "id": "licence-esgis",
-      "order": 2,
+      "order": 3,
       "visible": true,
       "date": "09/2022 — 06/2026",
       "role": { "fr": "Licence Sécurité Informatique", "en": "Bachelor in Computer Security" },
@@ -27,7 +39,7 @@
     },
     {
       "id": "benevole-rpc",
-      "order": 3,
+      "order": 4,
       "visible": true,
       "date": "06/2024 — AUJOURD'HUI",
       "role": { "fr": "Bénévole — Communication & Événementiel", "en": "Volunteer — Communication & Events" },
@@ -53,7 +65,7 @@
     },
     {
       "id": "bac-d",
-      "order": 4,
+      "order": 5,
       "visible": true,
       "date": "09/2021 — 06/2022",
       "role": { "fr": "Baccalauréat Série D", "en": "High School Scientific Baccalaureate (Series D)" },
@@ -61,18 +73,6 @@
       "description": {
         "fr": "Obtention du Baccalauréat série scientifique.",
         "en": "Graduated in scientific curriculum (mathematics & life sciences)."
-      }
-    },
-    {
-      "id": "consultant-cyber",
-      "order": 5,
-      "visible": true,
-      "date": "08/2026",
-      "role": { "fr": "Consultant Cybersécurité", "en": "Cybersecurity Consultant" },
-      "org": "KPS GROUPE BENIN",
-      "description": {
-        "fr": "Accompagne les organisations dans l'identification des risques cyber, l'évaluation de la sécurité de leurs systèmes d'information et la mise en œuvre de mesures de protection adaptées. Intervient sur la sécurité des applications web, des infrastructures réseau et des bonnes pratiques de cybersécurité.",
-        "en": "Support organizations in identifying cyber risks, assessing the security of their information systems, and implementing appropriate protection measures. Contribute to web application security, network security, and cybersecurity best practices."
       }
     }
   ]
