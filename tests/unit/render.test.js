@@ -60,10 +60,18 @@ describe('rendu de la page', () => {
     expect([...doc.querySelectorAll('.project-number')].map(e => e.textContent)).toEqual(
       content.projects.projects.map((_, i) => `PROJECT_0${i + 1}`)
     );
-    const cyan = doc.querySelector('[data-card="experience"]');
+    // Cartes fixtures : le contenu réel des cartes est éditable depuis /admin
+    const card = (id, order, color, percent) => ({
+      id, order, visible: true, color, icon: '#', badge: 'b', title: 't', org: 'o', date: 'd',
+      progress: { label: 'l', value: 'v', percent }, tags: []
+    });
+    const c = loadRealContent();
+    c.cards.cards = [card('fx-cyan', 0, 'cyan', 80), card('fx-green', 1, 'green', 100)];
+    const d = parse(renderPage(loadTemplate(), c));
+    const cyan = d.querySelector('[data-card="fx-cyan"]');
     expect(cyan.querySelector('.sec-card').className).toBe('sec-card sec-card--cyan');
     expect(cyan.querySelector('.progress-bar-fill').getAttribute('data-fill')).toBe('80');
-    expect(doc.querySelector('[data-card="formation"] .sec-card').className).toBe('sec-card');
+    expect(d.querySelector('[data-card="fx-green"] .sec-card').className).toBe('sec-card');
     expect(doc.querySelector('.social-pile-item.github-item svg path')).not.toBeNull();
     expect(doc.querySelector('.hero-name').getAttribute('data-text')).toBe('de SOUZA');
     expect(norm(doc.querySelector('.nav-brand').textContent)).toBe('J.de SOUZA');
