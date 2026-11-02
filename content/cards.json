@@ -2,46 +2,30 @@
   "$schema": "./schema/cards.schema.json",
   "cards": [
     {
-      "id": "formation",
+      "id": "g-1",
       "order": 1,
       "visible": true,
-      "color": "green",
-      "icon": "🎓",
-      "badge": { "fr": "Formation", "en": "Education" },
-      "title": { "fr": "Licence Sécurité Informatique", "en": "Bachelor in Computer Security" },
-      "org": "ESGIS — Cotonou",
-      "date": "09/2022 — 06/2026",
-      "progress": {
-        "label": { "fr": "PROGRESSION", "en": "PROGRESSION" },
-        "value": { "fr": "Terminé", "en": "Completed" },
-        "percent": 100
-      },
-      "tags": [
-        { "fr": "Cybersécurité", "en": "Cybersecurity" },
-        { "fr": "Réseaux", "en": "Networking" },
-        "SysAdmin"
-      ]
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": { "fr": "Certification", "en": "Certificate" },
+      "title": "Google AI Professional Certificate⁠",
+      "org": "Google",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
+      "tags": [{ "fr": "Cybersécurité", "en": "Cybersecurity" }, { "fr": "Intelligence artificielle", "en": "I.A" }]
     },
     {
-      "id": "experience",
+      "id": "cissp",
       "order": 2,
       "visible": true,
-      "color": "cyan",
-      "icon": "⚡",
-      "badge": { "fr": "Expérience", "en": "Experience" },
-      "title": { "fr": "Bénévole Comm. & Évén.", "en": "Volunteer Comm. & Events" },
-      "org": "Le Rond Point Classe",
-      "date": { "fr": "06/2024 — AUJOURD'HUI", "en": "06/2024 — PRESENT" },
-      "progress": {
-        "label": "IMPACT",
-        "value": "FESTICHILL",
-        "percent": 80
-      },
-      "tags": [
-        "Marketing",
-        { "fr": "Événementiel", "en": "Events" },
-        "Booking"
-      ]
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": "Certification",
+      "title": "Certified Information Systems Security Professional (CISSP)",
+      "org": "INFOSEC",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
+      "tags": []
     },
     {
       "id": "certif",
@@ -49,8 +33,8 @@
       "visible": true,
       "color": "yellow",
       "icon": "🏅",
-      "badge": { "fr": "Certification", "en": "Certification" },
-      "title": "CCEP Certified",
+      "badge": "Certification",
+      "title": "Certified Cybersecurity Educator Professional (CCEP)",
       "org": "Red Team Leaders",
       "date": { "fr": "OBTENU", "en": "EARNED" },
       "progress": {
@@ -58,24 +42,85 @@
         "value": { "fr": "CERTIFIÉ", "en": "CERTIFIED" },
         "percent": 100
       },
-      "tags": ["Offensive Sec", "Educator"]
+      "tags": []
     },
     {
-      "id": "fortinet",
+      "id": "ibm-1",
       "order": 4,
       "visible": true,
       "color": "yellow",
-      "icon": "🔒",
-      "badge": { "fr": "Certification", "en": "Certification" },
-      "title": "Threat Landscape",
+      "icon": "🏅",
+      "badge": { "fr": "Certification", "en": "Certificate" },
+      "title": "Governance, Risk, Compliance, and Data Privacy",
+      "org": "IBM",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
+      "tags": []
+    },
+    {
+      "id": "ibm-2",
+      "order": 5,
+      "visible": true,
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": "Certification",
+      "title": "Vulnerability Management",
+      "org": "IBM",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
+      "tags": []
+    },
+    {
+      "id": "ibm-3",
+      "order": 6,
+      "visible": true,
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": "Certification",
+      "title": "System and Network Security",
+      "org": "IBM",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
+      "tags": []
+    },
+    {
+      "id": "g-2",
+      "order": 7,
+      "visible": true,
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": "Certification",
+      "title": "Foundations of Project Management",
+      "org": "Google",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
+      "tags": []
+    },
+    {
+      "id": "fortinet",
+      "order": 8,
+      "visible": true,
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": "Certification",
+      "title": "NSE1 - Introduction to the Threat Landscape",
       "org": "Fortinet Training Institute",
       "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": {
-        "label": { "fr": "DOMAINE", "en": "DOMAIN" },
-        "value": "THREAT INTEL",
-        "percent": 100
-      },
+      "progress": { "label": { "fr": "DOMAINE", "en": "DOMAIN" }, "value": "THREAT INTEL", "percent": 100 },
       "tags": ["Threat Intel", "Fortinet"]
+    },
+    {
+      "id": "onu-1",
+      "order": 9,
+      "visible": true,
+      "color": "yellow",
+      "icon": "🏅",
+      "badge": "Certification",
+      "title": "Cybercriminality Courses",
+      "org": "United Nations Office of Drugs and Crime (ONU)",
+      "date": { "fr": "OBTENU", "en": "EARNED" },
+      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
+      "tags": []
     }
   ]
 }
