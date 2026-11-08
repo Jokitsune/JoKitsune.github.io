@@ -4,6 +4,8 @@ import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { headersFor } from '../../src/vite/admin-plugin.js';
+import { svgProblem } from '../../api/_lib/svg.js';
+import { PUBLIC_PATH_RE } from '../../api/_lib/upload.js';
 import { ROOT } from './helpers.js';
 
 const vercel = JSON.parse(readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
@@ -69,6 +71,28 @@ describe('vercel.json — en-têtes', () => {
     }
   });
 
+  it('SVG uploadés : CSP sandbox fermée, Content-Type explicite, téléchargement en navigation directe', () => {
+    const p = '/images/uploads/a-0123456789ab.svg';
+    const csp = get(p, 'Content-Security-Policy');
+    expect(csp).toMatch(/^sandbox;/);
+    expect(csp).toContain("default-src 'none'");
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).not.toMatch(/unsafe-|style-src|script-src/);
+    expect(get(p, 'Content-Type')).toBe('image/svg+xml');
+    expect(get(p, 'Content-Disposition')).toBe('attachment');
+    expect(get(p, 'X-Content-Type-Options')).toBe('nosniff');
+    // La règle .svg doit rester la dernière qui correspond (la dernière l'emporte)
+    const matching = vercel.headers.filter(r => new RegExp(`^${r.source}$`).test(p));
+    expect(matching.at(-1).source).toBe('/images/uploads/(.*)\\.svg');
+  });
+
+  it('images matricielles uploadées : CSP fermée, sans sandbox ni attachment', () => {
+    const p = '/images/uploads/a-0123456789ab.png';
+    expect(get(p, 'Content-Security-Policy')).toBe("default-src 'none'; frame-ancestors 'none'");
+    expect(get(p, 'Content-Disposition')).toBeUndefined();
+    expect(get(p, 'X-Content-Type-Options')).toBe('nosniff');
+  });
+
   it('redirection /admin → /admin/ et aucun en-tête CORS', () => {
     expect(vercel.redirects).toContainEqual({ source: '/admin', destination: '/admin/', permanent: false });
     expect(JSON.stringify(vercel)).not.toMatch(/Access-Control-Allow/i);
@@ -101,6 +125,18 @@ describe('T-PUB-01 — aucun sink HTML dans le code applicatif', () => {
       expect(m[2].trim()).toBe('');
     }
     expect(html).not.toMatch(/<style\b|\sstyle=|\son[a-z]+=/i);
+  });
+});
+
+describe('SVG du dépôt — revalidation (seule défense sur GitHub Pages, sans en-têtes)', () => {
+  it('tout public/images/uploads/*.svg passe la liste blanche de l’API', () => {
+    const dir = path.join(ROOT, 'public/images/uploads');
+    const files = readdirSync(dir).filter(f => f.toLowerCase().endsWith('.svg'));
+    for (const file of files) {
+      const bytes = new Uint8Array(readFileSync(path.join(dir, file)));
+      expect(svgProblem(bytes), file).toBeNull();
+      expect(`/images/uploads/${file}`, file).toMatch(PUBLIC_PATH_RE);
+    }
   });
 });
 
