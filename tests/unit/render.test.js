@@ -50,7 +50,7 @@ describe('rendu de la page', () => {
     expect(doc.querySelectorAll('.social-pile-item')).toHaveLength(content.site.socials.length);
     expect(doc.querySelectorAll('.skill-card')).toHaveLength(content.skills.categories.length);
     expect(doc.querySelectorAll('.project-card')).toHaveLength(content.projects.projects.length);
-    expect(doc.querySelectorAll('.timeline-item')).toHaveLength(content.timeline.items.length);
+    expect(doc.querySelectorAll('.tl-item')).toHaveLength(content.timeline.items.length);
     expect(doc.querySelectorAll('.card-3d-wrap')).toHaveLength(content.cards.cards.length);
     expect(doc.querySelectorAll('.contact-item')).toHaveLength(content.site.contact.items.length);
   });

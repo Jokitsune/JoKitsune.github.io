@@ -57,7 +57,7 @@ describe('i18n côté client', () => {
     expect(norm(document.querySelector('.hero-greeting').textContent)).toBe(localize(content.site.hero.greeting, 'en'));
     expect(document.querySelector('#skills .section-title').innerHTML).toBe('Technical<br>Arsenal');
     expect(document.querySelector('#form-name').placeholder).toBe('Your name...');
-    expect(norm(document.querySelector('.nav-links').textContent)).toContain('./education');
+    expect(norm(document.querySelector('.nav-links').textContent)).toContain('./journey');
     expect(document.querySelector('.lang-btn[data-lang="en"]').classList.contains('active')).toBe(true);
 
     setLanguage('fr');

@@ -1,34 +1,223 @@
-/* Partial : Formation & timeline — extrait de l'ancien style.css (l. 550-581) */
+/* Partial : Formation — frise « Parcours » animée au défilement (.tl*)
+   États posés UNIQUEMENT par le JS (src/js/modules/timeline.js) :
+     .tl.is-enhanced  animation active (absente en mouvement réduit : tout est visible, rail plein)
+     .tl-item.is-visible / .is-reached / .is-active
+   Le rail lit une seule variable, --tl-progress (0 → 1), écrite via le CSSOM. */
 
 /* -------- FORMATION -------- */
 #formation { background: var(--bg2); }
 
-/* Layout côte à côte */
-.formation-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: start;
+@property --tl-progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
 }
 
-/* Timeline */
-.timeline { position: relative; padding-left: 40px; }
-.timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--green), var(--border)); }
-.timeline-item {
+.tl {
+  /* Tokens locaux de la frise */
+  --tl-muted: #6b9478;            /* texte secondaire : 5,5:1 sur --bg2 (AA) */
+  --tl-date-w: 9.5rem;            /* colonne des dates (desktop) */
+  --tl-node-col: 3rem;            /* colonne du point */
+  --tl-rail-x: calc(var(--tl-date-w) + var(--tl-node-col) / 2);
+  --tl-gap: 3rem;
+  --tl-body-pt: 1.25rem;          /* marge haute du corps : aligne point et période sur la 1re ligne */
+  --tl-ease: cubic-bezier(.16, 1, .3, 1);
+  --tl-dur-reveal: 520ms;
+  --tl-dur-state: 240ms;
+
   position: relative;
-  margin-bottom: 50px;
-  opacity: 0;
-  transform: translateX(-20px);
-  animation: slideIn 0.5s forwards;
-  animation-play-state: paused;
+  max-width: 62rem;
+  margin-inline: auto;
 }
-.timeline-item:nth-child(1) { animation-delay: 0.2s; }
-.timeline-item:nth-child(2) { animation-delay: 0.4s; }
-.timeline-item:nth-child(3) { animation-delay: 0.6s; }
-.timeline-dot  { position: absolute; left: -47px; top: 6px; width: 14px; height: 14px; background: var(--green); border-radius: 50%; box-shadow: 0 0 12px var(--green); }
-.timeline-date { font-size: 0.72rem; color: var(--green-dim); letter-spacing: 2px; margin-bottom: 6px; }
-.timeline-role { font-family: 'Orbitron', monospace; font-size: 0.95rem; color: var(--green); font-weight: 700; margin-bottom: 4px; }
-.timeline-org  { font-size: 0.8rem; color: var(--cyan); margin-bottom: 10px; letter-spacing: 1px; }
-.timeline-desc { font-family: 'Exo 2', sans-serif; font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; }
-.timeline-desc ul { list-style: none; padding: 0; }
-.timeline-desc ul li::before { content: '→ '; color: var(--green-dim); }
+
+/* -------- Rail -------- */
+.tl-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--tl-rail-x);
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--border);
+  container-type: size;           /* 100cqh = hauteur du rail, pour placer la tête sans layout */
+  pointer-events: none;
+}
+.tl-rail-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--green), var(--cyan));
+  transform-origin: top;
+  transform: scaleY(var(--tl-progress));
+}
+.tl-rail-head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 12px var(--green), 0 0 24px rgba(0, 255, 136, 0.4);
+  transform: translateY(calc(var(--tl-progress) * 100cqh));
+  opacity: 0;
+}
+.tl.is-enhanced .tl-rail-head { opacity: 1; }
+
+/* -------- Liste et entrées -------- */
+.tl-list { list-style: none; padding: 0; margin: 0; }
+
+.tl-item {
+  --kind-color: var(--green);
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--tl-date-w) var(--tl-node-col) minmax(0, 1fr);
+  align-items: start;
+}
+.tl-item + .tl-item { margin-top: var(--tl-gap); }
+.tl-item--formation { --kind-color: var(--cyan); }
+.tl-item--benevolat { --kind-color: var(--yellow); }
+
+/* Point : forme par catégorie (l'information ne repose pas sur la couleur seule) */
+.tl-node {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  width: 14px;
+  height: 14px;
+  margin-top: calc(var(--tl-body-pt) + 0.1rem);
+  border: 2px solid var(--kind-color);
+  border-radius: 50%;
+  background: var(--bg2);
+  position: relative;
+  z-index: 1;
+  transition: background-color var(--tl-dur-state) ease-out, box-shadow var(--tl-dur-state) ease-out;
+}
+.tl-item--formation .tl-node { border-radius: 2px; transform: rotate(45deg); }
+.tl-item--benevolat .tl-node { outline: 1px solid var(--kind-color); outline-offset: 3px; }
+
+/* Point atteint (ou frise non animée : tout est « atteint ») */
+.tl:not(.is-enhanced) .tl-node,
+.tl-item.is-reached .tl-node {
+  background: var(--kind-color);
+  box-shadow: 0 0 12px var(--kind-color);
+}
+.tl.is-enhanced .tl-item.is-reached .tl-node { animation: tl-node-ping 600ms var(--tl-ease) 1; }
+.tl.is-enhanced .tl-item--formation.is-reached .tl-node { animation-name: tl-node-ping-diamond; }
+
+/* Corps */
+.tl-body {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 65ch;
+  padding: var(--tl-body-pt) 1.5rem;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg3) 60%, transparent);
+  transition: border-color 300ms ease-out, box-shadow 300ms ease-out;
+}
+.tl-item.is-active .tl-body {
+  border-color: color-mix(in srgb, var(--kind-color) 60%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--kind-color) 15%, transparent);
+}
+
+/* Ordre visuel (le DOM commence par le h3) */
+.tl-kind { order: -2; }
+.tl-when { order: -1; }
+
+.tl-role {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--green);
+  margin-bottom: 0.35rem;
+}
+.tl-kind {
+  align-self: flex-start;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--kind-color);
+  border: 1px solid var(--kind-color);
+  padding: 0.1rem 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.tl-when {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--green-dim);
+  margin-bottom: 0.35rem;
+}
+/* Bloc atomique : le point « en cours » ne se sépare jamais de son libellé */
+.tl-ongoing { display: inline-flex; align-items: center; color: var(--kind-color); }
+.tl-ongoing::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.4em;
+  border-radius: 50%;
+  background: currentColor;
+}
+/* Pulsation limitée à 2 cycles (WCAG 2.2.2), au moment où l'entrée apparaît */
+.tl.is-enhanced .tl-item.is-visible .tl-ongoing::before { animation: tl-pulse 2s ease-in-out 2; }
+
+.tl-org {
+  font-size: 0.85rem;
+  color: var(--cyan);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.75rem;
+}
+.tl-desc {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--tl-muted);
+}
+.tl-bullets { list-style: none; padding: 0; margin: 0; }
+.tl-bullets li::before { content: '→ '; color: var(--green-dim); }
+
+/* Desktop : la période passe dans la colonne de gauche, alignée à droite */
+@media (min-width: 901px) {
+  .tl-item { position: relative; }
+  .tl-when {
+    position: absolute;
+    top: var(--tl-body-pt);
+    left: 0;
+    width: var(--tl-date-w);
+    padding-right: 0.25rem;
+    text-align: right;
+  }
+}
+
+/* Cartes, provisoirement sous la frise */
+#formation .cards-column { margin-top: 5rem; }
+
+/* -------- Apparition (uniquement si le JS a activé l'animation) -------- */
+.tl.is-enhanced .tl-item {
+  transition: opacity var(--tl-dur-reveal) var(--tl-ease), transform var(--tl-dur-reveal) var(--tl-ease);
+}
+.tl.is-enhanced .tl-item:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+.tl.tl--instant .tl-item { transition: none; }
+
+@keyframes tl-node-ping {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.35); box-shadow: 0 0 22px var(--kind-color); }
+  100% { transform: scale(1); }
+}
+@keyframes tl-node-ping-diamond {
+  0%   { transform: rotate(45deg) scale(1); }
+  45%  { transform: rotate(45deg) scale(1.35); box-shadow: 0 0 22px var(--kind-color); }
+  100% { transform: rotate(45deg) scale(1); }
+}
+@keyframes tl-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  50%      { opacity: 0.45; box-shadow: 0 0 6px 2px currentColor; }
+}

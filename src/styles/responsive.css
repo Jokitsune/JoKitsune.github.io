@@ -7,7 +7,6 @@
 
 @media (max-width: 900px) {
   #hero                { grid-template-columns: 1fr; }
-  .formation-layout    { grid-template-columns: 1fr; }
   .contact-wrapper     { grid-template-columns: 1fr; }
   .contact-info        { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 40px; }
   nav                  { padding: 12px 20px; }
@@ -47,6 +46,12 @@
   
   section              { padding: 60px 5% 40px; }
   .cards-column        { grid-template-columns: 1fr 1fr; }
+
+  /* Frise « Parcours » : une colonne, la période passe au-dessus de l'intitulé */
+  .tl                  { --tl-node-col: 2rem; --tl-rail-x: calc(var(--tl-node-col) / 2); --tl-gap: 2.25rem; --tl-body-pt: 1rem; }
+  .tl-item             { grid-template-columns: var(--tl-node-col) minmax(0, 1fr); }
+  .tl-node             { grid-column: 1; }
+  .tl-body             { grid-column: 2; padding-inline: 1.125rem; }
 }
 
 @media (max-width: 680px) {
@@ -112,4 +117,10 @@
     width: 44px;
     height: 44px;
   }
+}
+
+@media (max-width: 380px) {
+  .tl                  { --tl-node-col: 1.5rem; --tl-body-pt: 0.875rem; }
+  .tl-body             { padding-inline: 0.875rem; }
+  .tl-role             { font-size: 0.95rem; }
 }

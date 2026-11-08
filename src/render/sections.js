@@ -8,6 +8,7 @@
 import { escapeAttr, escapeHtml, safeUrl } from './escape.js';
 import { visibleSorted } from './context.js';
 import { SHARE_ICON, socialIcon } from './icons.js';
+import { sortTimeline, isOngoing, formatMonth, periodText } from '../lib/timeline.js';
 
 /** Suffixe de classe des variantes de carte (green = style de base, sans suffixe). */
 function variant(cls, color) {
@@ -190,11 +191,12 @@ ${promptLine(`<span${finalCmd.attr}>${finalCmd.html}</span><span class="t-cursor
 }
 
 /* -------- En-tête de section (label + titre) -------- */
+// Le titre porte l'id « <name>-title », cible possible d'un aria-labelledby sur la section.
 function sectionHeading(name, { ui }, ctx) {
   const label = ctx.t(`sections.${name}.label`, ui.sections[name].label);
   const title = ctx.t(`sections.${name}.title`, ui.sections[name].title);
   return `      <div class="section-label"${label.attr}>${label.html}</div>
-      <h2 class="section-title"${title.attr}>${title.html}</h2>`;
+      <h2 class="section-title" id="${name}-title"${title.attr}>${title.html}</h2>`;
 }
 
 /* -------- COMPÉTENCES -------- */
@@ -260,38 +262,55 @@ ${cards}
     </section>`;
 }
 
-/* -------- Timeline (colonne gauche de la section formation) -------- */
+/* -------- Timeline « Parcours » -------- */
+// Ordre DOM : intitulé (h3) → catégorie → période → organisme → description,
+// pour qu'un lecteur d'écran qui saute de titre en titre entende tout le contexte.
+// L'ordre visuel (catégorie et période au-dessus) est réglé en CSS.
+// Aucune classe d'état (is-enhanced, is-visible…) : elles sont posées par le JS.
 function renderTimeline(content, ctx) {
-  return visibleSorted(content.timeline.items).map(item => {
-    const date = ctx.t(`timeline.${item.id}.date`, item.date);
-    const role = ctx.t(`timeline.${item.id}.role`, item.role);
-    const org = ctx.t(`timeline.${item.id}.org`, item.org);
+  const labels = content.ui.timeline;
+  return sortTimeline(content.timeline.items).map(item => {
+    const k = `timeline.${item.id}`;
+    const kind = escapeAttr(item.kind);
+    const role = ctx.t(`${k}.role`, item.role);
+    const org = ctx.t(`${k}.org`, item.org);
+    const kindLabel = ctx.t(`timelineUi.kind.${item.kind}`, labels.kinds[item.kind]);
+    const period = ctx.t(`${k}.period`, periodText(item, labels));
+    const start = `<time datetime="${escapeAttr(item.start)}">${escapeHtml(formatMonth(item.start))}</time>`;
+    let end;
+    if (isOngoing(item)) {
+      const present = ctx.t('timelineUi.present', labels.present);
+      end = `<span class="tl-ongoing"${present.attr}>${present.html}</span>`;
+    } else {
+      end = `<time datetime="${escapeAttr(item.end)}">${escapeHtml(formatMonth(item.end))}</time>`;
+    }
     let desc;
     if (item.bullets) {
       const lis = item.bullets.map((b, i) => {
-        const li = ctx.t(`timeline.${item.id}.bullets.${i}`, b);
-        return `                <li${li.attr}>${li.html}</li>`;
+        const li = ctx.t(`${k}.bullets.${i}`, b);
+        return `              <li${li.attr}>${li.html}</li>`;
       }).join('\n');
-      desc = `            <div class="timeline-desc">
-              <ul>
+      desc = `            <ul class="tl-desc tl-bullets" role="list">
 ${lis}
-              </ul>
-            </div>`;
+            </ul>`;
     } else {
-      const d = ctx.t(`timeline.${item.id}.description`, item.description);
-      desc = `            <div class="timeline-desc"${d.attr}>${d.html}</div>`;
+      const d = ctx.t(`${k}.description`, item.description);
+      desc = `            <p class="tl-desc"${d.attr}>${d.html}</p>`;
     }
-    return `          <div class="timeline-item">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-date"${date.attr}>${date.html}</div>
-            <div class="timeline-role"${role.attr}>${role.html}</div>
-            <div class="timeline-org"${org.attr}>${org.html}</div>
+    return `        <li class="tl-item tl-item--${kind}" data-kind="${kind}" data-id="${escapeAttr(item.id)}">
+          <span class="tl-node" aria-hidden="true"></span>
+          <div class="tl-body">
+            <h3 class="tl-role"${role.attr}>${role.html}</h3>
+            <p class="tl-kind"${kindLabel.attr}>${kindLabel.html}</p>
+            <p class="tl-when"><span class="sr-only"${period.attr}>${period.html}</span><span class="tl-when-text" aria-hidden="true">${start}<span class="tl-sep"> — </span>${end}</span></p>
+            <p class="tl-org"${org.attr}>${org.html}</p>
 ${desc}
-          </div>`;
-  }).join('\n\n');
+          </div>
+        </li>`;
+  }).join('\n');
 }
 
-/* -------- Cartes 3D (colonne droite de la section formation) -------- */
+/* -------- Cartes 3D (provisoirement sous la frise de la section formation) -------- */
 function renderCards(content, ctx) {
   return visibleSorted(content.cards.cards).map(card => {
     const c = card.color;
@@ -334,27 +353,24 @@ ${tags}
   }).join('\n\n');
 }
 
-/* -------- FORMATION (timeline + cartes) -------- */
+/* -------- FORMATION : frise « Parcours » -------- */
+// Les cartes restent provisoirement sous la frise : elles rejoindront la section
+// #certifications (rendue séparément) dans une étape suivante.
 export function renderFormation(content, ctx) {
-  return `<section id="formation">
+  return `<section id="formation" aria-labelledby="formation-title">
 ${sectionHeading('formation', content, ctx)}
 
-      <!-- Layout : timeline à gauche, cartes à droite -->
-      <div class="formation-layout">
-
-        <!-- COLONNE GAUCHE : Timeline -->
-        <div class="timeline">
-
+      <div class="tl" data-timeline>
+        <div class="tl-rail" aria-hidden="true"><span class="tl-rail-fill"></span><span class="tl-rail-head"></span></div>
+        <ol class="tl-list" role="list">
 ${renderTimeline(content, ctx)}
+        </ol>
+      </div>
 
-        </div>
-
-        <!-- COLONNE DROITE : Cartes 3D tilt -->
-        <div class="cards-column">
+      <div class="cards-column">
 
 ${renderCards(content, ctx)}
 
-        </div>
       </div>
     </section>`;
 }
