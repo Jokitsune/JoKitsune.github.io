@@ -1,28 +1,50 @@
 /* ================================================
-   VUE FICHIERS — CV (PDF, FR/EN) et images (PNG/JPEG/WebP)
+   VUE FICHIERS — CV (PDF, FR/EN) et images (PNG/JPEG/WebP/SVG)
    Les JPEG sont ré-encodés via <canvas> avant envoi (suppression des
-   métadonnées EXIF, dont la géolocalisation). Le serveur revérifie tout.
+   métadonnées EXIF, dont la géolocalisation). Le serveur revérifie tout ;
+   les SVG ne sont validés QUE côté serveur (pas de DOMParser : Trusted Types).
    ================================================ */
 
 import { api, AdminApiError } from '../api.js';
 import { h, mount, nextId } from '../dom.js';
 
-const LIMITS = { cv: 3 * 1024 * 1024, image: 1.5 * 1024 * 1024 };
-const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const LIMITS = { cv: 3 * 1024 * 1024, image: 1.5 * 1024 * 1024, svg: 256 * 1024 };
+const SVG_TYPE = 'image/svg+xml';
+const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', SVG_TYPE];
 
 const formatSize = n => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(2)} Mo` : `${Math.ceil(n / 1024)} Ko`);
+
+/** Type effectif : certains systèmes ne renseignent pas le type MIME des .svg. */
+const fileType = file => (file.type === '' && /\.svg$/i.test(file.name) ? SVG_TYPE : file.type);
+
+const SVGO_HINT = 'Passez le fichier dans SVGO avec le plugin convertStyleToAttrs (styles convertis en attributs, métadonnées retirées), ou ré-exportez en « SVG simple ».';
 
 const UPLOAD_REASONS = {
   magic_mismatch: 'le contenu du fichier ne correspond pas à son type',
   pdf_active_content: 'le PDF contient du contenu actif (JavaScript, lancement…)',
-  too_small: 'fichier trop petit'
+  too_small: 'fichier trop petit',
+  svg_malformed: 'SVG mal formé',
+  svg_bad_encoding: 'encodage non UTF-8',
+  svg_dtd_or_cdata: 'DOCTYPE/entités/CDATA interdits',
+  svg_disallowed_element: 'élément non autorisé',
+  svg_disallowed_attribute: 'attribut non autorisé (style compris)',
+  svg_event_handler: 'gestionnaire d’événement (on…) interdit',
+  svg_disallowed_value: 'référence externe ou valeur interdite',
+  svg_unexpected_text: 'texte hors title/desc/text',
+  svg_too_complex: 'SVG trop complexe',
+  svg_missing_viewbox: 'viewBox absent ou invalide'
 };
 
 function describeError(err) {
   if (!(err instanceof AdminApiError)) return 'Erreur inattendue.';
-  if (err.code === 'UPLOAD_INVALID') return `Fichier refusé : ${UPLOAD_REASONS[err.details?.[0]?.code] ?? 'contenu invalide'}.`;
-  if (err.code === 'UNSUPPORTED_MEDIA_TYPE') return 'Type de fichier non autorisé (PDF pour le CV ; PNG, JPEG ou WebP pour les images ; SVG interdit).';
-  if (err.code === 'PAYLOAD_TOO_LARGE') return 'Fichier trop volumineux (3 Mo max. pour un PDF, 1,5 Mo pour une image).';
+  if (err.code === 'UPLOAD_INVALID') {
+    const detail = err.details?.[0] ?? {};
+    const name = detail.name ? ` « ${detail.name} »` : '';
+    const hint = String(detail.code ?? '').startsWith('svg_') ? ` ${SVGO_HINT}` : '';
+    return `Fichier refusé : ${UPLOAD_REASONS[detail.code] ?? 'contenu invalide'}${name}.${hint}`;
+  }
+  if (err.code === 'UNSUPPORTED_MEDIA_TYPE') return 'Type de fichier non autorisé (PDF pour le CV ; PNG, JPEG, WebP ou SVG pour les images).';
+  if (err.code === 'PAYLOAD_TOO_LARGE') return 'Fichier trop volumineux (3 Mo max. pour un PDF, 1,5 Mo pour une image, 256 Ko pour un SVG).';
   return err.message;
 }
 
@@ -135,7 +157,7 @@ function cvCard(lang, app) {
 function imageCard(app) {
   const fileId = nextId();
   const nameId = nextId();
-  const input = h('input', { id: fileId, type: 'file', accept: IMAGE_TYPES.join(','), class: 'input-file' });
+  const input = h('input', { id: fileId, type: 'file', accept: `${IMAGE_TYPES.join(',')},.svg`, class: 'input-file' });
   const name = h('input', { id: nameId, type: 'text', class: 'input', maxlength: '60', autocomplete: 'off' });
   const strip = h('input', { type: 'checkbox', checked: true });
   const previewBox = h('div', { class: 'preview' });
@@ -147,7 +169,8 @@ function imageCard(app) {
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     const file = input.files?.[0];
     previewBox.replaceChildren();
-    if (!file || !IMAGE_TYPES.includes(file.type)) return;
+    if (!file || !IMAGE_TYPES.includes(fileType(file))) return;
+    // Aperçu via <img src=blob:> : contexte inerte, même pour un SVG piégé
     objectUrl = URL.createObjectURL(file);
     previewBox.append(h('img', { src: objectUrl, alt: 'Aperçu de l’image sélectionnée' }));
     if (!name.value) name.value = file.name.replace(/\.[^.]+$/, '');
@@ -158,16 +181,18 @@ function imageCard(app) {
       e.preventDefault();
       let file = input.files?.[0];
       if (!file) return input.focus();
-      if (!IMAGE_TYPES.includes(file.type)) return mount(out, h('p', { class: 'error' }, 'Formats acceptés : PNG, JPEG, WebP (SVG interdit).'));
+      const type = fileType(file);
+      if (!IMAGE_TYPES.includes(type)) return mount(out, h('p', { class: 'error' }, 'Formats acceptés : PNG, JPEG, WebP ou SVG.'));
       btn.disabled = true;
       try {
         let blob = file;
-        if (file.type === 'image/jpeg' && strip.checked) blob = await stripJpegMetadata(file);
-        if (blob.size > LIMITS.image) {
-          mount(out, h('p', { class: 'error' }, `Image trop volumineuse (${formatSize(blob.size)} > 1,5 Mo).`));
+        if (type === 'image/jpeg' && strip.checked) blob = await stripJpegMetadata(file);
+        const limit = type === SVG_TYPE ? LIMITS.svg : LIMITS.image;
+        if (blob.size > limit) {
+          mount(out, h('p', { class: 'error' }, `Image trop volumineuse (${formatSize(blob.size)} > ${formatSize(limit)}).`));
           return;
         }
-        const res = await api.upload({ kind: 'image', name: name.value }, blob, file.type);
+        const res = await api.upload({ kind: 'image', name: name.value }, blob, type);
         const warn = res.warnings?.includes('exif_present') ? '⚠ métadonnées EXIF présentes' : '';
         mount(out, result(res.url, res.duplicate ? '(déjà présente)' : warn, app));
         app.toast('Image envoyée dans le brouillon.', 'ok');
@@ -181,7 +206,8 @@ function imageCard(app) {
     }
   },
   h('h2', {}, 'Image'),
-  h('div', { class: 'field' }, h('label', { for: fileId, class: 'field-label' }, 'Fichier PNG, JPEG ou WebP (1,5 Mo max.)'), input),
+  h('div', { class: 'field' }, h('label', { for: fileId, class: 'field-label' }, 'Fichier PNG, JPEG, WebP ou SVG (1,5 Mo ; SVG 256 Ko)'), input),
+  h('p', { class: 'muted' }, 'SVG : liste blanche stricte (ni <style> ni attribut style, ni script, ni lien externe, viewBox obligatoire). ', SVGO_HINT),
   h('div', { class: 'field' }, h('label', { for: nameId, class: 'field-label' }, 'Libellé (sert à nommer le fichier)'), name),
   h('label', { class: 'inline-check' }, strip, ' Retirer les métadonnées des JPEG (recommandé : géolocalisation)'),
   previewBox, btn, out);
