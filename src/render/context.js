@@ -6,6 +6,12 @@ import { escapeAttr, safeUrl, textToHtml } from './escape.js';
 
 export const LANGS = ['fr', 'en'];
 
+/**
+ * Attributs traduisibles via `data-i18n-attr="attr:clé;attr:clé"` (liste blanche
+ * partagée avec le client, src/js/modules/i18n.js). Jamais href, src, style ni on*.
+ */
+export const I18N_ATTRS = Object.freeze(['alt', 'aria-label', 'aria-roledescription', 'aria-description', 'title']);
+
 /** Vrai si la valeur est un texte bilingue { fr, en }. */
 export function isLocalized(value) {
   return value !== null && typeof value === 'object' && 'fr' in value && 'en' in value;
@@ -73,6 +79,29 @@ export function createContext(lang) {
       if (!isLocalized(value)) return { attr: '', value: url };
       register(key, value, '');
       return { attr: ` data-i18n-href="${escapeAttr(key)}"`, value: url };
+    },
+    /**
+     * Attributs textuels traduisibles (alt, aria-label…), pré-rendus dans la
+     * langue du rendu. Renvoie la chaîne d'attributs complète, précédée d'une espace :
+     *   ctx.attrs({ alt: ['certs.x.alt', { fr, en }] })
+     *   → ' alt="…" data-i18n-attr="alt:certs.x.alt"'
+     * Une valeur invariante produit l'attribut seul, sans data-i18n-attr.
+     * @param {Record<string, [string, unknown]>} spec
+     */
+    attrs(spec) {
+      const out = [];
+      const i18n = [];
+      for (const [name, [key, value]] of Object.entries(spec)) {
+        if (!I18N_ATTRS.includes(name)) throw new Error(`Attribut non traduisible : ${name}`);
+        if (/[;:\s]/.test(key)) throw new Error(`Clé i18n invalide pour un attribut : ${key}`);
+        out.push(` ${name}="${escapeAttr(localize(value, lang))}"`);
+        if (isLocalized(value)) {
+          register(key, value, '');
+          i18n.push(`${name}:${key}`);
+        }
+      }
+      if (i18n.length) out.push(` data-i18n-attr="${escapeAttr(i18n.join(';'))}"`);
+      return out.join('');
     },
     /** Texte non traduit dynamiquement, échappé pour un attribut (méta…) */
     plain(value) {
