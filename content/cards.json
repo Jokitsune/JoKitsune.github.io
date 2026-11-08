@@ -5,122 +5,100 @@
       "id": "g-1",
       "order": 1,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": { "fr": "Certification", "en": "Certificate" },
-      "title": "Google AI Professional Certificate⁠",
+      "title": "Google AI Professional Certificate",
       "org": "Google",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
-      "tags": [{ "fr": "Cybersécurité", "en": "Cybersecurity" }, { "fr": "Intelligence artificielle", "en": "I.A" }]
+      "logo": "/images/uploads/google-7e6682219347.svg",
+      "logoAlt": { "fr": "Logo Google", "en": "Google logo" },
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/professional-cert/certificate/H1DDKOTI32R9",
+      "verifyPlatform": "Coursera"
     },
     {
       "id": "cissp",
       "order": 2,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": "Certification",
       "title": "Certified Information Systems Security Professional (CISSP)",
       "org": "INFOSEC",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
-      "tags": []
+      "logo": "/images/uploads/infosec-690b1e6abb1c.svg",
+      "logoAlt": { "fr": "Logo Infosec", "en": "Infosec logo" },
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/specialization/certificate/XX0D22OWA9K6",
+      "verifyPlatform": "Coursera"
     },
     {
       "id": "certif",
       "order": 3,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": "Certification",
       "title": "Certified Cybersecurity Educator Professional (CCEP)",
       "org": "Red Team Leaders",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": {
-        "label": { "fr": "ACCRÉDITATION", "en": "ACCREDITATION" },
-        "value": { "fr": "CERTIFIÉ", "en": "CERTIFIED" },
-        "percent": 100
-      },
-      "tags": []
+      "logo": "/images/uploads/red-team-leaders-7d896c02f6b6.webp",
+      "logoAlt": { "fr": "Logo Red Team Leaders", "en": "Red Team Leaders logo" },
+      "verifyUrl": "https://courses.redteamleaders.com/exam-completion/393b4102150eae6b",
+      "verifyPlatform": "Red Team Leaders"
     },
     {
       "id": "ibm-1",
       "order": 4,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": { "fr": "Certification", "en": "Certificate" },
       "title": "Governance, Risk, Compliance, and Data Privacy",
       "org": "IBM",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
-      "tags": []
+      "logo": "/images/uploads/ibm-6bdf7f8ccdb3.svg",
+      "logoAlt": { "fr": "Logo IBM", "en": "IBM logo" },
+      "verifyUrl": "https://www.credly.com/badges/a120be53-fa75-40c4-b12f-06d095b1af3c",
+      "verifyPlatform": "Credly"
     },
     {
       "id": "ibm-2",
       "order": 5,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": "Certification",
       "title": "Vulnerability Management",
       "org": "IBM",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
-      "tags": []
+      "logo": "/images/uploads/ibm-6bdf7f8ccdb3.svg",
+      "logoAlt": { "fr": "Logo IBM", "en": "IBM logo" },
+      "verifyUrl": "https://www.credly.com/badges/545de80b-1953-4428-a5f7-16a1c0b75cfe",
+      "verifyPlatform": "Credly"
     },
     {
       "id": "ibm-3",
       "order": 6,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": "Certification",
       "title": "System and Network Security",
       "org": "IBM",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
-      "tags": []
+      "logo": "/images/uploads/ibm-6bdf7f8ccdb3.svg",
+      "logoAlt": { "fr": "Logo IBM", "en": "IBM logo" },
+      "verifyUrl": "https://www.credly.com/badges/6cd7bc6b-e058-43be-924a-55eafb32575b",
+      "verifyPlatform": "Credly"
     },
     {
       "id": "g-2",
       "order": 7,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": "Certification",
       "title": "Foundations of Project Management",
       "org": "Google",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
-      "tags": []
+      "logo": "/images/uploads/google-7e6682219347.svg",
+      "logoAlt": { "fr": "Logo Google", "en": "Google logo" },
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/records/IL550K6V2TRY",
+      "verifyPlatform": "Coursera"
     },
     {
       "id": "fortinet",
       "order": 8,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": "Certification",
       "title": "NSE1 - Introduction to the Threat Landscape",
       "org": "Fortinet Training Institute",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": { "fr": "DOMAINE", "en": "DOMAIN" }, "value": "THREAT INTEL", "percent": 100 },
-      "tags": ["Threat Intel", "Fortinet"]
+      "logo": "/images/uploads/fortinet-610410b0d602.svg",
+      "logoAlt": { "fr": "Logo Fortinet", "en": "Fortinet logo" },
+      "verifyUrl": "https://www.credly.com/badges/b2f3c263-8b63-4afe-b802-ca2d99c715d7",
+      "verifyPlatform": "Credly"
     },
     {
       "id": "onu-1",
       "order": 9,
       "visible": true,
-      "color": "yellow",
-      "icon": "🏅",
-      "badge": "Certification",
       "title": "Cybercriminality Courses",
-      "org": "United Nations Office of Drugs and Crime (ONU)",
-      "date": { "fr": "OBTENU", "en": "EARNED" },
-      "progress": { "label": "PROGRESSION", "value": { "fr": "Terminé", "en": "Completed" }, "percent": 100 },
-      "tags": []
+      "org": "United Nations Office on Drugs and Crime (ONU)",
+      "logo": "/images/uploads/unodc-e4fb57b2c7b8.svg",
+      "logoAlt": { "fr": "Emblème des Nations unies", "en": "United Nations emblem" },
+      "verifyUrl": "https://elearningunodc.org/pluginfile.php/1/tool_certificate/issues/1762330234/5525553831JD.pdf",
+      "verifyPlatform": "UNODC"
     }
   ]
 }

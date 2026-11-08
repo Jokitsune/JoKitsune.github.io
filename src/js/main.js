@@ -11,8 +11,6 @@ import { initNav } from './modules/nav.js';
 import { initSocial } from './modules/social.js';
 import { initContact } from './modules/contact.js';
 import { initTimeline } from './modules/timeline.js';
-import { initTilt } from './modules/tilt.js';
-import { initProgress } from './modules/progress.js';
 import { initAudio } from './modules/audio.js';
 // Généré au build depuis content/*.json par le plugin Vite (src/vite/portfolio-content-plugin.js)
 import content from 'virtual:portfolio-content';
@@ -26,6 +24,4 @@ initSocial();
 initSmoothScroll();
 initContact({ formId: content.formspreeId, status: content.formStatus });
 initTimeline();
-initTilt();
-initProgress();
 initAudio({ volume: content.audioVolume });

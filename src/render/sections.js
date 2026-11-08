@@ -10,11 +10,6 @@ import { visibleSorted } from './context.js';
 import { SHARE_ICON, socialIcon } from './icons.js';
 import { sortTimeline, isOngoing, formatMonth, periodText } from '../lib/timeline.js';
 
-/** Suffixe de classe des variantes de carte (green = style de base, sans suffixe). */
-function variant(cls, color) {
-  return color && color !== 'green' ? ` ${cls}--${color}` : '';
-}
-
 /* -------- <head> : métadonnées SEO -------- */
 export function renderHead({ site }, ctx) {
   const m = site.meta;
@@ -310,52 +305,7 @@ ${desc}
   }).join('\n');
 }
 
-/* -------- Cartes 3D (provisoirement sous la frise de la section formation) -------- */
-function renderCards(content, ctx) {
-  return visibleSorted(content.cards.cards).map(card => {
-    const c = card.color;
-    const k = `cards.${card.id}`;
-    const badge = ctx.t(`${k}.badge`, card.badge);
-    const title = ctx.t(`${k}.title`, card.title);
-    const org = ctx.t(`${k}.org`, card.org);
-    const date = ctx.t(`${k}.date`, card.date);
-    const pLabel = ctx.t(`${k}.progress.label`, card.progress.label);
-    const pValue = ctx.t(`${k}.progress.value`, card.progress.value);
-    const percent = Math.min(100, Math.max(0, Number(card.progress.percent) || 0));
-    const tags = card.tags.map((tag, i) => {
-      const t = ctx.t(`${k}.tags.${i}`, tag);
-      return `                  <span class="card-tag"${t.attr}>${t.html}</span>`;
-    }).join('\n');
-
-    return `          <div class="card-3d-wrap" data-card="${escapeAttr(card.id)}">
-            <div class="card-3d-inner">
-              <div class="sec-card${variant('sec-card', c)}">
-                <div class="shine-layer" aria-hidden="true"></div>
-                <div class="card-corner-tag" aria-hidden="true"></div>
-                <div class="card-type-badge${variant('card-badge', c)}"><span class="badge-dot${variant('badge-dot', c)}" aria-hidden="true"></span><span${badge.attr}>${badge.html}</span></div>
-                <div class="card-icon-ring${variant('card-ring', c)}" aria-hidden="true">${escapeHtml(card.icon)}</div>
-                <div>
-                  <div class="card-title${variant('card-title', c)}"${title.attr}>${title.html}</div>
-                  <div class="card-org"${org.attr}>${org.html}</div>
-                  <div class="card-date"${date.attr}>${date.html}</div>
-                </div>
-                <div class="card-divider${variant('card-divider', c)}" aria-hidden="true"></div>
-                <div class="card-progress">
-                  <div class="progress-label"><span${pLabel.attr}>${pLabel.html}</span><span${pValue.attr}>${pValue.html}</span></div>
-                  <div class="progress-bar-bg"><div class="progress-bar-fill${variant('progress-bar-fill', c)}" data-fill="${percent}"></div></div>
-                </div>
-                <div class="card-tags">
-${tags}
-                </div>
-              </div>
-            </div>
-          </div>`;
-  }).join('\n\n');
-}
-
 /* -------- FORMATION : frise « Parcours » -------- */
-// Les cartes restent provisoirement sous la frise : elles rejoindront la section
-// #certifications (rendue séparément) dans une étape suivante.
 export function renderFormation(content, ctx) {
   return `<section id="formation" aria-labelledby="formation-title">
 ${sectionHeading('formation', content, ctx)}
@@ -365,12 +315,6 @@ ${sectionHeading('formation', content, ctx)}
         <ol class="tl-list" role="list">
 ${renderTimeline(content, ctx)}
         </ol>
-      </div>
-
-      <div class="cards-column">
-
-${renderCards(content, ctx)}
-
       </div>
     </section>`;
 }

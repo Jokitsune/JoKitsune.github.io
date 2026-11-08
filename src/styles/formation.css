@@ -194,9 +194,6 @@
   }
 }
 
-/* Cartes, provisoirement sous la frise */
-#formation .cards-column { margin-top: 5rem; }
-
 /* -------- Apparition (uniquement si le JS a activé l'animation) -------- */
 .tl.is-enhanced .tl-item {
   transition: opacity var(--tl-dur-reveal) var(--tl-ease), transform var(--tl-dur-reveal) var(--tl-ease);

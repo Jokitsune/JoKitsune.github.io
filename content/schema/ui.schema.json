@@ -847,6 +847,314 @@
       ],
       "additionalProperties": false
     },
+    "certifications": {
+      "type": "object",
+      "properties": {
+        "verify": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "newTab": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "prev": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "next": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "pause": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "play": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "carousel": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "slide": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "dots": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "position": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "verify",
+        "newTab",
+        "prev",
+        "next",
+        "pause",
+        "play",
+        "carousel",
+        "slide",
+        "dots",
+        "position"
+      ],
+      "additionalProperties": false
+    },
     "form": {
       "type": "object",
       "properties": {
@@ -1171,6 +1479,7 @@
     "hero",
     "sections",
     "timeline",
+    "certifications",
     "form",
     "a11y"
   ],

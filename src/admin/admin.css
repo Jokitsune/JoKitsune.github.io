@@ -135,6 +135,7 @@ textarea.input { resize: vertical; line-height: 1.5; }
 .input[aria-invalid='true'] { border-color: var(--danger); }
 .input--number { max-width: 180px; }
 .field-error { margin: 0; color: var(--danger); font-size: 0.85rem; }
+.field-hint { margin: 0; color: var(--green-dim); font-size: 0.85rem; }
 .field--check { display: flex; align-items: center; gap: 8px; }
 .inline-check { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); min-height: 36px; }
 input[type='checkbox'] { width: 20px; height: 20px; accent-color: var(--green); }

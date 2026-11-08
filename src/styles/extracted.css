@@ -1,6 +1,6 @@
 /* Partial : anciens styles inline du HTML pré-rendu, déplacés ici pour permettre
    une CSP appliquée sans 'unsafe-inline' (rendu identique). Importé EN DERNIER.
-   Les valeurs issues du contenu (délais du boot, progression des cartes) sont
+   Les valeurs issues du contenu (délais du boot) sont
    produites au build dans une feuille dédiée (src/render/content-css.js). */
 
 .boot-line .boot-value { color: var(--green); }

@@ -61,6 +61,18 @@
     "present": { "fr": "aujourd’hui", "en": "present" },
     "to": { "fr": "à", "en": "to" }
   },
+  "certifications": {
+    "verify": { "fr": "Vérifier le certificat", "en": "Verify the certificate" },
+    "newTab": { "fr": "(nouvel onglet)", "en": "(new tab)" },
+    "prev": { "fr": "Certification précédente", "en": "Previous certification" },
+    "next": { "fr": "Certification suivante", "en": "Next certification" },
+    "pause": { "fr": "Arrêter la rotation automatique", "en": "Stop automatic rotation" },
+    "play": { "fr": "Lancer la rotation automatique", "en": "Start automatic rotation" },
+    "carousel": { "fr": "carrousel", "en": "carousel" },
+    "slide": { "fr": "certification", "en": "certification" },
+    "dots": { "fr": "Choisir une certification", "en": "Choose a certification" },
+    "position": { "fr": "{n} sur {total}", "en": "{n} of {total}" }
+  },
   "form": {
     "nameLabel": { "fr": "nom", "en": "name" },
     "namePlaceholder": { "fr": "Votre nom...", "en": "Your name..." },

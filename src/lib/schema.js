@@ -194,6 +194,23 @@ export const uiSchema = z.strictObject({
     present: localizedSchema,
     to: localizedSchema
   }),
+  // Libellés du carrousel « Certifications » (noms accessibles, lien de vérification)
+  certifications: z.strictObject({
+    verify: localizedSchema,
+    newTab: localizedSchema,
+    prev: localizedSchema,
+    next: localizedSchema,
+    pause: localizedSchema,
+    play: localizedSchema,
+    carousel: localizedSchema,
+    slide: localizedSchema,
+    dots: localizedSchema,
+    // Position d'une certification : {n} et {total} sont remplacés par le site
+    position: localizedSchema.refine(
+      v => (typeof v === 'string' ? [v] : [v.fr, v.en]).every(t => t.includes('{n}') && t.includes('{total}')),
+      { message: 'La position doit contenir {n} et {total}' }
+    )
+  }),
   form: z.strictObject({
     nameLabel: localizedSchema,
     namePlaceholder: localizedSchema,
@@ -261,26 +278,35 @@ export const timelineSchema = z.strictObject({
     }))
 });
 
-/* -------- cards.json -------- */
+/* -------- cards.json (section « Certifications ») -------- */
 
-export const CARD_COLORS = /** @type {const} */ (['green', 'cyan', 'yellow']);
+/**
+ * Logo : chemin local d'un fichier envoyé depuis l'onglet Fichiers de l'admin
+ * (même forme que PUBLIC_PATH_RE côté API). Jamais d'URL externe : la CSP du
+ * site (img-src 'self') la bloquerait, et un hotlink fuiterait les visites.
+ */
+export const LOGO_PATH_RE = /^\/images\/uploads\/[a-z0-9-]+\.(png|jpg|webp|svg)$/;
+
+export const logoPathSchema = z
+  .string()
+  .regex(LOGO_PATH_RE, 'Chemin de logo invalide : collez le chemin copié depuis l’onglet Fichiers (/images/uploads/nom-xxxxxxxxxxxx.svg, .png, .jpg ou .webp)');
+
+// Lien de vérification d'une certification : https uniquement, hôte explicite
+export const httpsUrlSchema = z
+  .string()
+  .max(2000)
+  .regex(/^https:\/\/[A-Za-z0-9.-]+(?::\d{1,5})?(?:[/?#][^\s<>"'`\\]*)?$/, 'Lien non autorisé (https:// obligatoire)');
 
 export const cardsSchema = z.strictObject({
   ...$schema,
   cards: listOf(z.strictObject({
     ...listItem,
-    color: z.enum(CARD_COLORS),
-    icon: textSchema,
-    badge: localizedSchema,
     title: localizedSchema,
     org: localizedSchema,
-    date: localizedSchema,
-    progress: z.strictObject({
-      label: localizedSchema,
-      value: localizedSchema,
-      percent: z.number().min(0).max(100)
-    }),
-    tags: z.array(localizedSchema)
+    logo: logoPathSchema.optional(),     // absent : monogramme de l'organisme
+    logoAlt: localizedSchema.optional(), // absent : alt="" (intitulé et organisme écrits à côté)
+    verifyUrl: httpsUrlSchema.optional(),     // absent : pas de bouton « Vérifier »
+    verifyPlatform: textSchema.optional()     // ex. Credly, Coursera (affiché en petit)
   }))
 });
 

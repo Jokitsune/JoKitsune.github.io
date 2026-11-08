@@ -8,7 +8,7 @@
    ================================================ */
 
 import { h, mount, nextId } from './dom.js';
-import { fieldLabel } from './labels.js';
+import { fieldLabel, fieldHint } from './labels.js';
 
 /* -------- Introspection du schéma -------- */
 
@@ -135,11 +135,13 @@ export function createForm({ schema, data, onChange, advanced = [] }) {
     const value = parent[key] ?? '';
     const long = LONG_KEYS.has(key) || String(value).includes('\n') || String(value).length > 90;
     const err = errorSlot(path);
+    const hintText = fieldHint(key);
+    const hint = hintText ? h('p', { class: 'field-hint', id: `hint-${id}` }, hintText) : null;
     const attrs = {
       id,
       class: 'input',
       dataset: { path, focusKey: path },
-      'aria-describedby': err.id,
+      'aria-describedby': hint ? `${hint.id} ${err.id}` : err.id,
       maxlength: schema?.maxLength,
       spellcheck: 'true',
       onInput: e => {
@@ -149,7 +151,7 @@ export function createForm({ schema, data, onChange, advanced = [] }) {
     };
     const input = long ? h('textarea', { ...attrs, rows: Math.min(8, Math.max(3, String(value).split('\n').length + 1)) }) : h('input', { ...attrs, type: 'text' });
     input.value = value;
-    return h('div', { class: 'field' }, h('label', { for: id, class: 'field-label' }, labelText), input, err);
+    return h('div', { class: 'field' }, h('label', { for: id, class: 'field-label' }, labelText), hint, input, err);
   }
 
   function localizedInput(parent, key, schema, path, labelText) {
@@ -180,7 +182,11 @@ export function createForm({ schema, data, onChange, advanced = [] }) {
         h('div', { class: 'i18n-col', lang: 'fr' }, textInput(obj, 'fr', sub.fr, joinPath(path, 'fr'), 'FR')),
         h('div', { class: 'i18n-col', lang: 'en' }, textInput(obj, 'en', sub.en, joinPath(path, 'en'), 'EN')));
     }
-    return h('div', { class: 'field field--i18n', role: 'group', 'aria-labelledby': groupId, dataset: { path } }, head, body, errorSlot(path));
+    const hintText = fieldHint(key);
+    const hint = hintText ? h('p', { class: 'field-hint', id: nextId('hint') }, hintText) : null;
+    return h('div', {
+      class: 'field field--i18n', role: 'group', 'aria-labelledby': groupId, 'aria-describedby': hint?.id, dataset: { path }
+    }, head, hint, body, errorSlot(path));
   }
 
   function booleanInput(parent, key, path, labelText) {

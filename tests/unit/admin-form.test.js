@@ -53,6 +53,20 @@ describe('Introspection du schéma', () => {
   });
 });
 
+describe('Aides de saisie (Certifications)', () => {
+  it('le champ logo explique qu’on colle le chemin copié depuis l’onglet Fichiers', () => {
+    build('cards');
+    const input = byPath('cards[0].logo');
+    expect(input).toBeTruthy();
+    const ids = input.getAttribute('aria-describedby').split(' ');
+    const hint = document.getElementById(ids[0]);
+    expect(hint.textContent).toMatch(/onglet Fichiers/);
+    expect(hint.textContent).toMatch(/Copier le chemin/);
+    // L'emplacement d'erreur reste relié
+    expect(document.getElementById(ids[1]).classList.contains('field-error')).toBe(true);
+  });
+});
+
 describe('Édition FR / EN', () => {
   it('deux champs côte à côte, la saisie met à jour le modèle', () => {
     build();

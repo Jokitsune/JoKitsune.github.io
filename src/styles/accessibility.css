@@ -11,9 +11,6 @@
   .glitch:hover::before, .glitch:hover::after {
     display: none;
   }
-  .card-3d-inner {
-    transform: none !important;
-  }
   .cyber-audio-player.playing .eq-bar {
     animation: none !important;
     height: 6px !important;

@@ -1,7 +1,7 @@
 /* -------- CURSEUR PERSONNALISÉ (Souris uniquement) -------- */
 
 // Éléments interactifs qui agrandissent le curseur au survol
-const HOVER_TARGETS = 'a, button, .skill-tag, .project-card, .sec-card, .card-3d-wrap, .form-input, .form-textarea';
+const HOVER_TARGETS = 'a, button, .skill-tag, .project-card, .cc-card, .form-input, .form-textarea';
 
 export function initCursor() {
   const isFinePointer = window.matchMedia('(pointer: fine)').matches;
