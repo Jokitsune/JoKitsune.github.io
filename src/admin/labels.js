@@ -7,7 +7,7 @@ export const FILE_LABELS = {
   ui: { title: 'Interface', hint: 'Écran de boot, navigation, boutons, titres de sections, formulaire, accessibilité' },
   skills: { title: 'Compétences', hint: 'Catégories et étiquettes' },
   projects: { title: 'Projets', hint: 'Cartes projets, stack et liens' },
-  timeline: { title: 'Parcours', hint: 'Frise chronologique' },
+  timeline: { title: 'Parcours', hint: 'Frise chronologique — triée automatiquement par date (la plus récente en premier) ; sans date de fin = en cours' },
   cards: { title: 'Certifications', hint: 'Cartes de formation et progression' }
 };
 
@@ -74,6 +74,16 @@ const FIELD_LABELS = {
   sections: 'Sections',
   projects: 'Projets',
   formation: 'Formation',
+  certifications: 'Certifications',
+  timeline: 'Frise « Parcours »',
+  kinds: 'Catégories',
+  kind: 'Catégorie',
+  experience: 'Expérience',
+  benevolat: 'Bénévolat',
+  present: 'Mention « en cours »',
+  to: 'Liaison entre deux dates',
+  start: 'Début (AAAA-MM)',
+  end: 'Fin (AAAA-MM)',
   form: 'Formulaire de contact',
   nameLabel: 'Libellé nom',
   namePlaceholder: 'Exemple nom',
@@ -105,6 +115,18 @@ const FIELD_LABELS = {
   fr: 'FR',
   en: 'EN'
 };
+
+/** Libellés des valeurs d'énumération affichées dans les listes déroulantes. */
+const ENUM_LABELS = {
+  formation: 'Formation',
+  experience: 'Expérience',
+  benevolat: 'Bénévolat'
+};
+
+/** Libellé d'une valeur d'énumération (repli : la valeur brute). */
+export function enumLabel(value) {
+  return ENUM_LABELS[value] ?? String(value);
+}
 
 /** Libellé d'un champ (repli : la clé brute). */
 export function fieldLabel(key) {

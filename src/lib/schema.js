@@ -157,6 +157,12 @@ export const siteSchema = z.strictObject({
 
 /* -------- ui.json -------- */
 
+/** Sections dont l'en-tête (label + titre) est éditable dans ui.sections. */
+export const SECTION_NAMES = /** @type {const} */ (['skills', 'projects', 'formation', 'certifications', 'contact']);
+
+/** Catégories d'une entrée de la frise (timeline.json › items[].kind). */
+export const TIMELINE_KINDS = /** @type {const} */ (['formation', 'experience', 'benevolat']);
+
 export const uiSchema = z.strictObject({
   ...$schema,
   boot: z.strictObject({
@@ -180,8 +186,14 @@ export const uiSchema = z.strictObject({
     ctaSocial: localizedSchema
   }),
   sections: z.strictObject(Object.fromEntries(
-    ['skills', 'projects', 'formation', 'contact'].map(k => [k, z.strictObject({ label: localizedSchema, title: localizedSchema })])
+    SECTION_NAMES.map(k => [k, z.strictObject({ label: localizedSchema, title: localizedSchema })])
   )),
+  // Libellés partagés de la frise « Parcours » (catégories, « aujourd'hui », « à »)
+  timeline: z.strictObject({
+    kinds: z.strictObject(Object.fromEntries(TIMELINE_KINDS.map(k => [k, localizedSchema]))),
+    present: localizedSchema,
+    to: localizedSchema
+  }),
   form: z.strictObject({
     nameLabel: localizedSchema,
     namePlaceholder: localizedSchema,
@@ -224,18 +236,29 @@ export const projectsSchema = z.strictObject({
 
 /* -------- timeline.json -------- */
 
+// AAAA-MM : c'est aussi une « valid month string » HTML, utilisable telle quelle dans <time datetime>
+export const monthSchema = z.string().regex(/^(19|20)\d{2}-(0[1-9]|1[0-2])$/, 'Mois invalide (format AAAA-MM)');
+
 export const timelineSchema = z.strictObject({
   ...$schema,
   items: listOf(z.strictObject({
     ...listItem,
-    date: localizedSchema,
+    kind: z.enum(TIMELINE_KINDS),
+    start: monthSchema,
+    end: monthSchema.optional(), // absent = « en cours »
     role: localizedSchema,
     org: localizedSchema,
     description: localizedSchema.optional(),
     bullets: z.array(localizedSchema).optional()
-  }).refine(it => (it.description === undefined) !== (it.bullets === undefined), {
-    message: 'Renseigner soit « description », soit « bullets » (exactement un des deux)'
-  }))
+  })
+    .refine(it => (it.description === undefined) !== (it.bullets === undefined), {
+      message: 'Renseigner soit « description », soit « bullets » (exactement un des deux)'
+    })
+    // AAAA-MM est de longueur fixe : la comparaison de chaînes suit l'ordre chronologique
+    .refine(it => it.end === undefined || it.end >= it.start, {
+      path: ['end'],
+      message: 'La date de fin précède la date de début'
+    }))
 });
 
 /* -------- cards.json -------- */

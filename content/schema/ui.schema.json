@@ -534,6 +534,74 @@
           ],
           "additionalProperties": false
         },
+        "certifications": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "fr": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    "en": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    }
+                  },
+                  "required": [
+                    "fr",
+                    "en"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "title": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "fr": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    "en": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    }
+                  },
+                  "required": [
+                    "fr",
+                    "en"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "label",
+            "title"
+          ],
+          "additionalProperties": false
+        },
         "contact": {
           "type": "object",
           "properties": {
@@ -607,7 +675,175 @@
         "skills",
         "projects",
         "formation",
+        "certifications",
         "contact"
+      ],
+      "additionalProperties": false
+    },
+    "timeline": {
+      "type": "object",
+      "properties": {
+        "kinds": {
+          "type": "object",
+          "properties": {
+            "formation": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "fr": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    "en": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    }
+                  },
+                  "required": [
+                    "fr",
+                    "en"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "experience": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "fr": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    "en": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    }
+                  },
+                  "required": [
+                    "fr",
+                    "en"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "benevolat": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "fr": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    },
+                    "en": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "pattern": "^[^<>]*$"
+                    }
+                  },
+                  "required": [
+                    "fr",
+                    "en"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "formation",
+            "experience",
+            "benevolat"
+          ],
+          "additionalProperties": false
+        },
+        "present": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "to": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^<>]*$"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fr": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                },
+                "en": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "pattern": "^[^<>]*$"
+                }
+              },
+              "required": [
+                "fr",
+                "en"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "kinds",
+        "present",
+        "to"
       ],
       "additionalProperties": false
     },
@@ -934,6 +1170,7 @@
     "nav",
     "hero",
     "sections",
+    "timeline",
     "form",
     "a11y"
   ],
