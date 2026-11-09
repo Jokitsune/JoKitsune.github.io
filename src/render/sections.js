@@ -9,6 +9,7 @@ import { escapeAttr, escapeHtml, safeUrl } from './escape.js';
 import { visibleSorted } from './context.js';
 import { SHARE_ICON, socialIcon } from './icons.js';
 import { sortTimeline, isOngoing, formatMonth, periodText } from '../lib/timeline.js';
+import { CAROUSEL_MIN, monogram } from '../lib/coverflow.js';
 
 /* -------- <head> : métadonnées SEO -------- */
 export function renderHead({ site }, ctx) {
@@ -50,9 +51,11 @@ ${lines}
 }
 
 /* -------- NAVIGATION -------- */
-export function renderNav({ site, ui }, ctx) {
+export function renderNav({ site, ui, cards }, ctx) {
   const id = site.identity;
-  const links = visibleSorted(ui.nav.links).map(link => {
+  // Aucune certification visible : la section n'est pas rendue, son lien non plus
+  const hasCerts = visibleSorted(cards?.cards).length > 0;
+  const links = visibleSorted(ui.nav.links).filter(link => hasCerts || link.href !== '#certifications').map(link => {
     const label = ctx.t(`nav.${link.id}`, link.label);
     return `      <li><a href="${escapeAttr(safeUrl(link.href))}" class="nav-link-item"${label.attr}>${label.html}</a></li>`;
   }).join('\n');
@@ -315,6 +318,105 @@ ${sectionHeading('formation', content, ctx)}
         <ol class="tl-list" role="list">
 ${renderTimeline(content, ctx)}
         </ol>
+      </div>
+    </section>`;
+}
+
+/* -------- CERTIFICATIONS : coverflow à logos (grille statique sans JS) -------- */
+// Un seul balisage pour les deux mises en page : sans JS (ou < CAROUSEL_MIN), une
+// grille où tout est visible ; le JS ajoute .cc--enhanced, les rôles ARIA et révèle
+// les contrôles (rendus `hidden`). Aucun style inline : le moteur écrit via le CSSOM.
+const pad2 = n => String(n).padStart(2, '0');
+
+function renderCertSlide(card, index, total, content, ctx) {
+  const labels = content.ui.certifications;
+  const id = escapeAttr(card.id);
+  const k = `cards.${card.id}`;
+  const title = ctx.t(`${k}.title`, card.title);
+  const org = ctx.t(`${k}.org`, card.org);
+  const n = index + 1;
+  const position = {
+    fr: labels.position.fr.replace('{n}', n).replace('{total}', total),
+    en: labels.position.en.replace('{n}', n).replace('{total}', total)
+  };
+  const slideAttrs = ctx.deferredAttrs({
+    'aria-roledescription': ['certifications.slide', labels.slide],
+    'aria-label': [`${k}.position`, position]
+  });
+
+  const visual = card.logo
+    ? `<img src="${escapeAttr(safeUrl(card.logo))}"${card.logoAlt ? ctx.attrs({ alt: [`${k}.logoAlt`, card.logoAlt] }) : ' alt=""'} loading="eager" decoding="async" draggable="false">`
+    : `<span class="cc-monogram" aria-hidden="true">${escapeHtml(monogram(ctx.plainText(card.org)))}</span>`;
+
+  let verify = '';
+  if (card.verifyUrl) {
+    const label = ctx.t('certifications.verify', labels.verify);
+    const newTab = ctx.t('certifications.newTab', labels.newTab);
+    const platform = card.verifyPlatform
+      ? `<span class="cc-platform">via ${escapeHtml(card.verifyPlatform)}</span>`
+      : '';
+    verify = `
+            <a class="btn-secondary cc-verify" href="${escapeAttr(safeUrl(card.verifyUrl))}" target="_blank" rel="noopener noreferrer" aria-describedby="cc-${id}-title">
+              <span class="cc-verify-main"><span${label.attr}>${label.html}</span> <span aria-hidden="true">↗</span></span>${platform}<span class="sr-only"${newTab.attr}>${newTab.html}</span>
+            </a>`;
+  }
+
+  return `        <li class="cc-slide" data-cc-slide data-id="${id}"${slideAttrs}>
+          <div class="cc-card">
+            <span class="cc-card-tag" aria-hidden="true">CERT_${pad2(n)}</span>
+            <div class="cc-plate">${visual}</div>
+          </div>
+          <div class="cc-info">
+            <p class="cc-prompt" aria-hidden="true">&gt; cert --show ${pad2(n)}/${pad2(total)}<span class="cc-caret">_</span></p>
+            <h3 class="cc-title" id="cc-${id}-title"${title.attr}>${title.html}</h3>
+            <p class="cc-org"${org.attr}>${org.html}</p>${verify}
+          </div>
+        </li>`;
+}
+
+function renderCertControls(cards, content, ctx) {
+  const labels = content.ui.certifications;
+  const sr = (key, value, extra = '') => {
+    const t = ctx.t(`certifications.${key}`, value);
+    return `<span class="sr-only"${extra}${t.attr}>${t.html}</span>`;
+  };
+  const dots = cards.map((card, i) => {
+    const title = ctx.t(`cards.${card.id}.title`, card.title);
+    return `          <button type="button" class="cc-dot" data-cc-dot="${i}"><span class="sr-only"${title.attr}>${title.html}</span></button>`;
+  }).join('\n');
+  const dotsLabel = ctx.t('certifications.dots', labels.dots);
+  return `      <div class="cc-controls" hidden>
+        <button type="button" class="cc-btn cc-toggle" data-cc-toggle><span class="cc-glyph cc-glyph--pause" aria-hidden="true"></span>${sr('pause', labels.pause, ' data-cc-label="pause"')}${sr('play', labels.play, ' data-cc-label="play" hidden')}</button>
+        <button type="button" class="cc-btn cc-prev" data-cc-prev><span class="cc-glyph" aria-hidden="true">‹</span>${sr('prev', labels.prev)}</button>
+        <div class="cc-dots" role="group" aria-labelledby="cc-dots-label">
+          <span class="sr-only" id="cc-dots-label"${dotsLabel.attr}>${dotsLabel.html}</span>
+${dots}
+        </div>
+        <button type="button" class="cc-btn cc-next" data-cc-next><span class="cc-glyph" aria-hidden="true">›</span>${sr('next', labels.next)}</button>
+        <p class="cc-counter" aria-hidden="true"><span data-cc-current>01</span> / ${pad2(cards.length)}</p>
+      </div>`;
+}
+
+export function renderCertifications(content, ctx) {
+  const cards = visibleSorted(content.cards.cards);
+  if (!cards.length) return '';
+  const carousel = cards.length >= CAROUSEL_MIN;
+  const slides = cards.map((card, i) => renderCertSlide(card, i, cards.length, content, ctx)).join('\n');
+  const rootAttrs = carousel
+    ? ` data-cc${ctx.deferredAttrs({ 'aria-roledescription': ['certifications.carousel', content.ui.certifications.carousel] })}`
+    : '';
+  return `<section id="certifications" aria-labelledby="certifications-title">
+${sectionHeading('certifications', content, ctx)}
+
+      <div class="cc"${rootAttrs}>
+        <div class="cc-stage">
+          <div class="cc-floor" aria-hidden="true"></div>
+          <ul class="cc-track" role="list">
+${slides}
+          </ul>
+        </div>
+${carousel ? `${renderCertControls(cards, content, ctx)}
+        <p class="cc-status sr-only" aria-live="polite" aria-atomic="true"></p>` : ''}
       </div>
     </section>`;
 }

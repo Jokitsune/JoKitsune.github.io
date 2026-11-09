@@ -117,8 +117,11 @@ describe('sécurité du rendu au build', () => {
     const { html } = renderSections(c);
     const doc = parse(renderPage(loadTemplate(), c));
 
-    expect(Object.values(html).join('')).not.toContain('<img');
-    expect(doc.querySelectorAll('main img, footer img, script:not([src])')).toHaveLength(0);
+    // Seules images légitimes : les logos locaux des certifications (/images/uploads/…)
+    const imgs = Object.values(html).join('').match(/<img[^>]*>/g) ?? [];
+    expect(imgs.length).toBeGreaterThan(0);
+    for (const img of imgs) expect(img).toMatch(/^<img src="\/images\/uploads\/[a-z0-9-]+\.(svg|png|jpg|webp)"/);
+    expect(doc.querySelectorAll('main img:not(.cc-plate > img), footer img, script:not([src])')).toHaveLength(0);
     expect(norm(doc.querySelector('.project-name').textContent)).toBe(XSS);
     expect(norm(doc.querySelector('.skill-card:nth-child(2) .skill-tag').textContent)).toBe(XSS);
     expect(doc.querySelector('footer').textContent).toContain(XSS);

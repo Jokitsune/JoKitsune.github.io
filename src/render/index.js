@@ -8,7 +8,7 @@
 import { createContext } from './context.js';
 import {
   renderHead, renderBoot, renderNav, renderHero, renderSkills,
-  renderProjects, renderFormation, renderContact, renderAudio, renderFooter
+  renderProjects, renderFormation, renderCertifications, renderContact, renderAudio, renderFooter
 } from './sections.js';
 
 export { escapeHtml, escapeAttr, textToHtml, safeUrl } from './escape.js';
@@ -27,6 +27,7 @@ export const SECTION_RENDERERS = {
   skills: renderSkills,
   projects: renderProjects,
   formation: renderFormation,
+  certifications: renderCertifications,
   contact: renderContact,
   audio: renderAudio,
   footer: renderFooter

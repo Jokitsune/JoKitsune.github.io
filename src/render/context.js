@@ -103,6 +103,24 @@ export function createContext(lang) {
       if (i18n.length) out.push(` data-i18n-attr="${escapeAttr(i18n.join(';'))}"`);
       return out.join('');
     },
+    /**
+     * Comme `attrs`, mais n'écrit QUE `data-i18n-attr` (clés enregistrées dans le
+     * dictionnaire) : l'attribut lui-même est posé par le JS, via applyI18nAttrs,
+     * quand il n'a de sens qu'en mode amélioré (ex. aria-roledescription, qui
+     * exige un role ajouté par le moteur). Valeurs bilingues uniquement.
+     * @param {Record<string, [string, unknown]>} spec
+     */
+    deferredAttrs(spec) {
+      const i18n = [];
+      for (const [name, [key, value]] of Object.entries(spec)) {
+        if (!I18N_ATTRS.includes(name)) throw new Error(`Attribut non traduisible : ${name}`);
+        if (/[;:\s]/.test(key)) throw new Error(`Clé i18n invalide pour un attribut : ${key}`);
+        if (!isLocalized(value)) throw new Error(`Attribut différé non bilingue : ${name}`);
+        register(key, value, '');
+        i18n.push(`${name}:${key}`);
+      }
+      return i18n.length ? ` data-i18n-attr="${escapeAttr(i18n.join(';'))}"` : '';
+    },
     /** Texte non traduit dynamiquement, échappé pour un attribut (méta…) */
     plain(value) {
       return escapeAttr(localize(value, lang));

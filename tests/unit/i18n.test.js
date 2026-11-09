@@ -96,7 +96,9 @@ describe('i18n côté client', () => {
     expect(title.querySelector('img, b')).toBeNull();
     expect(title.querySelectorAll('br')).toHaveLength(1);
     expect(title.textContent).toBe(`${XSS}<b>gras</b>`);
-    expect(document.querySelectorAll('img')).toHaveLength(0);
+    // Seules images : les logos locaux des certifications
+    expect(document.querySelectorAll('img:not(.cc-plate > img)')).toHaveLength(0);
+    for (const img of document.querySelectorAll('img')) expect(img.getAttribute('src')).toMatch(/^\/images\/uploads\//);
   });
 
   it('setMultilineText crée des <br> via le DOM', () => {
