@@ -7,6 +7,24 @@ et le projet adhère au [Versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Ajouté
+
+- Section `#certifications` séparée : carrousel coverflow 3D à logos des organismes (JS pur, moteur `src/lib/coverflow.js` testé), lien « Vérifier le certificat » vers Credly, Coursera, Red Team Leaders ou UNODC, autoplay pausable et coupé en mouvement réduit, swipe, clavier, repli en grille sans JS.
+- Frise « Parcours » (`#formation`) animée au défilement : catégorie (`kind` : formation, expérience, bénévolat), dates structurées `start` / `end` (fin absente = « aujourd'hui »), tri chronologique automatique.
+- Traduction des attributs `alt` / `aria-label` via `data-i18n-attr`.
+- Upload de logos SVG depuis `/admin` : analyse `saxes` sous liste blanche stricte (rejet de scripts, `on*`, `foreignObject`, liens externes, DTD, `<style>`…), en-têtes dédiés (`sandbox`, `attachment`) sur Vercel.
+- Logos officiels des organismes dans `public/images/uploads/`.
+
+### Modifié
+
+- `content/cards.json` : suppression de `color` / `icon` / `badge` / `date` / `progress` / `tags`, ajout de `logo`, `logoAlt`, `verifyUrl`, `verifyPlatform`. **Changement de format** : un brouillon `/admin` antérieur est refusé.
+- `content/timeline.json` : `date` remplacé par `kind` / `start` / `end`.
+- Accessibilité : focus clavier visible et jamais masqué par la nav, `.sr-only`, contraste des libellés de section.
+
+### Supprimé
+
+- Anciennes cartes 3D (tilt, barres de progression, anneaux animés) et leur code (`tilt.js`, `progress.js`, `cards.css`).
+
 ## [2.0.1] - 2026-10-29
 
 ### Corrigé
