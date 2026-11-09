@@ -100,6 +100,9 @@ test('CSP appliquée (en-têtes vercel.json) : aucune violation, aucun script ti
     await page.evaluate(v => window.scrollTo(0, v), y);
     await page.waitForTimeout(30);
   }
+  // Le carrousel #certifications écrit transform/opacity via le CSSOM : idem
+  await page.locator('#certifications').scrollIntoViewIfNeeded();
+  await page.locator('.cc-next').click();
   await page.waitForTimeout(500);
   expect(violations).toEqual([]);
   expect(scripts.every(u => new URL(u).origin === new URL(page.url()).origin)).toBe(true);
