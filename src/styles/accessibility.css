@@ -29,6 +29,27 @@
   .tl-item { opacity: 1 !important; transform: none !important; }
 }
 
+/* -------- CERTIFICATIONS (coverflow) -------- */
+/* Mouvement réduit : le moteur saute directement à la cible (pas d'interpolation)
+   et ne lance pas l'autoplay ; légende, points et filtre sans transition. */
+@media (prefers-reduced-motion: reduce) {
+  .cc-card,
+  .cc-dot::before,
+  .cc-plate img,
+  .cc-btn { transition: none !important; }
+  .cc--enhanced .cc-slide.is-current .cc-info,
+  .cc-caret { animation: none !important; }
+}
+
+/* Couleurs forcées : carte active et point courant identifiables sans couleurs */
+@media (forced-colors: active) {
+  .cc-slide.is-current .cc-card { border: 3px solid Highlight; }
+  .cc-dot::before { forced-color-adjust: none; background: CanvasText; }
+  .cc-dot[aria-current="true"]::before { background: Highlight; }
+  .cc-glyph--pause { border-color: ButtonText; }
+  .cc-glyph--play { border-left-color: ButtonText; }
+}
+
 /* Couleurs forcées : formes et états lisibles sans ombres ni couleurs de marque */
 @media (forced-colors: active) {
   .tl-rail { background: CanvasText; }
