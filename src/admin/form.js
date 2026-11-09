@@ -8,7 +8,7 @@
    ================================================ */
 
 import { h, mount, nextId } from './dom.js';
-import { fieldLabel, fieldHint } from './labels.js';
+import { fieldLabel, fieldHint, enumLabel } from './labels.js';
 
 /* -------- Introspection du schéma -------- */
 
@@ -230,7 +230,7 @@ export function createForm({ schema, data, onChange, advanced = [] }) {
         parent[key] = e.target.value;
         changed();
       }
-    }, schema.enum.map(v => h('option', { value: v }, v)));
+    }, schema.enum.map(v => h('option', { value: v }, enumLabel(v))));
     select.value = parent[key];
     return h('div', { class: 'field' }, h('label', { for: id, class: 'field-label' }, labelText), select, err);
   }

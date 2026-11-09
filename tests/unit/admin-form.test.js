@@ -35,6 +35,14 @@ beforeEach(() => {
 });
 
 describe('Introspection du schéma', () => {
+  it('menu « Catégorie » de la frise : libellés accentués, valeurs brutes conservées', () => {
+    build('timeline');
+    const select = document.querySelector('select[data-path$=".kind"]');
+    expect(select).not.toBeNull();
+    const options = [...select.options].map(o => [o.value, o.textContent]);
+    expect(options).toEqual(expect.arrayContaining([['formation', 'Formation'], ['experience', 'Expérience'], ['benevolat', 'Bénévolat']]));
+  });
+
   it('texte traduisible et liste gérée détectés', () => {
     const item = schemas.projects.properties.projects;
     expect(isManagedList(item)).toBe(true);
