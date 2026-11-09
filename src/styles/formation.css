@@ -15,7 +15,7 @@
 
 .tl {
   /* Tokens locaux de la frise */
-  --tl-muted: #6b9478;            /* texte secondaire : 5,5:1 sur --bg2 (AA) */
+  --tl-muted: var(--text-muted);  /* texte secondaire : 5,5:1 sur --bg2 (AA) */
   --tl-date-w: 9.5rem;            /* colonne des dates (desktop) */
   --tl-node-col: 3rem;            /* colonne du point */
   --tl-rail-x: calc(var(--tl-date-w) + var(--tl-node-col) / 2);
