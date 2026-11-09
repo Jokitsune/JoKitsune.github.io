@@ -80,7 +80,11 @@ function checkViewBox(value) {
 function checkValue(attrName, value) {
   if (value.length > MAX_VALUE) fail('svg_too_complex', attrName);
   if (FORBIDDEN_VALUE_RE.test(value)) fail('svg_disallowed_value', attrName);
-  if (/url\(/i.test(value) && !LOCAL_URL_RE.test(value.trim())) fail('svg_disallowed_value', attrName);
+  const urls = value.match(/url\(/gi)?.length ?? 0;
+  // Une seule référence url(#id) : un second url() (filter/mask acceptent des listes)
+  // pourrait viser un fichier relatif, que la classe du repli laisse passer.
+  if (urls > 1) fail('svg_disallowed_value', attrName);
+  if (urls === 1 && !LOCAL_URL_RE.test(value.trim())) fail('svg_disallowed_value', attrName);
 }
 
 function checkAttributes(node, state) {
