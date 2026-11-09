@@ -22,48 +22,6 @@
           "visible": {
             "type": "boolean"
           },
-          "color": {
-            "type": "string",
-            "enum": [
-              "green",
-              "cyan",
-              "yellow"
-            ]
-          },
-          "icon": {
-            "type": "string",
-            "maxLength": 2000,
-            "pattern": "^[^<>]*$"
-          },
-          "badge": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 2000,
-                "pattern": "^[^<>]*$"
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "fr": {
-                    "type": "string",
-                    "maxLength": 2000,
-                    "pattern": "^[^<>]*$"
-                  },
-                  "en": {
-                    "type": "string",
-                    "maxLength": 2000,
-                    "pattern": "^[^<>]*$"
-                  }
-                },
-                "required": [
-                  "fr",
-                  "en"
-                ],
-                "additionalProperties": false
-              }
-            ]
-          },
           "title": {
             "anyOf": [
               {
@@ -122,7 +80,11 @@
               }
             ]
           },
-          "date": {
+          "logo": {
+            "type": "string",
+            "pattern": "^\\/images\\/uploads\\/[a-z0-9-]+\\.(png|jpg|webp|svg)$"
+          },
+          "logoAlt": {
             "anyOf": [
               {
                 "type": "string",
@@ -151,125 +113,23 @@
               }
             ]
           },
-          "progress": {
-            "type": "object",
-            "properties": {
-              "label": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "maxLength": 2000,
-                    "pattern": "^[^<>]*$"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "fr": {
-                        "type": "string",
-                        "maxLength": 2000,
-                        "pattern": "^[^<>]*$"
-                      },
-                      "en": {
-                        "type": "string",
-                        "maxLength": 2000,
-                        "pattern": "^[^<>]*$"
-                      }
-                    },
-                    "required": [
-                      "fr",
-                      "en"
-                    ],
-                    "additionalProperties": false
-                  }
-                ]
-              },
-              "value": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "maxLength": 2000,
-                    "pattern": "^[^<>]*$"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "fr": {
-                        "type": "string",
-                        "maxLength": 2000,
-                        "pattern": "^[^<>]*$"
-                      },
-                      "en": {
-                        "type": "string",
-                        "maxLength": 2000,
-                        "pattern": "^[^<>]*$"
-                      }
-                    },
-                    "required": [
-                      "fr",
-                      "en"
-                    ],
-                    "additionalProperties": false
-                  }
-                ]
-              },
-              "percent": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 100
-              }
-            },
-            "required": [
-              "label",
-              "value",
-              "percent"
-            ],
-            "additionalProperties": false
+          "verifyUrl": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^https:\\/\\/[A-Za-z0-9.-]+(?::\\d{1,5})?(?:[/?#][^\\s<>\"'`\\\\]*)?$"
           },
-          "tags": {
-            "type": "array",
-            "items": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "maxLength": 2000,
-                  "pattern": "^[^<>]*$"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "fr": {
-                      "type": "string",
-                      "maxLength": 2000,
-                      "pattern": "^[^<>]*$"
-                    },
-                    "en": {
-                      "type": "string",
-                      "maxLength": 2000,
-                      "pattern": "^[^<>]*$"
-                    }
-                  },
-                  "required": [
-                    "fr",
-                    "en"
-                  ],
-                  "additionalProperties": false
-                }
-              ]
-            }
+          "verifyPlatform": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^<>]*$"
           }
         },
         "required": [
           "id",
           "order",
           "visible",
-          "color",
-          "icon",
-          "badge",
           "title",
-          "org",
-          "date",
-          "progress",
-          "tags"
+          "org"
         ],
         "additionalProperties": false
       }

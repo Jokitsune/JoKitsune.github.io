@@ -9,7 +9,7 @@ section {
 }
 .section-label {
   font-size: 0.7rem;
-  color: var(--text-dim);
+  color: var(--text-muted);   /* WCAG 1.4.3 : --text-dim n'atteint pas 4,5:1 */
   letter-spacing: 4px;
   text-transform: uppercase;
   margin-bottom: 8px;

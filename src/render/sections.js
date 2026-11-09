@@ -8,11 +8,8 @@
 import { escapeAttr, escapeHtml, safeUrl } from './escape.js';
 import { visibleSorted } from './context.js';
 import { SHARE_ICON, socialIcon } from './icons.js';
-
-/** Suffixe de classe des variantes de carte (green = style de base, sans suffixe). */
-function variant(cls, color) {
-  return color && color !== 'green' ? ` ${cls}--${color}` : '';
-}
+import { sortTimeline, isOngoing, formatMonth, periodText } from '../lib/timeline.js';
+import { CAROUSEL_MIN, monogram } from '../lib/coverflow.js';
 
 /* -------- <head> : métadonnées SEO -------- */
 export function renderHead({ site }, ctx) {
@@ -54,9 +51,11 @@ ${lines}
 }
 
 /* -------- NAVIGATION -------- */
-export function renderNav({ site, ui }, ctx) {
+export function renderNav({ site, ui, cards }, ctx) {
   const id = site.identity;
-  const links = visibleSorted(ui.nav.links).map(link => {
+  // Aucune certification visible : la section n'est pas rendue, son lien non plus
+  const hasCerts = visibleSorted(cards?.cards).length > 0;
+  const links = visibleSorted(ui.nav.links).filter(link => hasCerts || link.href !== '#certifications').map(link => {
     const label = ctx.t(`nav.${link.id}`, link.label);
     return `      <li><a href="${escapeAttr(safeUrl(link.href))}" class="nav-link-item"${label.attr}>${label.html}</a></li>`;
   }).join('\n');
@@ -190,11 +189,12 @@ ${promptLine(`<span${finalCmd.attr}>${finalCmd.html}</span><span class="t-cursor
 }
 
 /* -------- En-tête de section (label + titre) -------- */
+// Le titre porte l'id « <name>-title », cible possible d'un aria-labelledby sur la section.
 function sectionHeading(name, { ui }, ctx) {
   const label = ctx.t(`sections.${name}.label`, ui.sections[name].label);
   const title = ctx.t(`sections.${name}.title`, ui.sections[name].title);
   return `      <div class="section-label"${label.attr}>${label.html}</div>
-      <h2 class="section-title"${title.attr}>${title.html}</h2>`;
+      <h2 class="section-title" id="${name}-title"${title.attr}>${title.html}</h2>`;
 }
 
 /* -------- COMPÉTENCES -------- */
@@ -260,101 +260,163 @@ ${cards}
     </section>`;
 }
 
-/* -------- Timeline (colonne gauche de la section formation) -------- */
+/* -------- Timeline « Parcours » -------- */
+// Ordre DOM : intitulé (h3) → catégorie → période → organisme → description,
+// pour qu'un lecteur d'écran qui saute de titre en titre entende tout le contexte.
+// L'ordre visuel (catégorie et période au-dessus) est réglé en CSS.
+// Aucune classe d'état (is-enhanced, is-visible…) : elles sont posées par le JS.
 function renderTimeline(content, ctx) {
-  return visibleSorted(content.timeline.items).map(item => {
-    const date = ctx.t(`timeline.${item.id}.date`, item.date);
-    const role = ctx.t(`timeline.${item.id}.role`, item.role);
-    const org = ctx.t(`timeline.${item.id}.org`, item.org);
+  const labels = content.ui.timeline;
+  return sortTimeline(content.timeline.items).map(item => {
+    const k = `timeline.${item.id}`;
+    const kind = escapeAttr(item.kind);
+    const role = ctx.t(`${k}.role`, item.role);
+    const org = ctx.t(`${k}.org`, item.org);
+    const kindLabel = ctx.t(`timelineUi.kind.${item.kind}`, labels.kinds[item.kind]);
+    const period = ctx.t(`${k}.period`, periodText(item, labels));
+    const start = `<time datetime="${escapeAttr(item.start)}">${escapeHtml(formatMonth(item.start))}</time>`;
+    let end;
+    if (isOngoing(item)) {
+      const present = ctx.t('timelineUi.present', labels.present);
+      end = `<span class="tl-ongoing"${present.attr}>${present.html}</span>`;
+    } else {
+      end = `<time datetime="${escapeAttr(item.end)}">${escapeHtml(formatMonth(item.end))}</time>`;
+    }
     let desc;
     if (item.bullets) {
       const lis = item.bullets.map((b, i) => {
-        const li = ctx.t(`timeline.${item.id}.bullets.${i}`, b);
-        return `                <li${li.attr}>${li.html}</li>`;
+        const li = ctx.t(`${k}.bullets.${i}`, b);
+        return `              <li${li.attr}>${li.html}</li>`;
       }).join('\n');
-      desc = `            <div class="timeline-desc">
-              <ul>
+      desc = `            <ul class="tl-desc tl-bullets" role="list">
 ${lis}
-              </ul>
-            </div>`;
+            </ul>`;
     } else {
-      const d = ctx.t(`timeline.${item.id}.description`, item.description);
-      desc = `            <div class="timeline-desc"${d.attr}>${d.html}</div>`;
+      const d = ctx.t(`${k}.description`, item.description);
+      desc = `            <p class="tl-desc"${d.attr}>${d.html}</p>`;
     }
-    return `          <div class="timeline-item">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-date"${date.attr}>${date.html}</div>
-            <div class="timeline-role"${role.attr}>${role.html}</div>
-            <div class="timeline-org"${org.attr}>${org.html}</div>
+    return `        <li class="tl-item tl-item--${kind}" data-kind="${kind}" data-id="${escapeAttr(item.id)}">
+          <span class="tl-node" aria-hidden="true"></span>
+          <div class="tl-body">
+            <h3 class="tl-role"${role.attr}>${role.html}</h3>
+            <p class="tl-kind"${kindLabel.attr}>${kindLabel.html}</p>
+            <p class="tl-when"><span class="sr-only"${period.attr}>${period.html}</span><span class="tl-when-text" aria-hidden="true">${start}<span class="tl-sep"> — </span>${end}</span></p>
+            <p class="tl-org"${org.attr}>${org.html}</p>
 ${desc}
-          </div>`;
-  }).join('\n\n');
+          </div>
+        </li>`;
+  }).join('\n');
 }
 
-/* -------- Cartes 3D (colonne droite de la section formation) -------- */
-function renderCards(content, ctx) {
-  return visibleSorted(content.cards.cards).map(card => {
-    const c = card.color;
-    const k = `cards.${card.id}`;
-    const badge = ctx.t(`${k}.badge`, card.badge);
-    const title = ctx.t(`${k}.title`, card.title);
-    const org = ctx.t(`${k}.org`, card.org);
-    const date = ctx.t(`${k}.date`, card.date);
-    const pLabel = ctx.t(`${k}.progress.label`, card.progress.label);
-    const pValue = ctx.t(`${k}.progress.value`, card.progress.value);
-    const percent = Math.min(100, Math.max(0, Number(card.progress.percent) || 0));
-    const tags = card.tags.map((tag, i) => {
-      const t = ctx.t(`${k}.tags.${i}`, tag);
-      return `                  <span class="card-tag"${t.attr}>${t.html}</span>`;
-    }).join('\n');
-
-    return `          <div class="card-3d-wrap" data-card="${escapeAttr(card.id)}">
-            <div class="card-3d-inner">
-              <div class="sec-card${variant('sec-card', c)}">
-                <div class="shine-layer" aria-hidden="true"></div>
-                <div class="card-corner-tag" aria-hidden="true"></div>
-                <div class="card-type-badge${variant('card-badge', c)}"><span class="badge-dot${variant('badge-dot', c)}" aria-hidden="true"></span><span${badge.attr}>${badge.html}</span></div>
-                <div class="card-icon-ring${variant('card-ring', c)}" aria-hidden="true">${escapeHtml(card.icon)}</div>
-                <div>
-                  <div class="card-title${variant('card-title', c)}"${title.attr}>${title.html}</div>
-                  <div class="card-org"${org.attr}>${org.html}</div>
-                  <div class="card-date"${date.attr}>${date.html}</div>
-                </div>
-                <div class="card-divider${variant('card-divider', c)}" aria-hidden="true"></div>
-                <div class="card-progress">
-                  <div class="progress-label"><span${pLabel.attr}>${pLabel.html}</span><span${pValue.attr}>${pValue.html}</span></div>
-                  <div class="progress-bar-bg"><div class="progress-bar-fill${variant('progress-bar-fill', c)}" data-fill="${percent}"></div></div>
-                </div>
-                <div class="card-tags">
-${tags}
-                </div>
-              </div>
-            </div>
-          </div>`;
-  }).join('\n\n');
-}
-
-/* -------- FORMATION (timeline + cartes) -------- */
+/* -------- FORMATION : frise « Parcours » -------- */
 export function renderFormation(content, ctx) {
-  return `<section id="formation">
+  return `<section id="formation" aria-labelledby="formation-title">
 ${sectionHeading('formation', content, ctx)}
 
-      <!-- Layout : timeline à gauche, cartes à droite -->
-      <div class="formation-layout">
-
-        <!-- COLONNE GAUCHE : Timeline -->
-        <div class="timeline">
-
+      <div class="tl" data-timeline>
+        <div class="tl-rail" aria-hidden="true"><span class="tl-rail-fill"></span><span class="tl-rail-head"></span></div>
+        <ol class="tl-list" role="list">
 ${renderTimeline(content, ctx)}
+        </ol>
+      </div>
+    </section>`;
+}
 
+/* -------- CERTIFICATIONS : coverflow à logos (grille statique sans JS) -------- */
+// Un seul balisage pour les deux mises en page : sans JS (ou < CAROUSEL_MIN), une
+// grille où tout est visible ; le JS ajoute .cc--enhanced, les rôles ARIA et révèle
+// les contrôles (rendus `hidden`). Aucun style inline : le moteur écrit via le CSSOM.
+const pad2 = n => String(n).padStart(2, '0');
+
+function renderCertSlide(card, index, total, content, ctx) {
+  const labels = content.ui.certifications;
+  const id = escapeAttr(card.id);
+  const k = `cards.${card.id}`;
+  const title = ctx.t(`${k}.title`, card.title);
+  const org = ctx.t(`${k}.org`, card.org);
+  const n = index + 1;
+  const position = {
+    fr: labels.position.fr.replace('{n}', n).replace('{total}', total),
+    en: labels.position.en.replace('{n}', n).replace('{total}', total)
+  };
+  const slideAttrs = ctx.deferredAttrs({
+    'aria-roledescription': ['certifications.slide', labels.slide],
+    'aria-label': [`${k}.position`, position]
+  });
+
+  const visual = card.logo
+    ? `<img src="${escapeAttr(safeUrl(card.logo))}"${card.logoAlt ? ctx.attrs({ alt: [`${k}.logoAlt`, card.logoAlt] }) : ' alt=""'} loading="eager" decoding="async" draggable="false">`
+    : `<span class="cc-monogram" aria-hidden="true">${escapeHtml(monogram(ctx.plainText(card.org)))}</span>`;
+
+  let verify = '';
+  if (card.verifyUrl) {
+    const label = ctx.t('certifications.verify', labels.verify);
+    const newTab = ctx.t('certifications.newTab', labels.newTab);
+    const platform = card.verifyPlatform
+      ? `<span class="cc-platform">via ${escapeHtml(card.verifyPlatform)}</span>`
+      : '';
+    verify = `
+            <a class="btn-secondary cc-verify" href="${escapeAttr(safeUrl(card.verifyUrl))}" target="_blank" rel="noopener noreferrer" aria-describedby="cc-${id}-title">
+              <span class="cc-verify-main"><span${label.attr}>${label.html}</span> <span aria-hidden="true">↗</span></span>${platform}<span class="sr-only"${newTab.attr}>${newTab.html}</span>
+            </a>`;
+  }
+
+  return `        <li class="cc-slide" data-cc-slide data-id="${id}"${slideAttrs}>
+          <div class="cc-card">
+            <span class="cc-card-tag" aria-hidden="true">CERT_${pad2(n)}</span>
+            <div class="cc-plate">${visual}</div>
+          </div>
+          <div class="cc-info">
+            <p class="cc-prompt" aria-hidden="true">&gt; cert --show ${pad2(n)}/${pad2(total)}<span class="cc-caret">_</span></p>
+            <h3 class="cc-title" id="cc-${id}-title"${title.attr}>${title.html}</h3>
+            <p class="cc-org"${org.attr}>${org.html}</p>${verify}
+          </div>
+        </li>`;
+}
+
+function renderCertControls(cards, content, ctx) {
+  const labels = content.ui.certifications;
+  const sr = (key, value, extra = '') => {
+    const t = ctx.t(`certifications.${key}`, value);
+    return `<span class="sr-only"${extra}${t.attr}>${t.html}</span>`;
+  };
+  const dots = cards.map((card, i) => {
+    const title = ctx.t(`cards.${card.id}.title`, card.title);
+    return `          <button type="button" class="cc-dot" data-cc-dot="${i}"><span class="sr-only"${title.attr}>${title.html}</span></button>`;
+  }).join('\n');
+  const dotsLabel = ctx.t('certifications.dots', labels.dots);
+  return `      <div class="cc-controls" hidden>
+        <button type="button" class="cc-btn cc-toggle" data-cc-toggle><span class="cc-glyph cc-glyph--pause" aria-hidden="true"></span>${sr('pause', labels.pause, ' data-cc-label="pause"')}${sr('play', labels.play, ' data-cc-label="play" hidden')}</button>
+        <button type="button" class="cc-btn cc-prev" data-cc-prev><span class="cc-glyph" aria-hidden="true">‹</span>${sr('prev', labels.prev)}</button>
+        <div class="cc-dots" role="group" aria-labelledby="cc-dots-label">
+          <span class="sr-only" id="cc-dots-label"${dotsLabel.attr}>${dotsLabel.html}</span>
+${dots}
         </div>
+        <button type="button" class="cc-btn cc-next" data-cc-next><span class="cc-glyph" aria-hidden="true">›</span>${sr('next', labels.next)}</button>
+        <p class="cc-counter" aria-hidden="true"><span data-cc-current>01</span> / ${pad2(cards.length)}</p>
+      </div>`;
+}
 
-        <!-- COLONNE DROITE : Cartes 3D tilt -->
-        <div class="cards-column">
+export function renderCertifications(content, ctx) {
+  const cards = visibleSorted(content.cards.cards);
+  if (!cards.length) return '';
+  const carousel = cards.length >= CAROUSEL_MIN;
+  const slides = cards.map((card, i) => renderCertSlide(card, i, cards.length, content, ctx)).join('\n');
+  const rootAttrs = carousel
+    ? ` data-cc${ctx.deferredAttrs({ 'aria-roledescription': ['certifications.carousel', content.ui.certifications.carousel] })}`
+    : '';
+  return `<section id="certifications" aria-labelledby="certifications-title">
+${sectionHeading('certifications', content, ctx)}
 
-${renderCards(content, ctx)}
-
+      <div class="cc"${rootAttrs}>
+        <div class="cc-stage">
+          <div class="cc-floor" aria-hidden="true"></div>
+          <ul class="cc-track" role="list">
+${slides}
+          </ul>
         </div>
+${carousel ? `${renderCertControls(cards, content, ctx)}
+        <p class="cc-status sr-only" aria-live="polite" aria-atomic="true"></p>` : ''}
       </div>
     </section>`;
 }

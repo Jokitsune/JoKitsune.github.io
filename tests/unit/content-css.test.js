@@ -14,22 +14,20 @@ describe('Feuille dérivée du contenu', () => {
     expect(html).not.toMatch(/<script[^>]+src="https?:/);
   });
 
-  it('chaque délai de boot et chaque progression rendus ont leur règle CSS', () => {
+  it('chaque délai de boot rendu a sa règle CSS', () => {
     const css = renderContentCss(content);
     for (const [, d] of html.matchAll(/data-boot-delay="([^"]+)"/g)) {
       expect(css).toContain(`.boot-line[data-boot-delay="${d}"] { animation-delay: ${d}s; }`);
     }
-    for (const [, f] of html.matchAll(/data-fill="([^"]+)"/g)) {
-      expect(css).toContain(`.progress-bar-fill[data-fill="${f}"] { --fill: ${f}%; }`);
-    }
+    // Plus aucune barre de progression (section Certifications en logos)
+    expect(html).not.toContain('data-fill');
+    expect(css).not.toContain('--fill');
   });
 
   it('valeurs re-normalisées (aucune injection CSS possible)', () => {
     const c = loadRealContent();
     c.ui.boot.lines[0].delay = '1s;} body{display:none';
-    c.cards.cards[0].progress.percent = 250;
     const css = renderContentCss(c);
     expect(css).not.toContain('display:none');
-    expect(css).toContain('--fill: 100%');
   });
 });

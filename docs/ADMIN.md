@@ -184,6 +184,20 @@ Activez aussi **Settings → Code security → Secret scanning** et **Push prote
 
 > **PDF et en-têtes** : la CSP `sandbox` et `nosniff` des PDF (`/files/*.pdf`, `/asset/*.pdf`) ne sont appliquées que par **Vercel**. Sur le miroir GitHub Pages, aucun en-tête personnalisé n'est possible : le PDF y est servi sans sandbox. L'admin refuse donc à l'envoi les PDF actifs (noms décodés des `#xx`) et les PDF non inspectables (`/ObjStm`, `/Encrypt`, flux non décodables).
 
+> **Logos SVG (onglet Fichiers)** : acceptés pour `kind=image`, 256 Ko max., et **refusés plutôt que réécrits** (le fichier commité est exactement celui qui a été validé). Règles (`api/_lib/svg.js`) :
+> - UTF-8 uniquement (BOM UTF-8 toléré) ; ni `DOCTYPE`, ni `ENTITY`, ni `CDATA`, ni instruction de traitement (`<?xml-stylesheet…?>`) ;
+> - racine `<svg xmlns="http://www.w3.org/2000/svg">` avec un `viewBox` valide (largeur et hauteur > 0) ;
+> - éléments en liste blanche (formes, `text`, dégradés, `clipPath`, `mask`, `pattern`, filtres simples). Refusés : `script`, `foreignObject`, `image`, `feImage`, `a`, `animate`, `set`, `metadata`, tout élément XHTML, `sodipodi:*`, `inkscape:*`, et **`<style>` comme l'attribut `style`** ;
+> - aucun attribut `on*` ; `href` / `xlink:href` seulement sur `use`, les dégradés et `pattern`, vers `#id` **existant dans le fichier**, sans référence d'entité (`&#…;`) ; `url(…)` seulement vers `#id` ; aucune valeur contenant `javascript:`, `data:`, `@` ou `\` ;
+> - profondeur ≤ 32, ≤ 2 000 éléments, ≤ 50 attributs par élément, valeur ≤ 64 Kio.
+>
+> En cas de refus, l'admin affiche le motif et l'élément ou l'attribut fautif. Pour préparer un export Illustrator ou Inkscape :
+> `npx svgo --multipass --config svgo.config.cjs logo.svg -o logo.min.svg`, avec un `svgo.config.cjs` qui active `preset-default` **et** le plugin `convertStyleToAttrs` (puis `removeStyleElement` si un `<style>` subsiste) : les styles deviennent des attributs de présentation (`fill`, `stroke`…), et les métadonnées d'éditeur sont retirées. Vérifiez ensuite qu'aucun `style=` ne reste.
+>
+> **SVG et en-têtes** : sur **Vercel**, `/images/uploads/*.svg` est servi avec `Content-Security-Policy: sandbox; default-src 'none'; frame-ancestors 'none'`, `Content-Type: image/svg+xml`, `Content-Disposition: attachment` et `nosniff` (règle placée en dernier dans `vercel.json`, car la dernière règle qui correspond l'emporte). **GitHub Pages n'envoie aucun de ces en-têtes** : un SVG ouvert directement y est rendu sur l'origine `jokitsune.github.io`, et la liste blanche ci-dessus est alors la **seule** défense. C'est pourquoi un test unitaire (`tests/unit/security-config.test.js`) revalide tout `public/images/uploads/*.svg` du dépôt, y compris un SVG commité directement par Git sans passer par l'admin. Le site n'affiche les logos que via `<img>` (contexte sans script ni chargement externe) ; ne jamais insérer un SVG dans le HTML ni via `<object>`, `<embed>` ou `<iframe>`.
+
+> **Logos des certifications** : envoyez le logo depuis l'onglet **Fichiers** (image), cliquez sur **Copier le chemin**, puis collez-le dans le champ **Logo** de la certification (onglet **Certifications**, fichier `cards.json`). Seuls les chemins locaux `/images/uploads/<nom>.svg|png|jpg|webp` sont acceptés : une URL externe serait bloquée par la CSP (`img-src 'self'`). Le **lien de vérification** doit commencer par `https://` ; la **plateforme** (Credly, Coursera…) s'affiche en petit sous le bouton « Vérifier le certificat ». Sans logo, les initiales de l'organisme s'affichent ; sans lien, aucun bouton.
+
 > **CSP du site public** : elle est **appliquée** (et non plus en Report-Only), sans aucun script tiers ni `unsafe-inline`. Le formulaire de contact utilise `fetch` vers `formspree.io` (le script `unpkg.com/@formspree/ajax` a été supprimé : il s'exécutait sur l'origine de l'admin). Tout nouveau domaine externe (police, script, média) doit être ajouté explicitement dans `vercel.json`.
 
 ## 8. Régler le pare-feu Vercel (WAF)

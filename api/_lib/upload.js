@@ -1,19 +1,23 @@
 /* ================================================
    UPLOAD — contrôles purs : types autorisés, magic bytes, PDF actif,
    EXIF, nom de fichier généré par le serveur.
-   SVG, GIF, HTML et tout autre type : refusés.
+   SVG : accepté sous liste blanche stricte (voir svg.js), jamais réécrit.
+   GIF, HTML et tout autre type : refusés.
    ================================================ */
 
 import { createHash } from 'node:crypto';
 import { inflateSync, constants as zlibConstants } from 'node:zlib';
+import { SVG_LIMIT, svgProblem } from './svg.js';
 
 export const MIN_SIZE = 100;
 export const LIMITS = { cv: 3 * 1024 * 1024, image: 1.5 * 1024 * 1024 };
+/** Limites plus strictes par type déclaré (prioritaires sur LIMITS). */
+export const TYPE_LIMITS = { 'image/svg+xml': SVG_LIMIT };
 
 /** Types acceptés par nature d'upload → extension. */
 export const ALLOWED_TYPES = {
   cv: { 'application/pdf': 'pdf' },
-  image: { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }
+  image: { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/svg+xml': 'svg' }
 };
 
 const startsWith = (bytes, sig, offset = 0) =>
@@ -162,17 +166,33 @@ export function publicUrl(repoPath) {
   return repoPath.replace(/^public/, '');
 }
 
-export const PUBLIC_PATH_RE = /^\/(files|images\/uploads)\/[a-z0-9-]+\.(pdf|png|jpg|webp)$/;
+export const PUBLIC_PATH_RE = /^\/(files\/[a-z0-9-]+\.pdf|images\/uploads\/[a-z0-9-]+\.(png|jpg|webp|svg))$/;
+
+/**
+ * SVG : jamais « deviné » par detectType ; validé par liste blanche, stocké tel quel.
+ * @param {Uint8Array} bytes
+ */
+function inspectSvg(bytes) {
+  if (bytes.length > SVG_LIMIT) return { ok: false, status: 413, code: 'PAYLOAD_TOO_LARGE', reason: 'too_large' };
+  if (detectType(bytes) !== null) return { ok: false, status: 422, code: 'UPLOAD_INVALID', reason: 'magic_mismatch' };
+  const problem = svgProblem(bytes);
+  if (problem) return { ok: false, status: 422, code: 'UPLOAD_INVALID', reason: problem.reason, ...(problem.name ? { name: problem.name } : {}) };
+  return { ok: true, detected: 'image/svg+xml', warnings: [] };
+}
 
 /**
  * Vérifie le contenu d'un upload déjà lu.
  * @param {'cv' | 'image'} kind
  * @param {string} declaredType type MIME déclaré (Content-Type)
  * @param {Uint8Array} bytes
- * @returns {{ ok: true, detected: string, warnings: string[] } | { ok: false, status: number, code: string, reason: string }}
+ * @returns {{ ok: true, detected: string, warnings: string[] } | { ok: false, status: number, code: string, reason: string, name?: string }}
  */
 export function inspectUpload(kind, declaredType, bytes) {
   if (bytes.length < MIN_SIZE) return { ok: false, status: 422, code: 'UPLOAD_INVALID', reason: 'too_small' };
+  if (declaredType === 'image/svg+xml') {
+    if (!ALLOWED_TYPES[kind]?.[declaredType]) return { ok: false, status: 415, code: 'UNSUPPORTED_MEDIA_TYPE', reason: 'type_not_allowed' };
+    return inspectSvg(bytes);
+  }
   if (bytes.length > LIMITS[kind]) return { ok: false, status: 413, code: 'PAYLOAD_TOO_LARGE', reason: 'too_large' };
   const detected = detectType(bytes);
   if (!detected || detected !== declaredType || !ALLOWED_TYPES[kind][detected]) {

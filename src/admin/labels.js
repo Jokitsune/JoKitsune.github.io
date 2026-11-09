@@ -7,8 +7,8 @@ export const FILE_LABELS = {
   ui: { title: 'Interface', hint: 'Écran de boot, navigation, boutons, titres de sections, formulaire, accessibilité' },
   skills: { title: 'Compétences', hint: 'Catégories et étiquettes' },
   projects: { title: 'Projets', hint: 'Cartes projets, stack et liens' },
-  timeline: { title: 'Parcours', hint: 'Frise chronologique' },
-  cards: { title: 'Certifications', hint: 'Cartes de formation et progression' }
+  timeline: { title: 'Parcours', hint: 'Frise chronologique — triée automatiquement par date (la plus récente en premier) ; sans date de fin = en cours' },
+  cards: { title: 'Certifications', hint: 'Carrousel de la section Certifications : intitulé, organisme, logo (onglet Fichiers) et lien de vérification' }
 };
 
 const FIELD_LABELS = {
@@ -74,6 +74,16 @@ const FIELD_LABELS = {
   sections: 'Sections',
   projects: 'Projets',
   formation: 'Formation',
+  certifications: 'Certifications',
+  timeline: 'Frise « Parcours »',
+  kinds: 'Catégories',
+  kind: 'Catégorie',
+  experience: 'Expérience',
+  benevolat: 'Bénévolat',
+  present: 'Mention « en cours »',
+  to: 'Liaison entre deux dates',
+  start: 'Début (AAAA-MM)',
+  end: 'Fin (AAAA-MM)',
   form: 'Formulaire de contact',
   nameLabel: 'Libellé nom',
   namePlaceholder: 'Exemple nom',
@@ -95,16 +105,52 @@ const FIELD_LABELS = {
   role: 'Intitulé',
   org: 'Organisme',
   bullets: 'Puces',
-  cards: 'Cartes',
-  color: 'Couleur',
-  badge: 'Badge',
-  progress: 'Progression',
-  percent: 'Pourcentage',
+  cards: 'Certifications',
+  logo: 'Logo (chemin du fichier)',
+  logoAlt: 'Texte alternatif du logo',
+  verifyUrl: 'Lien de vérification (https)',
+  verifyPlatform: 'Plateforme de vérification',
+  verify: 'Bouton « Vérifier »',
+  newTab: 'Mention « nouvel onglet » (lecteurs d’écran)',
+  prev: 'Bouton « précédent » (lecteurs d’écran)',
+  next: 'Bouton « suivant » (lecteurs d’écran)',
+  pause: 'Bouton « arrêter la rotation »',
+  play: 'Bouton « lancer la rotation »',
+  carousel: 'Type de composant « carrousel »',
+  slide: 'Type d’élément « certification »',
+  dots: 'Groupe de points (lecteurs d’écran)',
+  position: 'Position ({n} et {total})',
   id: 'Identifiant',
   visible: 'Visible sur le site',
   fr: 'FR',
   en: 'EN'
 };
+
+/** Aides affichées sous certains champs (reliées par aria-describedby). */
+const FIELD_HINTS = {
+  logo: 'Collez ici le chemin copié depuis l’onglet Fichiers (bouton « Copier le chemin »), ex. /images/uploads/ibm-6bdf7f8ccdb3.svg. Formats : SVG, PNG, JPG ou WebP. Sans logo, les initiales de l’organisme s’affichent.',
+  logoAlt: 'Facultatif : l’intitulé et l’organisme sont déjà écrits à côté du logo.',
+  verifyUrl: 'Adresse https:// de la page publique du certificat (Credly, Coursera…). Sans lien, aucun bouton « Vérifier ».',
+  verifyPlatform: 'Nom affiché en petit sous le bouton, ex. Credly, Coursera.',
+  position: 'Doit contenir {n} (numéro) et {total} (nombre de certifications), ex. « {n} sur {total} ».'
+};
+
+/** Aide d'un champ (undefined si aucune). */
+export function fieldHint(key) {
+  return FIELD_HINTS[key];
+}
+
+/** Libellés des valeurs d'énumération affichées dans les listes déroulantes. */
+const ENUM_LABELS = {
+  formation: 'Formation',
+  experience: 'Expérience',
+  benevolat: 'Bénévolat'
+};
+
+/** Libellé d'une valeur d'énumération (repli : la valeur brute). */
+export function enumLabel(value) {
+  return ENUM_LABELS[value] ?? String(value);
+}
 
 /** Libellé d'un champ (repli : la clé brute). */
 export function fieldLabel(key) {

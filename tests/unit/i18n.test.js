@@ -1,7 +1,10 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderPage, buildDictionary, localize } from '../../src/render/index.js';
-import { initI18n, setLanguage, setMultilineText } from '../../src/js/modules/i18n.js';
+import {
+  initI18n, setLanguage, setMultilineText, applyI18nAttrs, parseI18nAttr, getLanguage, translate, I18N_CHANGE_EVENT
+} from '../../src/js/modules/i18n.js';
+import { createContext } from '../../src/render/context.js';
 import { loadRealContent, loadTemplate, XSS } from './helpers.js';
 
 const norm = s => s.replace(/\s+/g, ' ').trim();
@@ -54,7 +57,7 @@ describe('i18n côté client', () => {
     expect(norm(document.querySelector('.hero-greeting').textContent)).toBe(localize(content.site.hero.greeting, 'en'));
     expect(document.querySelector('#skills .section-title').innerHTML).toBe('Technical<br>Arsenal');
     expect(document.querySelector('#form-name').placeholder).toBe('Your name...');
-    expect(norm(document.querySelector('.nav-links').textContent)).toContain('./education');
+    expect(norm(document.querySelector('.nav-links').textContent)).toContain('./journey');
     expect(document.querySelector('.lang-btn[data-lang="en"]').classList.contains('active')).toBe(true);
 
     setLanguage('fr');
@@ -93,7 +96,9 @@ describe('i18n côté client', () => {
     expect(title.querySelector('img, b')).toBeNull();
     expect(title.querySelectorAll('br')).toHaveLength(1);
     expect(title.textContent).toBe(`${XSS}<b>gras</b>`);
-    expect(document.querySelectorAll('img')).toHaveLength(0);
+    // Seules images : les logos locaux des certifications
+    expect(document.querySelectorAll('img:not(.cc-plate > img)')).toHaveLength(0);
+    for (const img of document.querySelectorAll('img')) expect(img.getAttribute('src')).toMatch(/^\/images\/uploads\//);
   });
 
   it('setMultilineText crée des <br> via le DOM', () => {
@@ -101,5 +106,67 @@ describe('i18n côté client', () => {
     setMultilineText(el, 'a\n<i>b</i>\nc');
     expect(el.childNodes).toHaveLength(5);
     expect(el.innerHTML).toBe('a<br>&lt;i&gt;b&lt;/i&gt;<br>c');
+  });
+});
+
+describe('attributs traduits (data-i18n-attr)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('pré-rendu : ctx.attrs écrit la langue du rendu et la liste attr:clé', () => {
+    const ctx = createContext('fr');
+    const out = ctx.attrs({
+      alt: ['certs.a.alt', { fr: 'Logo « A »', en: 'A "logo"' }],
+      'aria-label': ['certs.a.label', { fr: 'Diapo 1 sur 3', en: 'Slide 1 of 3' }],
+      title: ['certs.a.title', 'invariant']
+    });
+    expect(out).toBe(' alt="Logo « A »" aria-label="Diapo 1 sur 3" title="invariant" data-i18n-attr="alt:certs.a.alt;aria-label:certs.a.label"');
+    expect(ctx.dictionary.en['certs.a.alt']).toBe('A "logo"');
+    expect(createContext('en').attrs({ alt: ['k', { fr: 'x', en: '"><img>' }] })).toContain('alt="&quot;&gt;&lt;img&gt;"');
+    expect(() => ctx.attrs({ href: ['k', 'x'] })).toThrow(/non traduisible/);
+    expect(() => ctx.attrs({ onclick: ['k', 'x'] })).toThrow(/non traduisible/);
+    expect(() => ctx.attrs({ alt: ['a;b', 'x'] })).toThrow(/invalide/);
+  });
+
+  it('liste blanche côté client : href, src, style et on* sont ignorés', () => {
+    expect(parseI18nAttr('alt:a; aria-label:b;title:c')).toEqual([['alt', 'a'], ['aria-label', 'b'], ['title', 'c']]);
+    expect(parseI18nAttr('href:a;src:b;style:c;onclick:d;onerror:e;:x;alt:;novalue')).toEqual([]);
+    expect(parseI18nAttr(null)).toEqual([]);
+  });
+
+  it('bascule de langue : attributs traduits, événement i18n:change, applyI18nAttrs sur un sous-arbre', () => {
+    const content = loadRealContent();
+    mountPage(content);
+    const dict = buildDictionary(content);
+    Object.assign(dict.fr, { 'x.alt': 'Logo FR', 'x.label': 'Libellé FR', 'x.href': 'javascript:alert(1)' });
+    Object.assign(dict.en, { 'x.alt': 'Logo EN', 'x.label': 'Label EN', 'x.href': 'javascript:alert(1)' });
+    const img = document.createElement('img');
+    img.setAttribute('data-i18n-attr', 'alt:x.alt;aria-label:x.label;href:x.href;onerror:x.href');
+    document.body.append(img);
+
+    const events = [];
+    const onChange = e => events.push(e.detail.lang);
+    document.addEventListener(I18N_CHANGE_EVENT, onChange);
+    localStorage.setItem('portfolio_lang', 'fr');
+    initI18n(dict, { defaultLang: 'fr' });
+    expect(img.getAttribute('alt')).toBe('Logo FR');
+    setLanguage('en');
+    expect(getLanguage()).toBe('en');
+    expect(translate('x.alt')).toBe('Logo EN');
+    expect(img.getAttribute('alt')).toBe('Logo EN');
+    expect(img.getAttribute('aria-label')).toBe('Label EN');
+    expect(img.hasAttribute('href')).toBe(false);
+    expect(img.hasAttribute('onerror')).toBe(false);
+    expect(events).toEqual(['fr', 'en']);
+    document.removeEventListener(I18N_CHANGE_EVENT, onChange);
+
+    // Nœud ajouté après l'init (ex. par un module) : applyI18nAttrs(root) le traduit, root compris
+    const late = document.createElement('div');
+    late.setAttribute('data-i18n-attr', 'aria-label:x.label');
+    late.innerHTML = '<span data-i18n-attr="title:x.alt"></span>'; // gabarit de test de confiance
+    applyI18nAttrs(late);
+    expect(late.getAttribute('aria-label')).toBe('Label EN');
+    expect(late.firstElementChild.getAttribute('title')).toBe('Logo EN');
   });
 });

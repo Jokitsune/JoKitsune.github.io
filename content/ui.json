@@ -19,8 +19,9 @@
       { "id": "home", "order": 1, "visible": true, "href": "#hero", "label": { "fr": "./home", "en": "./home" } },
       { "id": "skills", "order": 2, "visible": true, "href": "#skills", "label": { "fr": "./skills", "en": "./skills" } },
       { "id": "projects", "order": 3, "visible": true, "href": "#projects", "label": { "fr": "./projects", "en": "./projects" } },
-      { "id": "formation", "order": 4, "visible": true, "href": "#formation", "label": { "fr": "./formation", "en": "./education" } },
-      { "id": "contact", "order": 5, "visible": true, "href": "#contact", "label": { "fr": "./contact", "en": "./contact" } }
+      { "id": "formation", "order": 4, "visible": true, "href": "#formation", "label": { "fr": "./parcours", "en": "./journey" } },
+      { "id": "certifications", "order": 5, "visible": true, "href": "#certifications", "label": { "fr": "./certifications", "en": "./certifications" } },
+      { "id": "contact", "order": 6, "visible": true, "href": "#contact", "label": { "fr": "./contact", "en": "./contact" } }
     ]
   },
   "hero": {
@@ -39,13 +40,38 @@
       "title": { "fr": "Projets &\nRéalisations", "en": "Projects &\nAchievements" }
     },
     "formation": {
-      "label": { "fr": "parcours", "en": "journey" },
-      "title": { "fr": "Formation &\nExpériences", "en": "Education &\nExperience" }
+      "label": { "fr": "formation & expériences", "en": "education & experience" },
+      "title": { "fr": "Parcours", "en": "Journey" }
+    },
+    "certifications": {
+      "label": { "fr": "certifications", "en": "certifications" },
+      "title": { "fr": "Certifications\n& Badges", "en": "Certifications\n& Badges" }
     },
     "contact": {
       "label": { "fr": "transmission", "en": "transmission" },
       "title": { "fr": "Initier\nContact", "en": "Initiate\nContact" }
     }
+  },
+  "timeline": {
+    "kinds": {
+      "formation": { "fr": "Formation", "en": "Education" },
+      "experience": { "fr": "Expérience", "en": "Experience" },
+      "benevolat": { "fr": "Bénévolat", "en": "Volunteering" }
+    },
+    "present": { "fr": "aujourd’hui", "en": "present" },
+    "to": { "fr": "à", "en": "to" }
+  },
+  "certifications": {
+    "verify": { "fr": "Vérifier le certificat", "en": "Verify the certificate" },
+    "newTab": { "fr": "(nouvel onglet)", "en": "(new tab)" },
+    "prev": { "fr": "Certification précédente", "en": "Previous certification" },
+    "next": { "fr": "Certification suivante", "en": "Next certification" },
+    "pause": { "fr": "Arrêter la rotation automatique", "en": "Stop automatic rotation" },
+    "play": { "fr": "Lancer la rotation automatique", "en": "Start automatic rotation" },
+    "carousel": { "fr": "carrousel", "en": "carousel" },
+    "slide": { "fr": "certification", "en": "certification" },
+    "dots": { "fr": "Choisir une certification", "en": "Choose a certification" },
+    "position": { "fr": "{n} sur {total}", "en": "{n} of {total}" }
   },
   "form": {
     "nameLabel": { "fr": "nom", "en": "name" },

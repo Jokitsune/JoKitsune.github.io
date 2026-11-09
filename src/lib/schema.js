@@ -157,6 +157,12 @@ export const siteSchema = z.strictObject({
 
 /* -------- ui.json -------- */
 
+/** Sections dont l'en-tête (label + titre) est éditable dans ui.sections. */
+export const SECTION_NAMES = /** @type {const} */ (['skills', 'projects', 'formation', 'certifications', 'contact']);
+
+/** Catégories d'une entrée de la frise (timeline.json › items[].kind). */
+export const TIMELINE_KINDS = /** @type {const} */ (['formation', 'experience', 'benevolat']);
+
 export const uiSchema = z.strictObject({
   ...$schema,
   boot: z.strictObject({
@@ -180,8 +186,31 @@ export const uiSchema = z.strictObject({
     ctaSocial: localizedSchema
   }),
   sections: z.strictObject(Object.fromEntries(
-    ['skills', 'projects', 'formation', 'contact'].map(k => [k, z.strictObject({ label: localizedSchema, title: localizedSchema })])
+    SECTION_NAMES.map(k => [k, z.strictObject({ label: localizedSchema, title: localizedSchema })])
   )),
+  // Libellés partagés de la frise « Parcours » (catégories, « aujourd'hui », « à »)
+  timeline: z.strictObject({
+    kinds: z.strictObject(Object.fromEntries(TIMELINE_KINDS.map(k => [k, localizedSchema]))),
+    present: localizedSchema,
+    to: localizedSchema
+  }),
+  // Libellés du carrousel « Certifications » (noms accessibles, lien de vérification)
+  certifications: z.strictObject({
+    verify: localizedSchema,
+    newTab: localizedSchema,
+    prev: localizedSchema,
+    next: localizedSchema,
+    pause: localizedSchema,
+    play: localizedSchema,
+    carousel: localizedSchema,
+    slide: localizedSchema,
+    dots: localizedSchema,
+    // Position d'une certification : {n} et {total} sont remplacés par le site
+    position: localizedSchema.refine(
+      v => (typeof v === 'string' ? [v] : [v.fr, v.en]).every(t => t.includes('{n}') && t.includes('{total}')),
+      { message: 'La position doit contenir {n} et {total}' }
+    )
+  }),
   form: z.strictObject({
     nameLabel: localizedSchema,
     namePlaceholder: localizedSchema,
@@ -224,40 +253,60 @@ export const projectsSchema = z.strictObject({
 
 /* -------- timeline.json -------- */
 
+// AAAA-MM : c'est aussi une « valid month string » HTML, utilisable telle quelle dans <time datetime>
+export const monthSchema = z.string().regex(/^(19|20)\d{2}-(0[1-9]|1[0-2])$/, 'Mois invalide (format AAAA-MM)');
+
 export const timelineSchema = z.strictObject({
   ...$schema,
   items: listOf(z.strictObject({
     ...listItem,
-    date: localizedSchema,
+    kind: z.enum(TIMELINE_KINDS),
+    start: monthSchema,
+    end: monthSchema.optional(), // absent = « en cours »
     role: localizedSchema,
     org: localizedSchema,
     description: localizedSchema.optional(),
     bullets: z.array(localizedSchema).optional()
-  }).refine(it => (it.description === undefined) !== (it.bullets === undefined), {
-    message: 'Renseigner soit « description », soit « bullets » (exactement un des deux)'
-  }))
+  })
+    .refine(it => (it.description === undefined) !== (it.bullets === undefined), {
+      message: 'Renseigner soit « description », soit « bullets » (exactement un des deux)'
+    })
+    // AAAA-MM est de longueur fixe : la comparaison de chaînes suit l'ordre chronologique
+    .refine(it => it.end === undefined || it.end >= it.start, {
+      path: ['end'],
+      message: 'La date de fin précède la date de début'
+    }))
 });
 
-/* -------- cards.json -------- */
+/* -------- cards.json (section « Certifications ») -------- */
 
-export const CARD_COLORS = /** @type {const} */ (['green', 'cyan', 'yellow']);
+/**
+ * Logo : chemin local d'un fichier envoyé depuis l'onglet Fichiers de l'admin
+ * (même forme que PUBLIC_PATH_RE côté API). Jamais d'URL externe : la CSP du
+ * site (img-src 'self') la bloquerait, et un hotlink fuiterait les visites.
+ */
+export const LOGO_PATH_RE = /^\/images\/uploads\/[a-z0-9-]+\.(png|jpg|webp|svg)$/;
+
+export const logoPathSchema = z
+  .string()
+  .regex(LOGO_PATH_RE, 'Chemin de logo invalide : collez le chemin copié depuis l’onglet Fichiers (/images/uploads/nom-xxxxxxxxxxxx.svg, .png, .jpg ou .webp)');
+
+// Lien de vérification d'une certification : https uniquement, hôte explicite
+export const httpsUrlSchema = z
+  .string()
+  .max(2000)
+  .regex(/^https:\/\/[A-Za-z0-9.-]+(?::\d{1,5})?(?:[/?#][^\s<>"'`\\]*)?$/, 'Lien non autorisé (https:// obligatoire)');
 
 export const cardsSchema = z.strictObject({
   ...$schema,
   cards: listOf(z.strictObject({
     ...listItem,
-    color: z.enum(CARD_COLORS),
-    icon: textSchema,
-    badge: localizedSchema,
     title: localizedSchema,
     org: localizedSchema,
-    date: localizedSchema,
-    progress: z.strictObject({
-      label: localizedSchema,
-      value: localizedSchema,
-      percent: z.number().min(0).max(100)
-    }),
-    tags: z.array(localizedSchema)
+    logo: logoPathSchema.optional(),     // absent : monogramme de l'organisme
+    logoAlt: localizedSchema.optional(), // absent : alt="" (intitulé et organisme écrits à côté)
+    verifyUrl: httpsUrlSchema.optional(),     // absent : pas de bouton « Vérifier »
+    verifyPlatform: textSchema.optional()     // ex. Credly, Coursera (affiché en petit)
   }))
 });
 

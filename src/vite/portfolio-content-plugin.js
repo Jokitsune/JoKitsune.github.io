@@ -29,7 +29,7 @@ export function clientPayload(content) {
 const MAIN_CSS_RE = /[\\/]src[\\/]styles[\\/]main\.css$/;
 
 /**
- * Règles CSS dérivées du contenu (délais du boot, progression des cartes),
+ * Règles CSS dérivées du contenu (délais du boot),
  * ajoutées à la FIN de src/styles/main.css avant son traitement par Vite :
  * elles partagent le bundle CSS principal (même chargement qu'avant, rendu
  * identique) et remplacent les anciens style="…" interdits par la CSP.

@@ -23,7 +23,10 @@ export const MAX_ORDER = 9999;
 export const CONTENT_FILE_RE = /^[a-z][a-z0-9-]{0,39}$/;
 
 const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
-const URL_KEYS = new Set(['url', 'href', 'src']);
+// logo (chemin local) et verifyUrl (https) : message « URL non autorisée » dédié
+const URL_KEYS = new Set(['url', 'href', 'src', 'logo', 'verifyUrl']);
+// Champs mois AAAA-MM (timeline) : message d'erreur dédié plutôt que « Format invalide »
+const MONTH_KEYS = new Set(['start', 'end']);
 
 // <br>, <br/>, <br />, insensible à la casse
 const BR_RE = /<br\s*\/?>/gi;
@@ -139,6 +142,7 @@ function mapIssue(issue, prefix = []) {
     case 'invalid_format': {
       const last = segs[segs.length - 1];
       if (URL_KEYS.has(last)) return [{ path, code: 'invalid_url' }];
+      if (MONTH_KEYS.has(last)) return [{ path, code: 'invalid_month' }];
       return [{ path, code: /[<>]/.test(String(issue.pattern ?? '')) ? 'html_forbidden' : 'invalid_format' }];
     }
     case 'unrecognized_keys':
@@ -161,7 +165,9 @@ function mapIssue(issue, prefix = []) {
     case 'custom':
       if (URL_KEYS.has(segs[segs.length - 1]) || URL_KEYS.has(segs[segs.length - 2])) return [{ path, code: 'invalid_url' }];
       if (/double/i.test(issue.message ?? '')) return [{ path, code: 'duplicate_id' }];
+      if (/fin précède/.test(issue.message ?? '')) return [{ path, code: 'end_before_start' }];
       if (/description|bullets/.test(issue.message ?? '')) return [{ path, code: 'description_xor_bullets' }];
+      if (/\{n\}/.test(issue.message ?? '')) return [{ path, code: 'missing_placeholder' }];
       return [{ path, code: 'invalid' }];
     default:
       return [{ path, code: issue.code ?? 'invalid' }];
@@ -217,6 +223,9 @@ export const ISSUE_LABELS = {
   invalid_type: 'Type de valeur incorrect',
   duplicate_id: 'Identifiant en double',
   description_xor_bullets: 'Renseigner soit la description, soit les puces (exactement l’un des deux)',
+  invalid_month: 'Format attendu AAAA-MM, ex. 2024-06',
+  end_before_start: 'La date de fin précède la date de début',
+  missing_placeholder: 'Le texte doit contenir {n} et {total} (ex. « {n} sur {total} »)',
   unknown_file: 'Fichier inconnu',
   invalid: 'Valeur invalide'
 };

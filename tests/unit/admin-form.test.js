@@ -35,6 +35,14 @@ beforeEach(() => {
 });
 
 describe('Introspection du schéma', () => {
+  it('menu « Catégorie » de la frise : libellés accentués, valeurs brutes conservées', () => {
+    build('timeline');
+    const select = document.querySelector('select[data-path$=".kind"]');
+    expect(select).not.toBeNull();
+    const options = [...select.options].map(o => [o.value, o.textContent]);
+    expect(options).toEqual(expect.arrayContaining([['formation', 'Formation'], ['experience', 'Expérience'], ['benevolat', 'Bénévolat']]));
+  });
+
   it('texte traduisible et liste gérée détectés', () => {
     const item = schemas.projects.properties.projects;
     expect(isManagedList(item)).toBe(true);
@@ -50,6 +58,20 @@ describe('Introspection du schéma', () => {
         expect(label, `${file} › ${input.dataset.path}`).not.toBeNull();
       }
     }
+  });
+});
+
+describe('Aides de saisie (Certifications)', () => {
+  it('le champ logo explique qu’on colle le chemin copié depuis l’onglet Fichiers', () => {
+    build('cards');
+    const input = byPath('cards[0].logo');
+    expect(input).toBeTruthy();
+    const ids = input.getAttribute('aria-describedby').split(' ');
+    const hint = document.getElementById(ids[0]);
+    expect(hint.textContent).toMatch(/onglet Fichiers/);
+    expect(hint.textContent).toMatch(/Copier le chemin/);
+    // L'emplacement d'erreur reste relié
+    expect(document.getElementById(ids[1]).classList.contains('field-error')).toBe(true);
   });
 });
 

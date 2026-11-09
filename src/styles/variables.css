@@ -13,5 +13,6 @@
   --bg3: #0f1e28;
   --border: #1a3344;
   --text: #c8e6d0;
-  --text-dim: #4a7a5a;
+  --text-dim: #4a7a5a;            /* décoratif uniquement : < 4,5:1 sur les fonds */
+  --text-muted: #6b9478;          /* texte secondaire : 5,8 / 5,5 / 5,0:1 sur --bg / --bg2 / --bg3 (AA) */
 }

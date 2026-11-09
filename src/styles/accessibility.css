@@ -11,11 +11,66 @@
   .glitch:hover::before, .glitch:hover::after {
     display: none;
   }
-  .card-3d-inner {
-    transform: none !important;
-  }
   .cyber-audio-player.playing .eq-bar {
     animation: none !important;
     height: 6px !important;
   }
+}
+
+/* -------- FRISE « PARCOURS » -------- */
+/* Mouvement réduit : le JS ne pose pas .is-enhanced (tout visible, rail plein,
+   points allumés). Ces règles couvrent un éventuel basculement à chaud. */
+@media (prefers-reduced-motion: reduce) {
+  .tl-item,
+  .tl-node,
+  .tl-body { transition: none !important; }
+  .tl-node,
+  .tl-ongoing::before { animation: none !important; }
+  .tl-item { opacity: 1 !important; transform: none !important; }
+}
+
+/* -------- CERTIFICATIONS (coverflow) -------- */
+/* Mouvement réduit : le moteur saute directement à la cible (pas d'interpolation)
+   et ne lance pas l'autoplay ; légende, points et filtre sans transition. */
+@media (prefers-reduced-motion: reduce) {
+  .cc-card,
+  .cc-dot::before,
+  .cc-plate img,
+  .cc-btn { transition: none !important; }
+  .cc--enhanced .cc-slide.is-current .cc-info,
+  .cc-caret { animation: none !important; }
+}
+
+/* Couleurs forcées : carte active et point courant identifiables sans couleurs */
+@media (forced-colors: active) {
+  .cc-slide.is-current .cc-card { border: 3px solid Highlight; }
+  .cc-dot::before { forced-color-adjust: none; background: CanvasText; }
+  .cc-dot[aria-current="true"]::before { background: Highlight; }
+  .cc-glyph--pause { border-color: ButtonText; }
+  .cc-glyph--play { border-left-color: ButtonText; }
+}
+
+/* Couleurs forcées : formes et états lisibles sans ombres ni couleurs de marque */
+@media (forced-colors: active) {
+  .tl-rail { background: CanvasText; }
+  .tl-rail-fill, .tl-rail-head { display: none; }
+  .tl-node {
+    forced-color-adjust: none;
+    background: Canvas;
+    border: 2px solid CanvasText;
+    box-shadow: none;
+  }
+  .tl-item--benevolat .tl-node { outline-color: CanvasText; }
+  .tl:not(.is-enhanced) .tl-node,
+  .tl-item.is-reached .tl-node { background: Highlight; border-color: Highlight; }
+  .tl-item.is-active .tl-body { border: 2px solid Highlight; }
+  .tl-kind { border-color: CanvasText; }
+}
+
+/* Impression : même rendu que sans animation */
+@media print {
+  .tl-item { opacity: 1 !important; transform: none !important; }
+  .tl-rail-head { display: none; }
+  .tl-rail-fill { transform: none; }
+  .tl-node { background: var(--kind-color); }
 }

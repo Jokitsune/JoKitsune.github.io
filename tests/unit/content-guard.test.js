@@ -67,6 +67,21 @@ describe('validateForWrite', () => {
     item.bullets = [{ fr: 'x', en: 'y' }];
     expect(validateForWrite('timeline', content.timeline).issues.map(i => i.code)).toContain('description_xor_bullets');
   });
+  it('certifications : logo externe et lien http refusés avec un code d’URL', () => {
+    const content = loadRealContent();
+    content.cards.cards[0].logo = 'https://evil.example/logo.svg';
+    content.cards.cards[1].verifyUrl = 'javascript:alert(1)';
+    const issues = validateForWrite('cards', content.cards).issues;
+    expect(issues).toContainEqual({ path: 'cards[0].logo', code: 'invalid_url' });
+    expect(issues).toContainEqual({ path: 'cards[1].verifyUrl', code: 'invalid_url' });
+    content.cards.cards[1].verifyUrl = 'http://www.credly.com/badges/x';
+    expect(validateForWrite('cards', content.cards).issues).toContainEqual({ path: 'cards[1].verifyUrl', code: 'url_forbidden' });
+  });
+  it('ui.certifications.position sans {n} : code dédié', () => {
+    const content = loadRealContent();
+    content.ui.certifications.position = 'certification';
+    expect(validateForWrite('ui', content.ui).issues).toContainEqual({ path: 'certifications.position', code: 'missing_placeholder' });
+  });
 });
 
 describe('formatContentJson', () => {

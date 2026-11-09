@@ -41,7 +41,8 @@ test('bascule de langue FR <-> EN', async ({ page }) => {
   await page.locator('.lang-btn[data-lang="en"]').click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('.hero-greeting')).toHaveText('// SYSTEM IDENTIFICATION');
-  await expect(page.locator('#formation .section-title')).toHaveText('Education &Experience');
+  await expect(page.locator('#formation .section-title')).toHaveText('Journey');
+  await expect(page.locator('#formation .tl-kind').first()).toHaveText('Experience');
   await expect(page.locator('#form-name')).toHaveAttribute('placeholder', 'Your name...');
   await expect(page.locator('.lang-btn[data-lang="en"]')).toHaveClass(/active/);
   await page.locator('.lang-btn[data-lang="fr"]').click();
@@ -90,6 +91,18 @@ test('CSP appliquée (en-têtes vercel.json) : aucune violation, aucun script ti
   await page.locator('.lang-btn[data-lang="en"]').click();
   await page.locator('#contact').scrollIntoViewIfNeeded();
   await page.locator('#formation').scrollIntoViewIfNeeded();
+  // La frise écrit --tl-progress via le CSSOM à chaque pas : aucune violation attendue
+  const { top, height } = await page.locator('#formation').evaluate(el => {
+    const r = el.getBoundingClientRect();
+    return { top: r.top + window.scrollY, height: r.height };
+  });
+  for (let y = top; y <= top + height; y += 200) {
+    await page.evaluate(v => window.scrollTo(0, v), y);
+    await page.waitForTimeout(30);
+  }
+  // Le carrousel #certifications écrit transform/opacity via le CSSOM : idem
+  await page.locator('#certifications').scrollIntoViewIfNeeded();
+  await page.locator('.cc-next').click();
   await page.waitForTimeout(500);
   expect(violations).toEqual([]);
   expect(scripts.every(u => new URL(u).origin === new URL(page.url()).origin)).toBe(true);

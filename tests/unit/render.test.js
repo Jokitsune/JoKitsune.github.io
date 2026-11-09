@@ -50,8 +50,7 @@ describe('rendu de la page', () => {
     expect(doc.querySelectorAll('.social-pile-item')).toHaveLength(content.site.socials.length);
     expect(doc.querySelectorAll('.skill-card')).toHaveLength(content.skills.categories.length);
     expect(doc.querySelectorAll('.project-card')).toHaveLength(content.projects.projects.length);
-    expect(doc.querySelectorAll('.timeline-item')).toHaveLength(content.timeline.items.length);
-    expect(doc.querySelectorAll('.card-3d-wrap')).toHaveLength(content.cards.cards.length);
+    expect(doc.querySelectorAll('.tl-item')).toHaveLength(content.timeline.items.length);
     expect(doc.querySelectorAll('.contact-item')).toHaveLength(content.site.contact.items.length);
   });
 
@@ -60,18 +59,6 @@ describe('rendu de la page', () => {
     expect([...doc.querySelectorAll('.project-number')].map(e => e.textContent)).toEqual(
       content.projects.projects.map((_, i) => `PROJECT_0${i + 1}`)
     );
-    // Cartes fixtures : le contenu réel des cartes est éditable depuis /admin
-    const card = (id, order, color, percent) => ({
-      id, order, visible: true, color, icon: '#', badge: 'b', title: 't', org: 'o', date: 'd',
-      progress: { label: 'l', value: 'v', percent }, tags: []
-    });
-    const c = loadRealContent();
-    c.cards.cards = [card('fx-cyan', 0, 'cyan', 80), card('fx-green', 1, 'green', 100)];
-    const d = parse(renderPage(loadTemplate(), c));
-    const cyan = d.querySelector('[data-card="fx-cyan"]');
-    expect(cyan.querySelector('.sec-card').className).toBe('sec-card sec-card--cyan');
-    expect(cyan.querySelector('.progress-bar-fill').getAttribute('data-fill')).toBe('80');
-    expect(d.querySelector('[data-card="fx-green"] .sec-card').className).toBe('sec-card');
     expect(doc.querySelector('.social-pile-item.github-item svg path')).not.toBeNull();
     expect(doc.querySelector('.hero-name').getAttribute('data-text')).toBe('de SOUZA');
     expect(norm(doc.querySelector('.nav-brand').textContent)).toBe('J.de SOUZA');
@@ -130,8 +117,11 @@ describe('sécurité du rendu au build', () => {
     const { html } = renderSections(c);
     const doc = parse(renderPage(loadTemplate(), c));
 
-    expect(Object.values(html).join('')).not.toContain('<img');
-    expect(doc.querySelectorAll('main img, footer img, script:not([src])')).toHaveLength(0);
+    // Seules images légitimes : les logos locaux des certifications (/images/uploads/…)
+    const imgs = Object.values(html).join('').match(/<img[^>]*>/g) ?? [];
+    expect(imgs.length).toBeGreaterThan(0);
+    for (const img of imgs) expect(img).toMatch(/^<img src="\/images\/uploads\/[a-z0-9-]+\.(svg|png|jpg|webp)"/);
+    expect(doc.querySelectorAll('main img:not(.cc-plate > img), footer img, script:not([src])')).toHaveLength(0);
     expect(norm(doc.querySelector('.project-name').textContent)).toBe(XSS);
     expect(norm(doc.querySelector('.skill-card:nth-child(2) .skill-tag').textContent)).toBe(XSS);
     expect(doc.querySelector('footer').textContent).toContain(XSS);

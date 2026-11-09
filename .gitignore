@@ -39,3 +39,6 @@ desktop.ini
 
 # Panneau /admin : données du backend fichier local (ADMIN_DEV_MODE=1)
 .admin-dev*/
+
+# graphify
+graphify-out/

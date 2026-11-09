@@ -8,7 +8,7 @@ import { ApiError, getContentLength, json, readBoundedBody } from '../http.js';
 import { requireMediaType } from '../guard.js';
 import { RepoConflictError, gitBlobSha } from '../github-api.js';
 import { buildCommitMessage, ensureWorkBranch, workBranch } from '../branches.js';
-import { ALLOWED_TYPES, LIMITS, cvPath, imagePath, inspectUpload, publicUrl } from '../upload.js';
+import { ALLOWED_TYPES, LIMITS, TYPE_LIMITS, cvPath, imagePath, inspectUpload, publicUrl } from '../upload.js';
 
 const SHA_RE = /^[0-9a-f]{40}$/;
 
@@ -23,33 +23,37 @@ export async function upload(ctx) {
   const baseSha = request.headers.get('x-base-sha');
   if (baseSha !== null && !SHA_RE.test(baseSha)) throw new ApiError(400, 'BAD_REQUEST', { reason: 'bad_base_sha' });
 
-  const reject = (status, code, reason) => {
+  // `name` : élément/attribut fautif d'un SVG, déjà nettoyé ([A-Za-z0-9:_-], 64 car.) ;
+  // jamais d'extrait du fichier dans la réponse ni dans le journal.
+  const reject = (status, code, reason, name) => {
     log.info('upload.rejected', { ...ctx.logFields, kind, reason });
-    throw new ApiError(status, code, { reason, ...(status === 422 ? { details: [{ path: '', code: reason }] } : {}) });
+    const detail = { path: '', code: reason, ...(name ? { name } : {}) };
+    throw new ApiError(status, code, { reason, ...(status === 422 ? { details: [detail] } : {}) });
   };
 
-  // Type déclaré : liste blanche stricte (SVG, GIF, HTML… ⇒ 415)
+  // Type déclaré : liste blanche stricte (GIF, HTML… ⇒ 415 ; SVG seulement pour kind=image)
   let declared;
   try {
     declared = requireMediaType(request, Object.keys(ALLOWED_TYPES[kind]));
   } catch {
     reject(415, 'UNSUPPORTED_MEDIA_TYPE', 'type_not_allowed');
   }
+  const limit = TYPE_LIMITS[declared] ?? LIMITS[kind];
   const length = getContentLength(request);
   if (length === null) reject(411, 'LENGTH_REQUIRED', 'length_missing');
-  if (length > LIMITS[kind]) reject(413, 'PAYLOAD_TOO_LARGE', 'too_large');
+  if (length > limit) reject(413, 'PAYLOAD_TOO_LARGE', 'too_large');
 
   let bytes;
   try {
     // Lecture bornée au plus petit de la taille déclarée et de la limite (Content-Length mensonger ⇒ 413)
-    bytes = await readBoundedBody(request, Math.min(length, LIMITS[kind]));
+    bytes = await readBoundedBody(request, Math.min(length, limit));
   } catch (err) {
     if (err instanceof ApiError && err.status === 413) reject(413, 'PAYLOAD_TOO_LARGE', 'too_large');
     throw err;
   }
 
   const check = inspectUpload(kind, declared, bytes);
-  if (!check.ok) reject(check.status, check.code, check.reason);
+  if (!check.ok) reject(check.status, check.code, check.reason, check.name);
 
   const repo = ctx.repo();
   const branch = workBranch(ctx.config);

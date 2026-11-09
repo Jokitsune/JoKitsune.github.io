@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { readRepoFile } from './helpers.js';
 import { validateContent, validateFile, toJSONSchemas, CONTENT_FILES, formatIssues } from '../../src/lib/schema.js';
 import { loadRealContent, XSS } from './helpers.js';
+import { LOGO_PATH_RE } from '../../src/lib/schema.js';
+import { PUBLIC_PATH_RE } from '../../api/_lib/upload.js';
 
 describe('schéma du contenu', () => {
   it('valide le contenu réel du dépôt', () => {
@@ -47,11 +49,42 @@ describe('schéma du contenu', () => {
     expect(formatIssues(res.errors)).toContain('content/cards.json › cards.1.id');
   });
 
-  it('refuse une couleur de carte inconnue et un pourcentage hors bornes', () => {
+  it('certifications : anciens champs refusés, U+2060 et « Office of » corrigés', () => {
     const c = loadRealContent();
-    c.cards.cards[0].color = 'purple';
-    c.cards.cards[1].progress.percent = 120;
+    for (const card of c.cards.cards) {
+      for (const k of ['color', 'icon', 'badge', 'date', 'progress', 'tags']) expect(card, `${card.id}.${k}`).not.toHaveProperty(k);
+      expect(String(card.title)).not.toContain('⁠');
+    }
+    expect(c.cards.cards.find(x => x.id === 'onu-1').org).toContain('Office on Drugs');
+    c.cards.cards[0].color = 'yellow';
+    c.cards.cards[1].progress = { label: 'l', value: 'v', percent: 100 };
     expect(validateFile('cards', c.cards).errors.length).toBe(2);
+  });
+
+  it('certifications : logo local uniquement, lien de vérification en https', () => {
+    const ok = card => validateFile('cards', { cards: [{ id: 'x', order: 1, visible: true, title: 't', org: 'o', ...card }] }).success;
+    // Le chemin du logo suit la forme des fichiers produits par l'upload d'images
+    for (const p of ['/images/uploads/a-0123456789ab.svg', '/images/uploads/a.png', '/images/uploads/b.jpg', '/images/uploads/c.webp']) {
+      expect(LOGO_PATH_RE.test(p), p).toBe(PUBLIC_PATH_RE.test(p));
+    }
+    expect(ok({})).toBe(true); // ni logo ni lien : monogramme, pas de bouton
+    expect(ok({ logo: '/images/uploads/ibm-6bdf7f8ccdb3.svg', verifyUrl: 'https://www.credly.com/badges/x', verifyPlatform: 'Credly' })).toBe(true);
+    expect(ok({ logo: '/images/uploads/a-0123456789ab.webp', logoAlt: { fr: 'Logo', en: 'Logo' } })).toBe(true);
+    for (const logo of ['https://evil.example/x.svg', '//evil.example/x.svg', '/images/uploads/x.gif', '/images/uploads/../x.svg',
+      '/images/uploads/X.svg', 'images/uploads/x.svg', '/images/uploads/x.svg?a=1', 'data:image/svg+xml,<svg>']) {
+      expect(ok({ logo }), logo).toBe(false);
+    }
+    for (const verifyUrl of ['http://www.credly.com/badges/x', 'javascript:alert(1)', 'https://', 'https://a.b/"onmouseover=x', '//credly.com/x', 'https://a.b/\\x']) {
+      expect(ok({ verifyUrl }), verifyUrl).toBe(false);
+    }
+  });
+
+  it('ui.certifications.position exige {n} et {total}', () => {
+    const c = loadRealContent();
+    c.ui.certifications.position = { fr: '{n} sur {total}', en: 'slide {n}' };
+    expect(validateFile('ui', c.ui).success).toBe(false);
+    c.ui.certifications.position = '{n} / {total}';
+    expect(validateFile('ui', c.ui).success).toBe(true);
   });
 
   it('exige description OU bullets dans la timeline', () => {

@@ -9,3 +9,32 @@ body {
   font-family: 'Share Tech Mono', monospace;
   overflow-x: hidden;
 }
+
+/* -------- UTILITAIRES D'ACCESSIBILITÉ -------- */
+/* Texte réservé aux lecteurs d'écran */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* L'attribut hidden l'emporte toujours sur un display déclaré par un composant */
+[hidden] { display: none !important; }
+
+/* Focus jamais masqué par la nav fixe (WCAG 2.4.11) : quand le focus fait défiler
+   la page, l'élément s'arrête sous la nav (50 px en bureau, 85 px repliée à 320 px).
+   Limité aux éléments focusables pour ne pas décaler les ancres de sections. */
+a[href], button, input, select, textarea, summary, [tabindex] { scroll-margin-top: 100px; }
+
+/* Focus clavier visible partout (WCAG 2.4.7) */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}

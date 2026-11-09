@@ -5,7 +5,8 @@
       "id": "consultant-cyber",
       "order": 1,
       "visible": true,
-      "date": "08/2026",
+      "kind": "experience",
+      "start": "2026-08",
       "role": { "fr": "Consultant Cybersécurité", "en": "Cybersecurity Consultant" },
       "org": "KPS GROUPE BENIN",
       "description": {
@@ -17,7 +18,9 @@
       "id": "stage-devsecops",
       "order": 2,
       "visible": true,
-      "date": "03/2026 – 06/2026",
+      "kind": "experience",
+      "start": "2026-03",
+      "end": "2026-06",
       "role": { "fr": "Stage DevSecOps Junior", "en": "Junior DevSecOps Intern" },
       "org": "Tics Master Sarl — Abomey-Calavi, Bénin",
       "description": {
@@ -26,22 +29,11 @@
       }
     },
     {
-      "id": "licence-esgis",
+      "id": "benevole-rpc",
       "order": 3,
       "visible": true,
-      "date": "09/2022 — 06/2026",
-      "role": { "fr": "Licence Sécurité Informatique", "en": "Bachelor in Computer Security" },
-      "org": "ESGIS — Cotonou, Bénin",
-      "description": {
-        "fr": "Formation axée sur la cybersécurité, les réseaux et la gestion des systèmes d'information.",
-        "en": "Specialized curriculum covering cybersecurity, enterprise networking, and information systems administration."
-      }
-    },
-    {
-      "id": "benevole-rpc",
-      "order": 4,
-      "visible": true,
-      "date": "06/2024 — AUJOURD'HUI",
+      "kind": "benevolat",
+      "start": "2024-06",
       "role": { "fr": "Bénévole — Communication & Événementiel", "en": "Volunteer — Communication & Events" },
       "org": "LE ROND POINT CLASSE — Cotonou, Bénin",
       "bullets": [
@@ -64,10 +56,26 @@
       ]
     },
     {
+      "id": "licence-esgis",
+      "order": 4,
+      "visible": true,
+      "kind": "formation",
+      "start": "2022-09",
+      "end": "2026-06",
+      "role": { "fr": "Licence Sécurité Informatique", "en": "Bachelor in Computer Security" },
+      "org": "ESGIS — Cotonou, Bénin",
+      "description": {
+        "fr": "Formation axée sur la cybersécurité, les réseaux et la gestion des systèmes d'information.",
+        "en": "Specialized curriculum covering cybersecurity, enterprise networking, and information systems administration."
+      }
+    },
+    {
       "id": "bac-d",
       "order": 5,
       "visible": true,
-      "date": "09/2021 — 06/2022",
+      "kind": "formation",
+      "start": "2021-09",
+      "end": "2022-06",
       "role": { "fr": "Baccalauréat Série D", "en": "High School Scientific Baccalaureate (Series D)" },
       "org": "La Merveilleuse — Porto-Novo, Bénin",
       "description": {
