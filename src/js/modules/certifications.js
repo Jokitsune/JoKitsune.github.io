@@ -17,7 +17,7 @@ import {
   computeTransforms, wrapOffset, wrapIndex, layoutFor, dampStep, swipeTarget,
   AUTOPLAY_DELAY, CAROUSEL_MIN
 } from '../../lib/coverflow.js';
-import { applyI18nAttrs } from './i18n.js';
+import { applyI18nAttrs, I18N_CHANGE_EVENT } from './i18n.js';
 
 const REDUCE_QUERY = '(prefers-reduced-motion: reduce)';
 const DRAG_START = 8;        // px avant de décider horizontal / vertical
@@ -304,6 +304,14 @@ export function initCertCarousel(root = document.querySelector('[data-cc]'), opt
     wheelSum = 0;
     go(dir);
   }, { passive: false });
+
+  /* ---------- Changement de langue ---------- */
+  // La région live garderait l'ancienne langue jusqu'au prochain changement de slide :
+  // on la vide (rien à annoncer), la prochaine fin d'animation la remplira.
+  on(document, I18N_CHANGE_EVENT, () => {
+    if (status) status.textContent = '';
+    announced = -1;
+  });
 
   /* ---------- Retenues de l'autoplay ---------- */
   on(root, 'pointerenter', e => { if (e.pointerType === 'mouse') hold('hover', true); });

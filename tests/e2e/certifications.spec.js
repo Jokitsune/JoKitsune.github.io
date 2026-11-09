@@ -273,3 +273,51 @@ test.describe('sans JavaScript', () => {
     }
   });
 });
+
+test('clic souris sur une carte latérale : elle devient la slide courante', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await show(page);
+  const all = await titles(page);
+  // Point visible de la carte suivante (à droite de la carte courante), vérifié par hit-test
+  const point = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('.cc-slide .cc-card')];
+    const cur = document.querySelector('.cc-slide.is-current .cc-card').getBoundingClientRect();
+    const r = cards[1].getBoundingClientRect();
+    const x = Math.round((Math.max(r.left, cur.right) + r.right) / 2);
+    const y = Math.round(r.top + r.height / 2);
+    return { x, y, hit: !!document.elementFromPoint(x, y)?.closest('.cc-card') };
+  });
+  expect(point.hit).toBe(true);
+  await page.mouse.click(point.x, point.y);
+  await expect(currentTitle(page)).toHaveText(all[1]);
+});
+
+test('Maj+Tab depuis les contrôles vers « Vérifier » à 320x256 (zoom 400 %) : lien non masqué par la nav fixe', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 256 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await show(page);
+  await page.locator('.cc-toggle').focus();
+  // Contrôles juste sous la nav : le lien, au-dessus, est hors écran avant Maj+Tab
+  await page.evaluate(() => {
+    const navBottom = document.querySelector('nav').getBoundingClientRect().bottom;
+    window.scrollBy(0, document.querySelector('.cc-toggle').getBoundingClientRect().top - navBottom - 4);
+  });
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('.cc-slide.is-current .cc-verify')).toBeFocused();
+  const { top, navBottom } = await page.evaluate(() => ({
+    top: document.activeElement.getBoundingClientRect().top,
+    navBottom: document.querySelector('nav').getBoundingClientRect().bottom
+  }));
+  expect(top).toBeGreaterThanOrEqual(navBottom);
+});
+
+test('changement de langue : la région live ne garde pas l’ancienne langue', async ({ page }) => {
+  await page.goto('/');
+  await show(page);
+  await page.locator('.cc-next').click();
+  await expect(page.locator('.cc-status')).toContainText(' sur ');
+  await page.locator('.lang-btn[data-lang="en"]').click();
+  await expect(page.locator('.cc-status')).not.toContainText(' sur ');
+});

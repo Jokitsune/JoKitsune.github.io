@@ -3,7 +3,8 @@
    - .cc--enhanced (posée par src/js/modules/certifications.js) : toutes les slides
      dans la même cellule de grille, transformées par le moteur via le CSSOM ;
      la hauteur de la piste = légende la plus haute → aucun décalage de mise en page.
-   Aucun texte de la section en --text-dim (contraste < 4,5:1). */
+   Aucun texte de la section en --text-dim (contraste < 4,5:1) ; le libellé
+   de section (.section-label, layout.css) utilise --text-muted. */
 
 /* -------- JETONS -------- */
 :root {
@@ -189,6 +190,10 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
   transform-style: preserve-3d;
+  /* En 3D, la piste (plan z = 0) recouvre au hit-test les cartes repoussées
+     en translateZ négatif : elle ne doit jamais capter le pointeur. La scène
+     (.cc-stage) garde les événements du glisser et de la molette. */
+  pointer-events: none;
 }
 .cc--enhanced .cc-slide {
   grid-area: 1 / 1;
