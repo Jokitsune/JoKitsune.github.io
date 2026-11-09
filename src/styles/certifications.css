@@ -143,6 +143,10 @@
   color: var(--text);
   border-color: var(--green-dim);
   white-space: normal;
+  /* Pas de « transition: all » : la visibility héritée de .cc-info resterait
+     « hidden » au début de la transition et le lien serait non focusable
+     au moment où le moteur lui donne le focus (changement de slide). */
+  transition-property: color, border-color, transform;
 }
 .btn-secondary.cc-verify:hover { color: var(--green); border-color: var(--green); }
 .cc-verify-main { white-space: nowrap; }
